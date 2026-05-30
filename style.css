@@ -56,7 +56,7 @@ body {
 .custom-gradient {
     background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
     background-size: 200% 200%;
-    animation: gradientShift 10s ease infinite;
+    animation: gradientShift 12s ease infinite;
 }
 
 /* Advanced CSS Keyframe Animations */
@@ -69,7 +69,7 @@ body {
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(8px); /* Smaller, snappier offset for fluid premium loading */
     }
     to {
         opacity: 1;
@@ -77,15 +77,17 @@ body {
     }
 }
 
+/* Redesigned fade and highlight row intro to bypass layout collapse/flicker bugs on chromium tables */
 @keyframes slideInUpRow {
-    from {
+    0% {
         opacity: 0;
-        transform: translateY(12px);
-        background-color: rgba(99, 102, 241, 0.15);
+        background-color: rgba(99, 102, 241, 0.25);
     }
-    to {
+    50% {
+        background-color: rgba(99, 102, 241, 0.12);
+    }
+    100% {
         opacity: 1;
-        transform: translateY(0);
         background-color: transparent;
     }
 }
@@ -93,17 +95,17 @@ body {
 @keyframes pulseGlow {
     0%, 100% {
         box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
-        border-color: rgba(99, 102, 241, 0.25);
+        border-color: rgba(99, 102, 241, 0.2);
     }
     50% {
-        box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
-        border-color: rgba(99, 102, 241, 0.6);
+        box-shadow: 0 0 25px rgba(99, 102, 241, 0.35);
+        border-color: rgba(99, 102, 241, 0.55);
     }
 }
 
 @keyframes popIn {
     0% {
-        transform: scale(0.9);
+        transform: scale(0.94);
         opacity: 0;
     }
     100% {
@@ -118,48 +120,56 @@ body {
         box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
     }
     50% {
-        transform: scale(1.05);
+        transform: scale(1.04);
         box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
     }
 }
 
 /* Smooth Entrance Classes */
 .animate-fade-in-up {
-    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; /* Snappier golden ratio duration */
 }
 
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
+.delay-100 { animation-delay: 0.08s; }
+.delay-200 { animation-delay: 0.16s; }
+.delay-300 { animation-delay: 0.24s; }
 
 /* Dynamic Addition Slide In */
 .animate-slide-in {
-    animation: slideInUpRow 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideInUpRow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Premium Card / Element Interactions on Focus and Hover */
+/* Form interactions: replaced expensive all transitions and layout shaking translateY transforms */
 input, select, textarea {
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: border-color 0.18s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1), 
+                background-color 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
+/* Pure, visual-only glow focus (never shift positions or fonts during active user typing) */
 input:focus, select:focus, textarea:focus {
+    border-color: rgba(99, 102, 241, 0.75) !important;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
-    transform: translateY(-1px);
 }
 
 /* Hover scales for specialized interactive buttons */
 .interactive-hover-btn {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                filter 0.2s ease;
 }
 
+/* Tactile hovering states */
 .interactive-hover-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px -10px rgba(99, 102, 241, 0.5);
-    filter: brightness(1.1);
+    transform: translateY(-1.5px);
+    box-shadow: 0 8px 16px -6px rgba(99, 102, 241, 0.4);
+    filter: brightness(1.08);
 }
 
+/* Press Down action produces tactile physical feedback, very satisfying inside web views */
 .interactive-hover-btn:active {
-    transform: translateY(1px);
+    transform: translateY(1px) scale(0.97);
+    filter: brightness(0.95);
 }
 
 /* Glowing Border Effect */
@@ -169,7 +179,7 @@ input:focus, select:focus, textarea:focus {
 
 /* Smooth Success Modal Entrance Animation */
 #successModal > div {
-    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 #successModal .success-badge {
@@ -178,5 +188,5 @@ input:focus, select:focus, textarea:focus {
 
 /* Dynamic Item Card Transition styling */
 #specItemsContainer {
-    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
 }
