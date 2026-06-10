@@ -281,6 +281,7 @@ function roundGlassDimension(val) {
 
 function calculateLiveEstimate() {
     const p = getSpecPricingDetails();
+    const estCard = document.getElementById('liveEstCard');
 
     if (p.width > 0 && p.height > 0) {
         // Round up dimensions like the ERP math does internally
@@ -306,10 +307,22 @@ function calculateLiveEstimate() {
             `Sizing Math: ${rW}" x ${rH}" rounded (${sqFt.toFixed(2)} SqFt) • ${runningFeet.toFixed(1)} RF edge length`;
         
         document.getElementById('liveEstPrice').innerText = `₹${totalPrice.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+
+        if (estCard && estCard.classList.contains('hidden')) {
+            estCard.classList.remove('hidden');
+            gsap.fromTo(estCard, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" });
+        }
     } else {
-        document.getElementById('liveEstSummary').innerHTML = `Type specs & dimensions to start...`;
-        document.getElementById('liveEstDims').innerText = "Supports millimeter, feet or standard inches auto rounding.";
-        document.getElementById('liveEstPrice').innerText = "₹0.00";
+        if (estCard && !estCard.classList.contains('hidden')) {
+            gsap.to(estCard, {
+                opacity: 0,
+                y: -10,
+                duration: 0.25,
+                onComplete: () => {
+                    estCard.classList.add('hidden');
+                }
+            });
+        }
     }
 }
 
@@ -344,7 +357,7 @@ function addSpecLineItem() {
     };
 
     clientSpecsList.push(itemSpec);
-    renderSpecLinesTable();
+    renderSpecLinesTable(itemSpec.id);
 
     // Reset size inputs
     document.getElementById('itemWidth').value = '';
@@ -356,35 +369,105 @@ function addSpecLineItem() {
 }
 
 function removeSpecLineItem(id) {
-    clientSpecsList = clientSpecsList.filter(item => item.id !== id);
-    renderSpecLinesTable();
+    const row = document.getElementById(`row-${id}`);
+    if (row) {
+        gsap.to(row, {
+            opacity: 0,
+            x: 35,
+            scale: 0.95,
+            duration: 0.4,
+            ease: "power2.in",
+            onComplete: () => {
+                clientSpecsList = clientSpecsList.filter(item => item.id !== id);
+                renderSpecLinesTable();
+            }
+        });
+    } else {
+        clientSpecsList = clientSpecsList.filter(item => item.id !== id);
+        renderSpecLinesTable();
+    }
 }
 
-function renderSpecLinesTable() {
+function renderSpecLinesTable(newItemId = null) {
     const container = document.getElementById('specItemsContainer');
     const tbody = document.getElementById('specItemsBody');
-    tbody.innerHTML = '';
+    const wasHidden = container.classList.contains('hidden');
 
     if (clientSpecsList.length === 0) {
-        container.classList.add('hidden');
+        if (!wasHidden) {
+            gsap.to(container, {
+                opacity: 0,
+                y: -15,
+                duration: 0.35,
+                onComplete: () => {
+                    container.classList.add('hidden');
+                }
+            });
+        } else {
+            container.classList.add('hidden');
+        }
+        tbody.innerHTML = '';
     } else {
-        container.classList.remove('hidden');
+        if (wasHidden) {
+            container.classList.remove('hidden');
+            gsap.fromTo(container, {
+                opacity: 0,
+                y: -25
+            }, {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                ease: "power3.out"
+            });
+        }
+
+        tbody.innerHTML = '';
         clientSpecsList.forEach(item => {
-            tbody.innerHTML += `
-                <tr class="border-b border-slate-800/60 hover:bg-slate-900/40 animate-slide-in">
-                    <td class="p-3 pl-4 font-semibold text-white leading-tight">
-                        ${item.name}
-                    </td>
-                    <td class="p-3 text-center font-mono text-indigo-300 font-semibold">${item.width}"</td>
-                    <td class="p-3 text-center font-mono text-indigo-300 font-semibold">${item.height}"</td>
-                    <td class="p-3 text-center font-bold text-white">${item.qty}</td>
-                    <td class="p-3 text-center">
-                        <button type="button" onclick="removeSpecLineItem('${item.id}')" class="text-rose-400 hover:text-rose-300 bg-rose-950/30 hover:bg-rose-900/20 p-1.5 rounded-lg transition interactive-hover-btn">
-                            <i class="fa fa-trash-can text-xs"></i>
-                        </button>
-                    </td>
-                </tr>
+            const rowId = `row-${item.id}`;
+            const isNew = item.id === newItemId;
+
+            const tr = document.createElement('tr');
+            tr.id = rowId;
+            tr.className = "border-b border-slate-800/60 hover:bg-slate-900/40";
+
+            if (isNew) {
+                tr.style.opacity = "0";
+                tr.style.transform = "translateX(-30px) scale(0.95)";
+            }
+
+            tr.innerHTML = `
+                <td class="p-3 pl-4 font-semibold text-white leading-tight">
+                    ${item.name}
+                </td>
+                <td class="p-3 text-center font-mono text-indigo-300 font-semibold">${item.width}"</td>
+                <td class="p-3 text-center font-mono text-indigo-300 font-semibold">${item.height}"</td>
+                <td class="p-3 text-center font-bold text-white">${item.qty}</td>
+                <td class="p-3 text-center">
+                    <button type="button" onclick="removeSpecLineItem('${item.id}')" class="text-rose-400 hover:text-rose-300 bg-rose-950/30 hover:bg-rose-900/20 p-1.5 rounded-lg transition interactive-hover-btn">
+                        <i class="fa fa-trash-can text-xs"></i>
+                    </button>
+                </td>
             `;
+            tbody.appendChild(tr);
+
+            if (isNew) {
+                gsap.to(tr, {
+                    opacity: 1,
+                    x: 0,
+                    scale: 1,
+                    duration: 0.6,
+                    ease: "power4.out",
+                    clearProps: "transform"
+                });
+
+                gsap.fromTo(tr, {
+                    backgroundColor: "rgba(99, 102, 241, 0.25)"
+                }, {
+                    backgroundColor: "rgba(0, 0, 0, 0)",
+                    duration: 1.2,
+                    ease: "power2.out"
+                });
+            }
         });
     }
 }
