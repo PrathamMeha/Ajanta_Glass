@@ -971,33 +971,8 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // Default verified testimonials
-        const defaultReviews = [
-            {
-                name: "Sunil Mehta",
-                role: "Architect",
-                rating: 5,
-                text: "The frameless glass partitions completely opened up our structural office space layout. Exceptionally custom build!"
-            },
-            {
-                name: "Rajesh Grover",
-                role: "HDFC Structural Lead",
-                rating: 5,
-                text: "Ajanta Glass manufactures the highest quality tempered enclosures with true reliability. Highly recommend for custom glass orders."
-            },
-            {
-                name: "Dr. Amit Shah",
-                role: "Homeowner",
-                rating: 5,
-                text: "My custom shower cubicle is absolutely gorgeous! Clean glass lines, water shedding polish, robust locks. Unbeatable value."
-            },
-            {
-                name: "Kavita Roy",
-                role: "Civil Project Lead",
-                rating: 5,
-                text: "The high wind resistance of their double glazed unit sliding glass door has made our balcony completely storm proof!"
-            }
-        ];
+        // Default verified testimonials (empty as requested to avoid fake reviews)
+        const defaultReviews = [];
 
         let activeReviews = [];
 
@@ -1020,8 +995,8 @@
                 console.error("Could not fetch custom reviews:", e);
             }
             
-            // Fallback to defaults if no custom reviews yet
-            activeReviews = [...defaultReviews];
+            // Fallback if no custom reviews yet
+            activeReviews = [];
             renderReviews();
         }
 
@@ -1030,8 +1005,16 @@
             if (!marqueeList) return;
             
             let html = '';
-            // If we have very few reviews, duplicate them to ensure smooth, continuous infinite scrolling animation
             let listToRender = [...activeReviews];
+            if (listToRender.length === 0) {
+                marqueeList.innerHTML = `
+                <div class="glass-panel p-6 rounded-2xl inline-block w-full text-center text-slate-400 border border-slate-800/40">
+                    <p class="text-xs leading-relaxed italic">No client reviews submitted yet. Click "Write a Live Review" above to publish your genuine experience!</p>
+                </div>
+                `;
+                return;
+            }
+            // If we have very few reviews, duplicate them to ensure smooth, continuous infinite scrolling animation
             while (listToRender.length < 8 && listToRender.length > 0) {
                 listToRender = [...listToRender, ...listToRender];
             }
