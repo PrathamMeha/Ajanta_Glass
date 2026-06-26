@@ -86,7 +86,7 @@
         }
     </style>
 </head>
-<body class="text-slate-100 selection:bg-indigo-500 selection:text-white">
+<body class="text-slate-100 selection:bg-indigo-500 selection:text-white overflow-x-hidden">
 
     <!-- Ambient background glowing elements (BMW/Apple premium design style) -->
     <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
@@ -164,10 +164,10 @@
 
     <!-- SECTION 2: LEGACY & TRUST STORY -->
     <section id="legacy" class="py-24 max-w-5xl mx-auto px-6 z-10 relative">
-        <div class="grid md:grid-cols-2 gap-12 items-center">
-            <div class="space-y-6">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div id="legacy-left" class="space-y-6">
                 <div class="text-xs font-bold text-indigo-400 uppercase tracking-widest font-display">Our Legacy</div>
-                <h2 class="text-3xl md:text-5xl font-syne font-extrabold uppercase leading-tight text-white">40+ Years of<br>Excellence</h2>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-syne font-extrabold uppercase leading-tight text-white">40+ Years of<br>Excellence</h2>
                 <p class="text-slate-400 text-sm leading-relaxed font-light">
                     For more than four decades, Ajanta Glass has been helping homeowners, visionary architects, builders, and corporate developers bring their aesthetic design visions to life. With thousands of successful commissions and a legacy built upon multi-generational reliability, we set the standard of high-end structural glazing solutions.
                 </p>
@@ -178,26 +178,26 @@
             </div>
 
             <!-- Stats and Journey Panel -->
-            <div class="glass-panel p-8 rounded-3xl space-y-8 relative overflow-hidden">
+            <div id="legacy-right" class="glass-panel p-6 sm:p-8 rounded-3xl space-y-8 relative overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent pointer-events-none"></div>
                 
                 <!-- Animated Statistics Grid -->
-                <div class="grid grid-cols-2 gap-6 relative z-10">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-6 relative z-10">
                     <div>
-                        <div class="text-3xl md:text-4xl font-syne font-black text-indigo-400 mb-1">40+</div>
-                        <div class="text-[10px] uppercase tracking-widest font-bold text-slate-500">Years Experience</div>
+                        <div class="text-2xl sm:text-3xl lg:text-4xl font-syne font-black text-indigo-400 mb-1">40+</div>
+                        <div class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-slate-500">Years Experience</div>
                     </div>
                     <div>
-                        <div class="text-3xl md:text-4xl font-syne font-black text-indigo-400 mb-1">10,000+</div>
-                        <div class="text-[10px] uppercase tracking-widest font-bold text-slate-500">Happy Customers</div>
+                        <div class="text-2xl sm:text-3xl lg:text-4xl font-syne font-black text-indigo-400 mb-1">10,000+</div>
+                        <div class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-slate-500">Happy Customers</div>
                     </div>
                     <div>
-                        <div class="text-3xl md:text-4xl font-syne font-black text-indigo-400 mb-1">25,000+</div>
-                        <div class="text-[10px] uppercase tracking-widest font-bold text-slate-500">Completed Projects</div>
+                        <div class="text-2xl sm:text-3xl lg:text-4xl font-syne font-black text-indigo-400 mb-1">25,000+</div>
+                        <div class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-slate-500">Completed Projects</div>
                     </div>
                     <div>
-                        <div class="text-3xl md:text-4xl font-syne font-black text-indigo-400 mb-1">100%</div>
-                        <div class="text-[10px] uppercase tracking-widest font-bold text-slate-500">Enduring Trust</div>
+                        <div class="text-2xl sm:text-3xl lg:text-4xl font-syne font-black text-indigo-400 mb-1">100%</div>
+                        <div class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-slate-500">Enduring Trust</div>
                     </div>
                 </div>
 
@@ -242,7 +242,7 @@
 
         <div class="grid md:grid-cols-5 gap-8 items-stretch">
             <!-- Sidebar Selection List -->
-            <div class="md:col-span-2 space-y-4">
+            <div id="products-sidebar" class="md:col-span-2 space-y-4">
                 <!-- Product 1 Header Button -->
                 <div onclick="selectProductSpotlight(1)" id="prodTab-1" class="glass-panel p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-indigo-500 spotlight-active flex items-center justify-between">
                     <div>
@@ -286,7 +286,7 @@
             </div>
 
             <!-- Spotlight Visual Details Screen -->
-            <div class="md:col-span-3 glass-panel rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between">
+            <div id="products-spotlight" class="md:col-span-3 glass-panel rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between">
                 <div class="absolute inset-0 z-0">
                     <img id="spotlightImage" class="w-full h-full object-cover opacity-20 filter brightness-50 transition-all duration-500 ease-out" src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" alt="product detail view">
                 </div>
@@ -333,7 +333,12 @@
     <section class="py-24 overflow-hidden relative z-10 w-full bg-gradient-to-b from-slate-950/40 to-slate-950/80">
         <div class="max-w-5xl mx-auto px-6 mb-12 flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="text-center md:text-left">
-                <h2 class="text-2xl md:text-4xl font-syne font-extrabold uppercase text-white">Verified Customer Backing</h2>
+                <h2 class="text-2xl md:text-4xl font-syne font-extrabold uppercase text-white flex flex-wrap items-center justify-center md:justify-start gap-2">
+                    <span>Verified Customer Backing</span>
+                    <span onclick="promptOwnerLogin()" id="ownerStatusIcon" class="cursor-pointer text-slate-600 hover:text-indigo-400 transition text-sm flex items-center" title="Owner Admin Tools">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </span>
+                </h2>
                 <p class="text-xs text-slate-400 mt-1">Real-time feedback and testimonials submitted directly by our verified clients.</p>
             </div>
             <button onclick="openReviewModal()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-syne font-bold text-xs px-5 py-3 rounded-xl shadow-lg shadow-indigo-600/20 border border-indigo-400/20 transition-all active:scale-95">
@@ -353,7 +358,7 @@
     </section>
 
     <!-- SECTION 6: WHY CHOOSE AJANTA CARD GRID -->
-    <section class="py-24 max-w-5xl mx-auto px-6 z-10 relative">
+    <section id="why-choose" class="py-24 max-w-5xl mx-auto px-6 z-10 relative">
         <div class="text-center mb-16 space-y-3">
             <h2 class="text-3xl md:text-5xl font-syne font-extrabold uppercase text-white">Why Choose Ajanta Glass</h2>
             <p class="text-slate-400 text-xs md:text-sm max-w-md mx-auto font-light">With decades of proven structural craftsmanship, we have optimized layouts for total client satisfaction.</p>
@@ -401,7 +406,7 @@
 
     <!-- SECTION 7: PLACE ORDER / SPEC CONFIGURATOR CENTER (THE HUB) -->
     <section id="configurator" class="py-24 max-w-4xl mx-auto px-6 z-10 relative">
-        <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+        <div id="configurator-card" class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent pointer-events-none"></div>
             
             <div class="flex flex-col sm:flex-row items-center justify-between border-b border-slate-800 pb-5 mb-8 gap-4">
@@ -639,7 +644,7 @@
             <div class="absolute -left-24 -top-24 w-80 h-80 rounded-full bg-emerald-650/5 blur-3xl pointer-events-none"></div>
             
             <div class="grid md:grid-cols-2 gap-10 items-center">
-                <div class="space-y-6">
+                <div id="showroom-left" class="space-y-6">
                     <div class="inline-flex items-center space-x-2 bg-indigo-950/40 border border-indigo-500/20 rounded-full px-4 py-1.5 text-indigo-300">
                         <i class="fa-solid fa-map-location-dot text-indigo-400 text-xs animate-pulse"></i>
                         <span class="text-[10px] uppercase tracking-wider font-extrabold font-display">Showroom & Experience Center</span>
@@ -680,7 +685,7 @@
                 </div>
                 
                 <!-- Interactive Google Map Frame -->
-                <div class="relative group">
+                <div id="showroom-right" class="relative group">
                     <div class="absolute -inset-1 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 opacity-20 group-hover:opacity-35 blur transition duration-500"></div>
                     <div class="relative bg-slate-950/80 border border-slate-800 rounded-2xl p-4 overflow-hidden">
                         <iframe class="w-full h-64 rounded-xl border border-slate-800/80 shadow-inner" src="https://maps.google.com/maps?q=Ajanta%20Glass%20Store,%20Sirsa%20Road&t=&z=14&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="filter: invert(90%) hue-rotate(180deg) grayscale(10%) contrast(110%);"></iframe>
@@ -975,6 +980,45 @@
         const defaultReviews = [];
 
         let activeReviews = [];
+        let isOwnerMode = false;
+        let editingReviewId = null;
+
+        function updateOwnerStatusUI() {
+            const iconContainer = document.getElementById('ownerStatusIcon');
+            if (iconContainer) {
+                if (isOwnerMode) {
+                    iconContainer.className = "cursor-pointer text-emerald-400 hover:text-emerald-300 transition text-sm flex items-center";
+                    iconContainer.title = "Owner Mode Enabled - Edit/Delete reviews active";
+                    iconContainer.innerHTML = `<i class="fa-solid fa-shield-halved"></i><span class="text-[9px] font-bold tracking-widest font-display ml-1.5 bg-emerald-950/80 text-emerald-300 border border-emerald-800/20 px-1.5 py-0.5 rounded">OWNER ACTIVE</span>`;
+                } else {
+                    iconContainer.className = "cursor-pointer text-slate-600 hover:text-indigo-400 transition text-sm flex items-center";
+                    iconContainer.title = "Owner Admin Tools";
+                    iconContainer.innerHTML = `<i class="fa-solid fa-shield-halved"></i>`;
+                }
+            }
+        }
+
+        function promptOwnerLogin() {
+            if (isOwnerMode) {
+                if (confirm("You are currently in Owner Mode. Would you like to exit Owner Mode?")) {
+                    isOwnerMode = false;
+                    sessionStorage.removeItem('isOwnerMode');
+                    updateOwnerStatusUI();
+                    renderReviews();
+                }
+                return;
+            }
+            const code = prompt("Enter Owner Passcode to access administrative tools:");
+            if (code === "ajanta123" || code === "1234") {
+                isOwnerMode = true;
+                sessionStorage.setItem('isOwnerMode', 'true');
+                updateOwnerStatusUI();
+                renderReviews();
+                alert("Owner Mode unlocked! You can now edit or delete any review using the controls on each card.");
+            } else if (code !== null) {
+                alert("Invalid passcode!");
+            }
+        }
 
         async function fetchReviews() {
             const hashedKey = await sha256(fabricatorUser);
@@ -1031,8 +1075,23 @@
                     starsHtml += `<i class="fa fa-star ${i < review.rating ? 'text-yellow-500' : 'text-slate-600'}"></i>`;
                 }
                 
+                let adminControls = '';
+                if (isOwnerMode) {
+                    adminControls = `
+                    <div class="absolute top-4 right-4 flex items-center gap-1.5 z-20">
+                        <button onclick="editReview(${review.createdAt}, event)" class="w-6 h-6 rounded bg-indigo-950 hover:bg-indigo-600 text-indigo-400 hover:text-white flex items-center justify-center border border-indigo-800/30 transition shadow" title="Edit Review">
+                            <i class="fa-solid fa-pen text-[9px]"></i>
+                        </button>
+                        <button onclick="deleteReview(${review.createdAt}, event)" class="w-6 h-6 rounded bg-red-950 hover:bg-red-600 text-red-400 hover:text-white flex items-center justify-center border border-red-800/30 transition shadow" title="Delete Review">
+                            <i class="fa-solid fa-trash text-[9px]"></i>
+                        </button>
+                    </div>
+                    `;
+                }
+
                 html += `
-                <div class="glass-panel p-6 rounded-2xl inline-block w-80 shrink-0 text-slate-300">
+                <div class="glass-panel p-6 rounded-2xl inline-block w-80 shrink-0 text-slate-300 relative group/card">
+                    ${adminControls}
                     <div class="flex items-center space-x-1.5 text-xs mb-3">
                         <div class="flex space-x-0.5">${starsHtml}</div>
                         <span class="text-[9px] bg-indigo-950 text-indigo-300 ml-2 px-2 py-0.5 rounded font-extrabold font-display uppercase tracking-widest border border-indigo-800/30">Verified</span>
@@ -1046,6 +1105,10 @@
         }
 
         function openReviewModal() {
+            editingReviewId = null; // Clear edit tracking
+            document.querySelector('#reviewModal h3').textContent = "Write a Real Review";
+            document.querySelector('#reviewModal p').textContent = "Share your genuine experience with Ajanta Glass. Your testimonial will appear in our homepage marquee instantly!";
+            document.getElementById('reviewSubmitBtn').querySelector('span').textContent = "Publish Testimonial";
             document.getElementById('reviewModal').classList.remove('hidden');
         }
 
@@ -1054,11 +1117,73 @@
             document.getElementById('reviewForm').reset();
         }
 
+        function editReview(createdAt, event) {
+            if (event) event.stopPropagation();
+            
+            const review = activeReviews.find(r => r.createdAt === createdAt);
+            if (!review) return;
+
+            editingReviewId = createdAt;
+            
+            document.getElementById('reviewAuthor').value = review.name;
+            document.getElementById('reviewRole').value = review.role;
+            document.getElementById('reviewRating').value = review.rating.toString();
+            document.getElementById('reviewText').value = review.text;
+
+            document.querySelector('#reviewModal h3').textContent = "Edit Review (Owner)";
+            document.querySelector('#reviewModal p').textContent = "Modify this testimonial's text, rating, author name, or role. Saving will instantly update the home page.";
+            document.getElementById('reviewSubmitBtn').querySelector('span').textContent = "Save Changes";
+            
+            document.getElementById('reviewModal').classList.remove('hidden');
+        }
+
+        async function deleteReview(createdAt, event) {
+            if (event) event.stopPropagation();
+            
+            const review = activeReviews.find(r => r.createdAt === createdAt);
+            const nameStr = review ? `"${review.name}"` : "this review";
+            
+            if (!confirm(`Are you sure you want to permanently delete the review by ${nameStr}? This action cannot be undone.`)) {
+                return;
+            }
+
+            const hashedKey = await sha256(fabricatorUser);
+            const endpoint = `https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/${hashedKey}_reviews`;
+
+            try {
+                let existingReviews = [];
+                const res = await fetch(endpoint).catch(() => null);
+                if (res && res.ok) {
+                    try {
+                        const jsonText = await res.text();
+                        existingReviews = JSON.parse(jsonText);
+                        if (!Array.isArray(existingReviews)) existingReviews = [];
+                    } catch(e) { existingReviews = []; }
+                }
+
+                const updatedReviews = existingReviews.filter(r => r.createdAt !== createdAt);
+
+                await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedReviews)
+                });
+
+                alert("Review deleted successfully.");
+                await fetchReviews();
+            } catch (e) {
+                console.error("Error deleting review:", e);
+                alert("Could not delete review. Please check connection.");
+            }
+        }
+
         async function submitReview(event) {
             event.preventDefault();
             const btn = document.getElementById('reviewSubmitBtn');
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa fa-circle-notch animate-spin mr-2"></i> <span>Publishing Review...</span>`;
+            
+            const isEditing = (editingReviewId !== null);
+            btn.innerHTML = `<i class="fa fa-circle-notch animate-spin mr-2"></i> <span>${isEditing ? 'Saving Changes...' : 'Publishing Review...'}</span>`;
 
             const name = document.getElementById('reviewAuthor').value.trim();
             const role = document.getElementById('reviewRole').value.trim();
@@ -1067,14 +1192,6 @@
 
             const hashedKey = await sha256(fabricatorUser);
             const endpoint = `https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/${hashedKey}_reviews`;
-
-            const newReview = {
-                name: name,
-                role: role,
-                rating: rating,
-                text: text,
-                createdAt: Date.now()
-            };
 
             try {
                 let existingReviews = [];
@@ -1086,11 +1203,30 @@
                         if (!Array.isArray(existingReviews)) existingReviews = [];
                     } catch(e) { existingReviews = []; }
                 } else {
-                    // Start with defaults if no KV database entry exists yet
                     existingReviews = [...defaultReviews];
                 }
 
-                existingReviews.unshift(newReview); // Prepend so new reviews appear first!
+                if (isEditing) {
+                    const index = existingReviews.findIndex(r => r.createdAt === editingReviewId);
+                    if (index !== -1) {
+                        existingReviews[index] = {
+                            ...existingReviews[index],
+                            name: name,
+                            role: role,
+                            rating: rating,
+                            text: text
+                        };
+                    }
+                } else {
+                    const newReview = {
+                        name: name,
+                        role: role,
+                        rating: rating,
+                        text: text,
+                        createdAt: Date.now()
+                    };
+                    existingReviews.unshift(newReview);
+                }
                 
                 await fetch(endpoint, {
                     method: 'POST',
@@ -1100,16 +1236,15 @@
 
                 closeReviewModal();
                 
-                // Show success feedback
-                document.querySelector('#successModal h3').textContent = "Review Published!";
-                document.querySelector('#successModal p').textContent = "Thank you! Your feedback has been published to our live home page marquee instantly.";
+                document.querySelector('#successModal h3').textContent = isEditing ? "Review Updated!" : "Review Published!";
+                document.querySelector('#successModal p').textContent = isEditing ? "The testimonial has been successfully updated on our live home page." : "Thank you! Your feedback has been published to our live home page marquee instantly.";
                 document.getElementById('successModal').classList.remove('hidden');
 
-                // Refresh the active marquee
+                editingReviewId = null;
                 await fetchReviews();
             } catch(e) {
                 console.error(e);
-                alert("Network error trying to publish your review. Please check connection.");
+                alert("Network error trying to process review. Please check connection.");
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>Publish Testimonial</span>`;
@@ -1122,6 +1257,13 @@
             if (userParam.trim() !== "") {
                 fabricatorUser = userParam.trim();
             }
+            
+            const isUserParamOwner = (fabricatorUser.toLowerCase() === MAIN_OWNER_ACCOUNT.toLowerCase());
+            if (isUserParamOwner || sessionStorage.getItem('isOwnerMode') === 'true') {
+                isOwnerMode = true;
+            }
+            
+            updateOwnerStatusUI();
             calculateLiveEstimate();
             fetchReviews();
         });
@@ -1534,27 +1676,159 @@
         document.addEventListener('DOMContentLoaded', () => {
             gsap.registerPlugin(ScrollTrigger);
 
-            gsap.from('#hero h1', { duration: 1, opacity: 0, y: 50, ease: 'power3.out' });
-            gsap.from('#hero p', { duration: 1, opacity: 0, y: 30, delay: 0.3, ease: 'power3.out' });
-            gsap.from('#hero font-pills', { duration: 1, opacity: 0, scale: 0.9, delay: 0.5 });
+            // Hero section animations on page load
+            gsap.from('#hero h1', { duration: 1.2, opacity: 0, y: 50, ease: 'power3.out' });
+            gsap.from('#hero p', { duration: 1.2, opacity: 0, y: 30, delay: 0.3, ease: 'power3.out' });
+            gsap.from('#hero font-pills', { duration: 1.2, opacity: 0, scale: 0.9, delay: 0.5 });
 
-            // Reveal scroll triggers for Legacy section
-            gsap.from('#legacy h2', {
-                scrollTrigger: { trigger: '#legacy', start: 'top 80%' },
-                y: 50, opacity: 0, duration: 1, ease: 'power3.out'
+            // 1. Legacy Section - Asymmetrical side slide & pop
+            gsap.fromTo('#legacy-left', 
+                { opacity: 0, x: -80 },
+                {
+                    scrollTrigger: {
+                        trigger: '#legacy',
+                        start: 'top 85%',
+                        end: 'bottom 15%',
+                        toggleActions: 'play reverse play reverse'
+                    },
+                    opacity: 1,
+                    x: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                }
+            );
+
+            gsap.fromTo('#legacy-right', 
+                { opacity: 0, x: 80 },
+                {
+                    scrollTrigger: {
+                        trigger: '#legacy',
+                        start: 'top 85%',
+                        end: 'bottom 15%',
+                        toggleActions: 'play reverse play reverse'
+                    },
+                    opacity: 1,
+                    x: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                }
+            );
+
+            // 2. Products Section - Side slide & pop
+            gsap.fromTo('#products-sidebar', 
+                { opacity: 0, x: -80 },
+                {
+                    scrollTrigger: {
+                        trigger: '#products',
+                        start: 'top 85%',
+                        end: 'bottom 15%',
+                        toggleActions: 'play reverse play reverse'
+                    },
+                    opacity: 1,
+                    x: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                }
+            );
+
+            gsap.fromTo('#products-spotlight', 
+                { opacity: 0, x: 80 },
+                {
+                    scrollTrigger: {
+                        trigger: '#products',
+                        start: 'top 85%',
+                        end: 'bottom 15%',
+                        toggleActions: 'play reverse play reverse'
+                    },
+                    opacity: 1,
+                    x: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                }
+            );
+
+            // 3. Why Choose Card Grid - Fully asymmetrical staggered pop out from sides
+            const whyCards = document.querySelectorAll('#why-choose .glass-panel');
+            whyCards.forEach((card, i) => {
+                const isLeft = i % 2 === 0;
+                gsap.fromTo(card, 
+                    { 
+                        opacity: 0, 
+                        x: isLeft ? -80 : 80,
+                        rotation: isLeft ? -4 : 4
+                    },
+                    {
+                        scrollTrigger: {
+                            trigger: card,
+                            start: 'top 92%',
+                            end: 'bottom 8%',
+                            toggleActions: 'play reverse play reverse'
+                        },
+                        opacity: 1,
+                        x: 0,
+                        rotation: 0,
+                        duration: 0.8,
+                        ease: 'back.out(1.2)'
+                    }
+                );
             });
 
-            // Reveal products spotlights
-            gsap.from('#products h2', {
-                scrollTrigger: { trigger: '#products', start: 'top 80%' },
-                y: 30, opacity: 0, duration: 0.8
-            });
+            // 4. Configurator Hub Card - 3D Springy Scale & Pop Out
+            gsap.fromTo('#configurator-card',
+                {
+                    opacity: 0,
+                    y: 100,
+                    scale: 0.9,
+                    rotationX: -8
+                },
+                {
+                    scrollTrigger: {
+                        trigger: '#configurator',
+                        start: 'top 85%',
+                        end: 'bottom 15%',
+                        toggleActions: 'play reverse play reverse'
+                    },
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    rotationX: 0,
+                    duration: 1,
+                    ease: 'back.out(1.3)'
+                }
+            );
 
-            // Reveal showroom section
-            gsap.from('#showroom .glass-panel', {
-                scrollTrigger: { trigger: '#showroom', start: 'top 85%' },
-                y: 60, opacity: 0, duration: 1.2, ease: 'power3.out'
-            });
+            // 5. Showroom Section - Asymmetrical side slide & pop
+            gsap.fromTo('#showroom-left', 
+                { opacity: 0, x: -80 },
+                {
+                    scrollTrigger: {
+                        trigger: '#showroom',
+                        start: 'top 85%',
+                        end: 'bottom 15%',
+                        toggleActions: 'play reverse play reverse'
+                    },
+                    opacity: 1,
+                    x: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                }
+            );
+
+            gsap.fromTo('#showroom-right', 
+                { opacity: 0, x: 80 },
+                {
+                    scrollTrigger: {
+                        trigger: '#showroom',
+                        start: 'top 85%',
+                        end: 'bottom 15%',
+                        toggleActions: 'play reverse play reverse'
+                    },
+                    opacity: 1,
+                    x: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                }
+            );
         });
     </script>
 
