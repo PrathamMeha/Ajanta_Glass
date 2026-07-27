@@ -2,14 +2,14 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajanta Glass — Premium Architectural Glass & Aluminium Solutions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AJANTA — Premium Architectural Glass & Window Systems</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet">
     <!-- GSAP for scroll animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -18,54 +18,76 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
                         display: ['Space Grotesk', 'sans-serif'],
                         syne: ['Syne', 'sans-serif'],
+                    },
+                    colors: {
+                        luxuryDark: '#050505',
+                        luxurySlate: '#0F172A',
+                        luxuryAccent: '#00B8D9',
                     }
                 }
             }
         }
     </script>
     <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        html {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden !important;
+        }
         body {
-            background-color: #030712;
-            overflow-x: hidden;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #050505;
+            overflow-x: hidden !important;
+            width: 100%;
+            max-width: 100vw;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
         }
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #030712;
+            background: #050505;
         }
         ::-webkit-scrollbar-thumb {
-            background: #1f2937;
+            background: #1e293b;
             border-radius: 999px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #374151;
+            background: #00B8D9;
         }
         /* Glassmorphism helpers */
         .glass-panel {
             background: rgba(15, 23, 42, 0.45);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .glass-panel:hover {
-            border-color: rgba(255, 255, 255, 0.12);
+            border-color: rgba(0, 184, 217, 0.25);
+            box-shadow: 0 12px 40px 0 rgba(0, 184, 217, 0.08);
         }
         .glass-input {
-            background: rgba(3, 7, 18, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             color: #ffffff;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .glass-input:focus {
-            border-color: #818cf8;
-            box-shadow: 0 0 15px rgba(129, 140, 248, 0.15);
+            border-color: #00B8D9;
+            box-shadow: 0 0 15px rgba(0, 184, 217, 0.2);
             outline: none;
+            background: rgba(15, 23, 42, 0.85);
         }
         /* Infinite moving marquee for testimonials */
         @keyframes marquee {
@@ -80,33 +102,49 @@
         }
         /* Interactive spotlight slider highlight active state */
         .spotlight-active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
-            border-color: rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, rgba(0, 184, 217, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+            border-color: rgba(0, 184, 217, 0.45) !important;
             transform: scale(1.02);
+        }
+        /* Gradient Background Mask */
+        .text-accent-glow {
+            text-shadow: 0 0 15px rgba(0, 184, 217, 0.35);
         }
     </style>
 </head>
-<body class="text-slate-100 selection:bg-indigo-500 selection:text-white overflow-x-hidden">
+<body class="text-slate-200 selection:bg-cyan-500 selection:text-white overflow-x-hidden">
 
     <!-- Ambient background glowing elements (BMW/Apple premium design style) -->
     <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div class="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-indigo-900/10 blur-[150px] animate-pulse"></div>
-        <div class="absolute top-[30%] -right-40 w-[500px] h-[500px] rounded-full bg-cyan-950/10 blur-[130px]" style="animation-delay: 2s;"></div>
-        <div class="absolute -bottom-45 left-[20%] w-[600px] h-[600px] rounded-full bg-emerald-950/5 blur-[150px]" style="animation-delay: 4s;"></div>
-    </div>
-
-    <!-- HEADER / NAVIGATION (Tesla style floating menu) -->
-    <header class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl">
-        <nav class="glass-panel rounded-2xl px-6 py-3 flex items-center justify-between shadow-2xl">
-            <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white w-9 h-9 rounded-xl flex items-center justify-center shadow-lg border border-indigo-500/30">
-                    <svg class="w-5 h-5 text-indigo-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
+        <div class="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-cyan-950/15 blur-[150px] animate-pulse"></div>
+        <div class="absolute top-[30%] -right-40 w-[500px] h-[500px] rounded-full bg-slate-900/10 blur-[130px]" style="animation-delay: 2s;"></div>
+        <div class="absolute -bottom-45 left-[20%] w-[600px] h-[600px] rounded-full bg-cyan-900/5 blur-[150px]" style="animation-delay: 4s;"></div>
+    </div>    <!-- HEADER / NAVIGATION (Tesla style floating menu) -->
+    <header class="fixed top-2 sm:top-4 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-5xl">
+        <nav class="glass-panel rounded-2xl px-3 py-2 sm:px-6 sm:py-3 flex items-center justify-between shadow-2xl">
+            <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                <!-- Image Logo and SVG Fallback side-by-side -->
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <img src="img_logo.webp" alt="Ajanta Logo" onerror="this.style.display='none'" class="h-7 sm:h-9 w-auto rounded-lg border border-white/10 shadow-lg object-contain">
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center shrink-0">
+                        <svg class="w-full h-full text-[#00B8D9] filter drop-shadow-[0_2px_8px_rgba(0,184,217,0.35)]" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="34" height="34" rx="10" fill="url(#logo-grad)" stroke="#00B8D9" stroke-width="1.5" stroke-opacity="0.3"/>
+                            <path d="M20 3V37" stroke="#00B8D9" stroke-width="1.5" stroke-opacity="0.4"/>
+                            <path d="M3 18H37" stroke="#00B8D9" stroke-width="1.5" stroke-opacity="0.4"/>
+                            <path d="M7 7 L33 33" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.12"/>
+                            <circle cx="20" cy="18" r="2" fill="#00B8D9"/>
+                            <defs>
+                                <linearGradient id="logo-grad" x1="3" y1="3" x2="37" y2="37" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#0F172A" stop-opacity="0.85"/>
+                                    <stop stop-color="#00B8D9" stop-opacity="0.4"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
                 </div>
-                <div>
-                    <span class="font-syne font-extrabold tracking-widest text-lg bg-gradient-to-r from-white via-indigo-100 to-slate-300 bg-clip-text text-transparent">AJANTA</span>
-                    <span class="text-xs font-bold text-indigo-400 block -mt-1 tracking-wider uppercase font-display">GLASS</span>
+                <div class="min-w-0">
+                    <span class="font-syne font-extrabold tracking-wider text-xs sm:text-base bg-gradient-to-r from-white via-cyan-100 to-slate-300 bg-clip-text text-transparent block truncate">AJANTA</span>
+                    <span class="text-[8px] sm:text-[9px] font-bold text-[#00B8D9] hidden xs:block -mt-1 tracking-widest uppercase font-display truncate">Est. 1976 • 50 Years</span>
                 </div>
             </div>
             
@@ -118,47 +156,74 @@
                 <a href="#configurator" class="hover:text-white transition duration-200 uppercase">Configurator</a>
             </div>
 
-            <div>
-                <a href="#configurator" class="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/15 border border-indigo-400/20 uppercase tracking-widest">
-                    Order Now
+            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                <button onclick="openAdminPortal()" class="bg-slate-900/85 hover:bg-slate-800 text-slate-300 hover:text-white px-2 py-1.5 sm:px-3.5 sm:py-2.5 rounded-xl border border-slate-800 flex items-center gap-1.5 transition text-[9px] sm:text-[10px] uppercase font-bold tracking-wider" title="Admin Panel">
+                    <i class="fa-solid fa-shield-halved text-[#00B8D9]"></i>
+                    <span class="hidden sm:inline">Admin</span>
+                </button>
+                <a href="#configurator" class="bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-600 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-xl transition duration-200 shadow-lg shadow-cyan-600/15 border border-cyan-400/20 uppercase tracking-wider sm:tracking-widest whitespace-nowrap">
+                    Get a Quote
                 </a>
             </div>
         </nav>
     </header>
 
     <!-- SECTION 1: HERO CONTAINER -->
-    <section id="hero" class="min-h-screen flex items-center justify-center relative pt-24 overflow-hidden z-10">
+    <section id="hero" class="min-h-screen flex flex-col items-center justify-center relative pt-24 sm:pt-32 pb-12 sm:pb-16 overflow-hidden z-10 w-full px-3 sm:px-6">
         <!-- Background image with luxury darkness mask -->
         <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(3,7,18,0.1)_0%,#030712_95%)] z-10"></div>
-            <img class="w-full h-full object-cover opacity-25 filter brightness-75 scale-105 transition-transform duration-[10s] ease-out" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80" alt="luxury architectural glass paneling">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(5,5,5,0.25)_0%,#050505_95%)] z-10"></div>
+            <img class="w-full h-full object-cover opacity-20 filter brightness-50 scale-105 transition-transform duration-[12s] ease-out" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80" alt="luxury architectural glass paneling">
         </div>
 
-        <div class="max-w-4xl mx-auto px-6 text-center z-10 relative mt-8">
+        <div class="max-w-4xl mx-auto text-center z-10 relative mt-2 sm:mt-4 flex-1 flex flex-col justify-center w-full">
             <!-- Trust Badge Pill -->
-            <div class="inline-flex items-center space-x-2 bg-indigo-950/40 border border-indigo-500/25 rounded-full px-4 py-1.5 mb-6 animate-fade-in text-indigo-300">
-                <i class="fa-solid fa-ribbon text-indigo-400 text-xs shadow-glow"></i>
-                <span class="text-[10px] font-bold tracking-widest uppercase">Trusted by Thousands Since 1986</span>
+            <div class="inline-flex items-center space-x-2 bg-slate-900/60 border border-[#00B8D9]/25 rounded-full px-3 py-1.5 mb-4 sm:mb-6 animate-fade-in text-cyan-300 mx-auto max-w-full">
+                <i class="fa-solid fa-crown text-[#00B8D9] text-[10px] sm:text-xs shadow-glow animate-pulse shrink-0"></i>
+                <span class="text-[9px] sm:text-[10px] font-bold tracking-wider sm:tracking-widest uppercase text-white font-display truncate">50 Years of Glazing Mastery • Since 1976</span>
             </div>
 
             <!-- Title Header -->
-            <h1 class="text-4xl sm:text-6xl md:text-7xl font-syne font-extrabold tracking-tight leading-tight uppercase mb-6">
-                Premium Glass & <br>
-                <span class="bg-gradient-to-r from-indigo-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent">Aluminium Solutions</span>
+            <h1 class="text-2xl xs:text-3xl sm:text-5xl md:text-7xl font-syne font-extrabold tracking-tight leading-tight uppercase mb-4 sm:mb-6 text-white break-words">
+                Architectural Glass &<br>
+                <span class="bg-gradient-to-r from-[#00B8D9] via-cyan-200 to-white bg-clip-text text-transparent text-accent-glow">Window Systems</span>
             </h1>
 
-            <p class="text-sm md:text-lg text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
-                Ajanta Glass delivers premium glass and aluminium solutions with unmatched craftsmanship, modern Italian-inspired designs, and four decades of trusted family experience.
+            <p class="text-xs sm:text-sm md:text-base text-slate-400 max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed font-light px-2">
+                Ajanta Doors and Windows engineered premium glazing with five decades of legacy. Designed with Italian-inspired slim profiles, toughened strength, and custom architectural glass choices.
             </p>
 
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="#products" class="w-full sm:w-auto bg-white hover:bg-slate-100 text-slate-900 font-bold px-8 py-3.5 rounded-2xl text-xs transition duration-200 tracking-widest uppercase shadow-2xl">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-md mx-auto w-full px-2">
+                <a href="#products" class="w-full sm:w-auto bg-white hover:bg-slate-200 text-slate-950 font-bold px-6 py-3.5 sm:px-8 sm:py-4 rounded-2xl text-xs transition duration-200 tracking-widest uppercase shadow-2xl text-center">
                     Explore Products
                 </a>
-                <a href="#configurator" class="w-full sm:w-auto bg-slate-900/80 hover:bg-slate-800 text-white font-bold px-8 py-3.5 rounded-2xl text-xs transition duration-200 tracking-widest uppercase border border-slate-700 shadow-2xl">
-                    Place Custom Order
+                <a href="#configurator" class="w-full sm:w-auto bg-slate-950/80 hover:bg-slate-900 text-white font-bold px-6 py-3.5 sm:px-8 sm:py-4 rounded-2xl text-xs transition duration-200 tracking-widest uppercase border border-white/10 shadow-2xl text-center">
+                    Request Quotation
                 </a>
             </div>
+        </div>
+
+        <!-- Animated statistics floated under Hero (Apple/BMW style) -->
+        <div class="w-full max-w-5xl mx-auto z-10 relative mt-8 sm:mt-12">
+            <div class="glass-panel rounded-2xl p-4 sm:p-6 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 text-center border border-white/5 bg-slate-950/30">
+                <div>
+                    <div class="text-xl sm:text-2xl md:text-3xl font-syne font-black text-[#00B8D9]">50+</div>
+                    <div class="text-[8px] sm:text-[9px] uppercase tracking-wider sm:tracking-widest text-slate-400 font-bold mt-1">Years of Craftsmanship</div>
+                </div>
+                <div>
+                    <div class="text-xl sm:text-2xl md:text-3xl font-syne font-black text-[#00B8D9]">10,000+</div>
+                    <div class="text-[8px] sm:text-[9px] uppercase tracking-wider sm:tracking-widest text-slate-400 font-bold mt-1">Bespoke Clients</div>
+                </div>
+                <div>
+                    <div class="text-xl sm:text-2xl md:text-3xl font-syne font-black text-[#00B8D9]">25,000+</div>
+                    <div class="text-[8px] sm:text-[9px] uppercase tracking-wider sm:tracking-widest text-slate-400 font-bold mt-1">Panels Delivered</div>
+                </div>
+                <div>
+                    <div class="text-xl sm:text-2xl md:text-3xl font-syne font-black text-[#00B8D9]">100%</div>
+                    <div class="text-[8px] sm:text-[9px] uppercase tracking-wider sm:tracking-widest text-slate-400 font-bold mt-1">Tempered Safety</div>
+                </div>
+            </div>
+        </div>
         </div>
     </section>
 
@@ -166,64 +231,44 @@
     <section id="legacy" class="py-24 max-w-5xl mx-auto px-6 z-10 relative">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
             <div id="legacy-left" class="space-y-6">
-                <div class="text-xs font-bold text-indigo-400 uppercase tracking-widest font-display">Our Legacy</div>
-                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-syne font-extrabold uppercase leading-tight text-white">40+ Years of<br>Excellence</h2>
+                <div class="text-xs font-bold text-[#00B8D9] uppercase tracking-widest font-display">Our Heritage</div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-syne font-extrabold uppercase leading-tight text-white">50 Years of<br>Excellence</h2>
                 <p class="text-slate-400 text-sm leading-relaxed font-light">
-                    For more than four decades, Ajanta Glass has been helping homeowners, visionary architects, builders, and corporate developers bring their aesthetic design visions to life. With thousands of successful commissions and a legacy built upon multi-generational reliability, we set the standard of high-end structural glazing solutions.
+                    For half a century, Ajanta Glass has partnered with visionary architects, builders, and elite homeowners to translate spatial visions into clean physical dimensions. Founded on principles of unbreakable family trust, our premium toughened panels and Italian profiles redefine luxury lifestyle.
                 </p>
-                <div class="border-l-2 border-indigo-500 pl-4 space-y-2 mt-4">
-                    <span class="text-xs font-bold text-indigo-300 uppercase block">Generations of Quality</span>
-                    <span class="text-xs text-slate-400 block font-light">Italian precision and high-grade tempered glass custom-engineered to withstand thermal stresses and extreme wind pressures.</span>
+                <div class="border-l-2 border-[#00B8D9] pl-4 space-y-2 mt-4">
+                    <span class="text-xs font-bold text-cyan-300 uppercase block">Generations of Quality</span>
+                    <span class="text-xs text-slate-400 block font-light">Custom-crafted glass and anodized heavy-duty structural aluminium profiles engineered to withstand thermal pressures and physical wind shear.</span>
                 </div>
             </div>
 
             <!-- Stats and Journey Panel -->
-            <div id="legacy-right" class="glass-panel p-6 sm:p-8 rounded-3xl space-y-8 relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent pointer-events-none"></div>
-                
-                <!-- Animated Statistics Grid -->
-                <div class="grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-6 relative z-10">
-                    <div>
-                        <div class="text-2xl sm:text-3xl lg:text-4xl font-syne font-black text-indigo-400 mb-1">40+</div>
-                        <div class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-slate-500">Years Experience</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl sm:text-3xl lg:text-4xl font-syne font-black text-indigo-400 mb-1">10,000+</div>
-                        <div class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-slate-500">Happy Customers</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl sm:text-3xl lg:text-4xl font-syne font-black text-indigo-400 mb-1">25,000+</div>
-                        <div class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-slate-500">Completed Projects</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl sm:text-3xl lg:text-4xl font-syne font-black text-indigo-400 mb-1">100%</div>
-                        <div class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-slate-500">Enduring Trust</div>
-                    </div>
-                </div>
+            <div id="legacy-right" class="glass-panel p-6 sm:p-8 rounded-3xl space-y-8 relative overflow-hidden bg-slate-900/25">
+                <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent pointer-events-none"></div>
 
                 <!-- Interactive Timeline Graphic -->
-                <div class="pt-6 border-t border-slate-800/80">
-                    <div class="text-xs font-bold text-indigo-300 mb-4 uppercase">Heritage Timeline</div>
-                    <div class="space-y-4">
-                        <div class="flex items-start space-x-3 text-xs">
-                            <span class="font-bold font-display text-indigo-400 mt-0.5">1986</span>
-                            <div>
-                                <span class="font-bold text-white block">Inception & Craftsmanship</span>
-                                <span class="text-slate-500 text-[11px]">Founded as a premium architectural glass vendor to major corporate clients.</span>
+                <div class="space-y-6">
+                    <div class="text-xs font-bold text-[#00B8D9] uppercase tracking-wider">Heritage Milestones</div>
+                    <div class="space-y-6 relative border-l border-slate-800 ml-2 pl-4">
+                        <div class="relative">
+                            <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#00B8D9] shadow-[0_0_8px_#00B8D9]"></span>
+                            <div class="text-xs">
+                                <span class="font-bold text-white block">1976 — Inception & Craftsmanship</span>
+                                <span class="text-slate-400 text-[11px] leading-relaxed block mt-0.5">Established premium glass manufacturing studio for luxury regional properties.</span>
                             </div>
                         </div>
-                        <div class="flex items-start space-x-3 text-xs">
-                            <span class="font-bold font-display text-indigo-400 mt-0.5">2005</span>
-                            <div>
-                                <span class="font-bold text-white block">Precision Automation Upgrade</span>
-                                <span class="text-slate-500 text-[11px]">Integrated automated toughening glass lines and premium Italian hardware.</span>
+                        <div class="relative">
+                            <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-800 border border-slate-700"></span>
+                            <div class="text-xs">
+                                <span class="font-bold text-white block">2005 — Architectural Systems</span>
+                                <span class="text-slate-400 text-[11px] leading-relaxed block mt-0.5">Automated state-of-the-art tempered processing and precision slim profiling lines.</span>
                             </div>
                         </div>
-                        <div class="flex items-start space-x-3 text-xs">
-                            <span class="font-bold font-display text-indigo-400 mt-0.5">2026</span>
-                            <div>
-                                <span class="font-bold text-white block">Digital Architectural Hub</span>
-                                <span class="text-slate-500 text-[11px]">Deploying live automated ERP sizing estimations of structural glass directly from raw dimensions.</span>
+                        <div class="relative">
+                            <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#00B8D9] shadow-[0_0_8px_#00B8D9]"></span>
+                            <div class="text-xs">
+                                <span class="font-bold text-white block">2026 — Next-Gen Sizing Hub</span>
+                                <span class="text-slate-400 text-[11px] leading-relaxed block mt-0.5">Deploying live automated ERP specifications directly monitored by Sunny Mehta.</span>
                             </div>
                         </div>
                     </div>
@@ -235,8 +280,8 @@
     <!-- SECTION 3: IMMERSIVE PRODUCT SHOWCASE -->
     <section id="products" class="py-24 max-w-5xl mx-auto px-6 z-10 relative">
         <div class="text-center mb-16 space-y-3">
-            <div class="text-xs font-bold text-indigo-400 uppercase tracking-widest font-display">Product Showcase</div>
-            <h2 class="text-3xl md:text-5xl font-syne font-extrabold uppercase text-white">Spotlight Architecture</h2>
+            <div class="text-xs font-bold text-[#00B8D9] uppercase tracking-widest font-display">Product Showcase</div>
+            <h2 class="text-3xl md:text-5xl font-syne font-extrabold uppercase text-white">Architectural Collections</h2>
             <p class="text-slate-400 text-xs md:text-sm max-w-lg mx-auto font-light">As you browse our premium collections, review specifications curated specifically for ultra-luxurious lifestyle grids.</p>
         </div>
 
@@ -244,12 +289,12 @@
             <!-- Sidebar Selection List -->
             <div id="products-sidebar" class="md:col-span-2 space-y-4">
                 <!-- Product 1 Header Button -->
-                <div onclick="selectProductSpotlight(1)" id="prodTab-1" class="glass-panel p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-indigo-500 spotlight-active flex items-center justify-between">
+                <div onclick="selectProductSpotlight(1)" id="prodTab-1" class="glass-panel p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-[#00B8D9] spotlight-active flex items-center justify-between">
                     <div>
                         <h4 class="font-bold text-sm tracking-wide text-white">Sliding Windows</h4>
-                        <span class="text-[10px] text-slate-500">Premium slim frames</span>
+                        <span class="text-[10px] text-slate-500">Premium slim profiles</span>
                     </div>
-                    <span class="text-indigo-400 text-xs font-bold"><i class="fa-solid fa-angle-right"></i></span>
+                    <span class="text-[#00B8D9] text-xs font-bold"><i class="fa-solid fa-angle-right"></i></span>
                 </div>
                 <!-- Product 2 Header Button -->
                 <div onclick="selectProductSpotlight(2)" id="prodTab-2" class="glass-panel p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
@@ -286,13 +331,13 @@
             </div>
 
             <!-- Spotlight Visual Details Screen -->
-            <div id="products-spotlight" class="md:col-span-3 glass-panel rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between">
+            <div id="products-spotlight" class="md:col-span-3 glass-panel rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between min-h-[380px]">
                 <div class="absolute inset-0 z-0">
                     <img id="spotlightImage" class="w-full h-full object-cover opacity-20 filter brightness-50 transition-all duration-500 ease-out" src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" alt="product detail view">
                 </div>
 
                 <div class="relative z-10 space-y-6">
-                    <div id="spotlightBadge" class="inline-block bg-indigo-950/60 border border-indigo-500/30 text-indigo-300 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                    <div id="spotlightBadge" class="inline-block bg-slate-900/60 border border-[#00B8D9]/30 text-cyan-300 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                         Premium Sizing Profile
                     </div>
                     
@@ -304,24 +349,24 @@
                         Elegant sliding systems designed for modern homes and offices with smooth operation, weather resistance and premium finish.
                     </p>
 
-                    <div id="spotlightFeatures" class="grid grid-cols-2 gap-4 text-xs font-medium text-slate-300 pt-4 border-t border-slate-800/80">
+                    <div id="spotlightFeatures" class="grid grid-cols-2 gap-4 text-xs font-medium text-slate-300 pt-4 border-t border-slate-850">
                         <div class="flex items-center space-x-2">
-                            <span class="text-emerald-400 font-bold"><i class="fa-regular fa-square-check"></i></span>
+                            <span class="text-[#00B8D9] font-bold"><i class="fa-regular fa-square-check"></i></span>
                             <span>Noise Reduction</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span class="text-emerald-400 font-bold"><i class="fa-regular fa-square-check"></i></span>
+                            <span class="text-[#00B8D9] font-bold"><i class="fa-regular fa-square-check"></i></span>
                             <span>Weather Resistant</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span class="text-emerald-400 font-bold"><i class="fa-regular fa-square-check"></i></span>
+                            <span class="text-[#00B8D9] font-bold"><i class="fa-regular fa-square-check"></i></span>
                             <span>Premium Aluminium</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="relative z-10 pt-6 flex justify-end">
-                    <a href="#configurator" class="bg-indigo-600 hover:bg-slate-100 hover:text-slate-900 border border-indigo-400/20 text-white text-[11px] font-bold tracking-widest px-6 py-3 rounded-xl transition uppercase">
+                    <a href="#configurator" class="bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-650 text-white text-[11px] font-bold tracking-widest px-6 py-3.5 rounded-xl transition uppercase">
                         Configure Sizing <i class="fa-solid fa-arrow-right ml-2"></i>
                     </a>
                 </div>
@@ -334,14 +379,14 @@
         <div class="max-w-5xl mx-auto px-6 mb-12 flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="text-center md:text-left">
                 <h2 class="text-2xl md:text-4xl font-syne font-extrabold uppercase text-white flex flex-wrap items-center justify-center md:justify-start gap-2">
-                    <span>Verified Customer Backing</span>
-                    <span onclick="promptOwnerLogin()" id="ownerStatusIcon" class="cursor-pointer text-slate-600 hover:text-indigo-400 transition text-sm flex items-center" title="Owner Admin Tools">
+                    <span>Verified Client Backing</span>
+                    <span onclick="promptOwnerLogin()" id="ownerStatusIcon" class="cursor-pointer text-slate-600 hover:text-cyan-400 transition text-sm flex items-center" title="Owner Admin Tools">
                         <i class="fa-solid fa-shield-halved"></i>
                     </span>
                 </h2>
                 <p class="text-xs text-slate-400 mt-1">Real-time feedback and testimonials submitted directly by our verified clients.</p>
             </div>
-            <button onclick="openReviewModal()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-syne font-bold text-xs px-5 py-3 rounded-xl shadow-lg shadow-indigo-600/20 border border-indigo-400/20 transition-all active:scale-95">
+            <button onclick="openReviewModal()" class="flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-650 text-white font-syne font-bold text-xs px-5 py-3 rounded-xl shadow-lg shadow-cyan-600/20 border border-cyan-400/20 transition-all active:scale-95">
                 <i class="fa-solid fa-pen-nib"></i>
                 <span>Write a Live Review</span>
             </button>
@@ -367,37 +412,37 @@
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
             <!-- Card 1 -->
             <div class="glass-panel p-6 rounded-2xl space-y-3">
-                <span class="text-indigo-400 text-2xl font-bold"><i class="fa-solid fa-business-time"></i></span>
-                <h4 class="font-bold text-sm text-white">40+ Years of Excellence</h4>
+                <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-business-time text-accent-glow"></i></span>
+                <h4 class="font-bold text-sm text-white">50 Years of Excellence</h4>
                 <p class="text-slate-400 text-xs leading-relaxed font-light">An unbroken timeline of delivering quality, performance, and trusted family reliability on every single commission.</p>
             </div>
             <!-- Card 2 -->
             <div class="glass-panel p-6 rounded-2xl space-y-3">
-                <span class="text-indigo-400 text-2xl font-bold"><i class="fa-solid fa-gem"></i></span>
+                <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-gem text-accent-glow"></i></span>
                 <h4 class="font-bold text-sm text-white">Premium Quality Materials</h4>
                 <p class="text-slate-400 text-xs leading-relaxed font-light">We exclusively utilize top-grade toughened float glass paired with anodized heavy-duty structural aluminium.</p>
             </div>
             <!-- Card 3 -->
             <div class="glass-panel p-6 rounded-2xl space-y-3">
-                <span class="text-indigo-400 text-2xl font-bold"><i class="fa-solid fa-users-gear"></i></span>
+                <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-users-gear text-accent-glow"></i></span>
                 <h4 class="font-bold text-sm text-white">Skilled Installation Team</h4>
                 <p class="text-slate-400 text-xs leading-relaxed font-light">We deploy certified field glaziers to verify dimensions, site installation layouts, and seamless anchoring.</p>
             </div>
             <!-- Card 4 -->
             <div class="glass-panel p-6 rounded-2xl space-y-3">
-                <span class="text-indigo-400 text-2xl font-bold"><i class="fa-solid fa-calculator"></i></span>
-                <h4 class="font-bold text-sm text-white">Competitive Sizing Rates</h4>
-                <p class="text-slate-400 text-xs leading-relaxed font-light">Transparent calculation systems linked straight to square-footage math with no hidden charges or layout surcharges.</p>
+                <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-file-invoice text-accent-glow"></i></span>
+                <h4 class="font-bold text-sm text-white">Personalized Quotations</h4>
+                <p class="text-slate-400 text-xs leading-relaxed font-light">Our team will review your custom size requirements and contact you with a personalized quotation after submission.</p>
             </div>
             <!-- Card 5 -->
             <div class="glass-panel p-6 rounded-2xl space-y-3">
-                <span class="text-indigo-400 text-2xl font-bold"><i class="fa-solid fa-certificate"></i></span>
+                <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-certificate text-accent-glow"></i></span>
                 <h4 class="font-bold text-sm text-white">Thousands of Customers</h4>
-                <p class="text-slate-400 text-xs leading-relaxed font-light">Thousands of private residences, commercial showrooms, and housing complexes have trusted us since 1986.</p>
+                <p class="text-slate-400 text-xs leading-relaxed font-light">Thousands of private residences, commercial showrooms, and housing complexes have trusted us since 1976.</p>
             </div>
             <!-- Card 6 -->
             <div class="glass-panel p-6 rounded-2xl space-y-3">
-                <span class="text-slate-400 hover:text-indigo-400 text-2xl font-bold transition duration-300"><i class="fa-solid fa-headset"></i></span>
+                <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-headset text-accent-glow"></i></span>
                 <h4 class="font-bold text-sm text-white">Reliable After-Sales Support</h4>
                 <p class="text-slate-400 text-xs leading-relaxed font-light">Direct priority channels built to file swift service inquiries or complaint reviews directly onto owner screens.</p>
             </div>
@@ -406,22 +451,22 @@
 
     <!-- SECTION 7: PLACE ORDER / SPEC CONFIGURATOR CENTER (THE HUB) -->
     <section id="configurator" class="py-24 max-w-4xl mx-auto px-6 z-10 relative">
-        <div id="configurator-card" class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent pointer-events-none"></div>
+        <div id="configurator-card" class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden bg-slate-950/40">
+            <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent pointer-events-none"></div>
             
-            <div class="flex flex-col sm:flex-row items-center justify-between border-b border-slate-800 pb-5 mb-8 gap-4">
+            <div class="flex flex-col sm:flex-row items-center justify-between border-b border-slate-850 pb-5 mb-8 gap-4">
                 <div class="flex items-center space-x-3">
-                    <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10B981]"></span>
                     <div>
                         <h2 class="text-xl font-syne font-bold uppercase text-white leading-none">Ajanta Configurator Hub</h2>
-                        <span class="text-[10px] text-slate-500 hover:text-indigo-400">Directly monitored by Sunny Mehta</span>
+                        <span class="text-[10px] text-slate-500 hover:text-cyan-400">Directly monitored by Sunny Mehta</span>
                     </div>
                 </div>
                 
                 <!-- Quoting / Support tab selection buttons -->
-                <div class="inline-flex bg-slate-950 p-1 rounded-xl border border-slate-800">
-                    <button onclick="switchPortalTab('quoting')" id="tabBtnQuoting" class="px-4 py-2 font-bold text-xs rounded-lg transition duration-200 bg-indigo-600 text-white">
-                        Sizing & Ordering
+                <div class="inline-flex bg-slate-950 p-1 rounded-xl border border-slate-850">
+                    <button onclick="switchPortalTab('quoting')" id="tabBtnQuoting" class="px-4 py-2 font-bold text-xs rounded-lg transition duration-200 bg-gradient-to-r from-cyan-600 to-cyan-850 text-white">
+                        Sizing & Requirements
                     </button>
                     <button onclick="switchPortalTab('support')" id="tabBtnSupport" class="px-4 py-2 font-bold text-xs rounded-lg transition duration-200 text-slate-400 hover:text-white">
                         Customer Support
@@ -429,166 +474,163 @@
                 </div>
             </div>
 
-            <!-- TAB A: ESTIMATOR CONFIGURATOR FORM -->
+            <!-- TAB A: ESTIMATOR CONFIGURATOR FORM WITH MULTI-STEP WIZARD -->
             <div id="quotingFormSection" class="transition-all duration-300 space-y-6">
-                <!-- Sizing Order specification client metrics -->
+                
+                <!-- Elegant Step Indicators -->
+                <div class="flex items-center justify-between max-w-md mx-auto mb-10 relative px-2">
+                    <div class="absolute top-4 left-0 w-full h-[1px] bg-slate-850 z-0"></div>
+                    
+                    <div class="relative z-10 flex flex-col items-center gap-1.5">
+                        <div id="wizard-indicator-1" class="w-8 h-8 rounded-full bg-[#00B8D9] text-slate-950 flex items-center justify-center font-bold text-xs ring-4 ring-cyan-500/20">1</div>
+                        <span id="wizard-indicator-text-1" class="text-[10px] font-bold text-white uppercase tracking-wider">Identity</span>
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center gap-1.5">
+                        <div id="wizard-indicator-2" class="w-8 h-8 rounded-full bg-slate-900 border border-slate-850 text-slate-500 flex items-center justify-center font-bold text-xs">2</div>
+                        <span id="wizard-indicator-text-2" class="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">Specs</span>
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center gap-1.5">
+                        <div id="wizard-indicator-3" class="w-8 h-8 rounded-full bg-slate-900 border border-slate-850 text-slate-500 flex items-center justify-center font-bold text-xs">3</div>
+                        <span id="wizard-indicator-text-3" class="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">Confirm</span>
+                    </div>
+                </div>
+
                 <form id="requirementsForm" onsubmit="submitForm(event)" class="space-y-6">
-                    <div class="grid sm:grid-cols-2 gap-6">
+                    
+                    <!-- STEP 1: IDENTITY & GEOLOCATION -->
+                    <div id="wizard-step-1" class="space-y-6">
+                        <div class="grid sm:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Your Name *</label>
+                                <input id="clientName" type="text" required placeholder="Full Name" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Mobile Number / Whatsapp *</label>
+                                <input id="clientPhone" type="tel" required placeholder="+91 98765 43210" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
+                            </div>
+                        </div>
+
+                        <!-- Geolocation Installation Address input line -->
                         <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Your Name *</label>
-                            <input id="clientName" type="text" required placeholder="Full Name" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Mobile Number / Whatsapp *</label>
-                            <input id="clientPhone" type="tel" required placeholder="e.g. +91 98765 43210" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
-                        </div>
-                    </div>
-
-                    <!-- Geolocation Installation Address input line -->
-                    <div class="space-y-2">
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex justify-between">
-                            <span>Installation / Site Address</span>
-                            <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest cursor-pointer" onclick="detectWebLocation()">
-                                <i class="fa-solid fa-location-arrow"></i> Auto Locate
-                            </span>
-                        </label>
-                        <div class="relative">
-                            <input id="clientAddress" type="text" placeholder="Flat number, Society name, Area, City" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium pr-10 placeholder-slate-600">
-                            <span onclick="detectWebLocation()" class="absolute right-4 top-3.5 text-indigo-400 cursor-pointer text-xs"><i id="locateIcon" class="fa-solid fa-compass"></i></span>
-                        </div>
-                    </div>
-
-                    <!-- General Requirements and Note -->
-                    <div class="space-y-2">
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">General Sizing Surcharges & Framework Directions</label>
-                        <textarea id="clientRequirements" rows="3" placeholder="Specify customized aluminum framework densities, mesh requirements, clear or safety laminated spec choice, site details..." class="w-full p-4 rounded-xl text-xs glass-input font-medium placeholder-slate-600"></textarea>
-                    </div>
-
-                    <!-- Live SPEC PANEL -->
-                    <div class="bg-indigo-950/20 border border-indigo-900/40 p-5 rounded-2xl space-y-4">
-                        <div class="flex items-center justify-between border-b border-indigo-500/10 pb-3">
-                            <span class="text-xs font-bold text-indigo-200">Interactive Size Calculator</span>
-                            <span class="text-[10px] font-extrabold text-indigo-400 bg-indigo-950 border border-indigo-900/50 px-2 py-0.5 rounded">ERP Standard</span>
-                        </div>
-
-                        <div class="grid sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] font-bold text-indigo-400 block mb-1">Product Category</label>
-                                <select id="itemCategory" onchange="handleCategoryChange()" class="w-full px-3 py-2.5 bg-slate-950/90 border border-indigo-900/40 rounded-xl text-xs text-white focus:outline-none">
-                                    <option value="Sliding Window">Sliding Window</option>
-                                    <option value="Sliding Door">Sliding Door</option>
-                                    <option value="Casement Door">Casement Door</option>
-                                    <option value="Fixed Partition">Fixed Glass Partition</option>
-                                    <option value="Glass Railing">Balcony Glass Railing</option>
-                                    <option value="Shower Cubicle">Shower Cubicle</option>
-                                    <option value="Mirror">Mirror / Toughened Glass</option>
-                                    <option value="CUSTOM_ITEM">+ Custom product select...</option>
-                                </select>
-                                <div id="customCategoryContainer" class="mt-2 hidden">
-                                    <input id="customCategoryInput" type="text" placeholder="Custom category..." class="w-full px-2.5 py-2 hover:border-indigo-500 rounded-lg text-xs glass-input">
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label class="text-[10px] font-bold text-indigo-400 block mb-1">Glass / Material Profile</label>
-                                <select id="itemGlassType" onchange="handleGlassTypeChange()" class="w-full px-3 py-2.5 bg-slate-950/90 border border-indigo-900/40 rounded-xl text-xs text-white focus:outline-none">
-                                    <option value="5mm Clear" data-price="80">5mm Clear Glass</option>
-                                    <option value="8mm Clear" data-price="120">8mm Clear Glass</option>
-                                    <option value="10mm Toughened" data-price="220">10mm Toughened Glass</option>
-                                    <option value="12mm Toughened" data-price="300">12mm Toughened Glass</option>
-                                    <option value="Sliding Window Frame" data-price="850">Sliding Window Profiling</option>
-                                    <option value="Frosted Glass" data-price="150">Frosted Glass</option>
-                                    <option value="Laminated Glass" data-price="250">Laminated Glass</option>
-                                    <option value="Mirror Panel" data-price="140">Mirror Spec</option>
-                                    <option value="CUSTOM_MATERIAL">+ Customized material spec...</option>
-                                </select>
-                                <div id="customMaterialContainer" class="mt-2 hidden space-y-2">
-                                    <input id="customMaterialName" type="text" placeholder="Material spec title" class="w-full px-2.5 py-1.5 rounded-lg text-xs glass-input">
-                                    <input id="customMaterialPrice" type="number" value="0" class="hidden">
-                                </div>
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex justify-between">
+                                <span>Installation / Site Address</span>
+                                <span class="text-[10px] text-[#00B8D9] font-bold uppercase tracking-widest cursor-pointer hover:text-cyan-400 transition" onclick="detectWebLocation()">
+                                    <i class="fa-solid fa-location-arrow"></i> Auto Locate
+                                </span>
+                            </label>
+                            <div class="relative">
+                                <input id="clientAddress" type="text" placeholder="Flat number, Society name, Area, City" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium pr-10 placeholder-slate-600">
+                                <span onclick="detectWebLocation()" class="absolute right-4 top-3.5 text-[#00B8D9] cursor-pointer text-xs"><i id="locateIcon" class="fa-solid fa-compass"></i></span>
                             </div>
                         </div>
 
-                        <div class="grid sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] font-bold text-indigo-400 block mb-1">Thickness Profile</label>
-                                <select id="itemThickness" onchange="handleThicknessChange()" class="w-full px-3 py-2.5 bg-slate-950/90 border border-indigo-900/40 rounded-xl text-xs text-white focus:outline-none">
-                                    <option value="Standard" data-price="0">Standard</option>
-                                    <option value="5mm" data-price="10">5mm Thickness</option>
-                                    <option value="8mm" data-price="30">8mm Thickness</option>
-                                    <option value="10mm" data-price="60">10mm Thickness</option>
-                                    <option value="12mm" data-price="100">12mm Thickness</option>
-                                    <option value="CUSTOM_THICKNESS">+ Custom thickness...</option>
-                                </select>
-                                <div id="customThicknessContainer" class="mt-2 hidden">
-                                    <input id="customThicknessName" type="text" placeholder="e.g. 15mm tempered" class="w-full px-2.5 py-1.5 rounded-lg text-xs glass-input">
-                                    <input id="customThicknessPrice" type="number" value="0" class="hidden">
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="text-[10px] font-bold text-indigo-400 block mb-1">Edgework Surcharge</label>
-                                <select id="itemEdgework" onchange="calculateLiveEstimate()" class="w-full px-3 py-2.5 bg-slate-950/90 border border-indigo-900/40 rounded-xl text-xs text-white focus:outline-none">
-                                    <option value="None" data-price="0">Standard bevel</option>
-                                    <option value="Seamed" data-price="15">Seamed perimeter</option>
-                                    <option value="Flat polished" data-price="35">Flat premium polished</option>
-                                    <option value="Beveled polished" data-price="55">Beveled polished decorative</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-3">
-                            <div>
-                                <label class="text-[10px] font-bold text-indigo-400 block mb-1">Width (Inches)</label>
-                                <input id="itemWidth" type="number" step="0.1" oninput="calculateLiveEstimate()" placeholder="Inches" class="w-full px-2.5 py-2 rounded-lg text-xs glass-input font-bold text-center">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-indigo-400 block mb-1">Height (Inches)</label>
-                                <input id="itemHeight" type="number" step="0.1" oninput="calculateLiveEstimate()" placeholder="Inches" class="w-full px-2.5 py-2 rounded-lg text-xs glass-input font-bold text-center">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-indigo-400 block mb-1">Quantity</label>
-                                <input id="itemQty" type="number" min="1" value="1" oninput="calculateLiveEstimate()" class="w-full px-2.5 py-2 rounded-lg text-xs glass-input font-bold text-center">
-                            </div>
-                        </div>
-
-                        <div id="liveEstCard" class="hidden p-3 bg-slate-950/60 rounded-xl border border-indigo-950 flex flex-col md:flex-row justify-between items-center gap-2">
-                            <div class="text-left font-display">
-                                <div id="liveEstSummary" class="text-xs font-bold text-white text-[11px]">Specify sizing dimensions or specs above...</div>
-                                <div id="liveEstDims" class="text-[10px] text-indigo-400">Math estimates dynamic square root surface values.</div>
-                            </div>
-                            <div id="liveEstPrice" class="text-sm font-black font-syne text-emerald-400 block pr-2">₹0.00</div>
-                        </div>
-
-                        <div class="flex justify-end pt-1">
-                            <button type="button" onclick="addSpecLineItem()" class="bg-indigo-600 hover:bg-slate-100 hover:text-indigo-950 text-white font-bold text-[11px] px-5 py-2.5 rounded-xl transition duration-200">
-                                <i class="fa fa-circle-plus"></i> Add Specs to Order
+                        <div class="pt-4 flex justify-end">
+                            <button type="button" onclick="setWizardStep(2)" class="bg-white hover:bg-slate-200 text-slate-950 font-bold text-xs px-6 py-3.5 rounded-xl transition duration-200 tracking-wider uppercase">
+                                Configure Requirements <i class="fa-solid fa-arrow-right ml-1.5"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Selected Spec Table list inside modal selection -->
-                    <div id="specItemsContainer" class="hidden border border-slate-800 rounded-xl overflow-hidden bg-slate-950/60 transition mt-4 animate-fade-in text-xs">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="bg-slate-900 border-b border-slate-800 font-bold text-slate-300">
-                                    <th class="p-3 text-left">Specs Profile</th>
-                                    <th class="p-3 text-center">Width</th>
-                                    <th class="p-3 text-center">Height</th>
-                                    <th class="p-3 text-center">Qty</th>
-                                    <th class="p-3 text-center">Revoke</th>
-                                </tr>
-                            </thead>
-                            <tbody id="specItemsBody" class="divide-y divide-slate-800 font-medium">
-                                <!-- Appended dynamic selection lines -->
-                            </tbody>
-                        </table>
+                    <!-- STEP 2: CUSTOM SIZING SPECIFICATIONS -->
+                    <div id="wizard-step-2" class="space-y-6 hidden">
+                        <!-- Live SPEC PANEL -->
+                        <div class="bg-slate-900/40 border border-slate-850 p-5 rounded-2xl space-y-4">
+                            <div class="flex items-center justify-between border-b border-white/5 pb-3">
+                                <span class="text-xs font-bold text-cyan-300">Enter Sizing Specifications</span>
+                                <span class="text-[10px] font-extrabold text-[#00B8D9] bg-slate-950 border border-slate-850 px-2 py-0.5 rounded">Manual Quote Sizing</span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 block mb-1">Product Category</label>
+                                    <select id="itemCategory" onchange="handleCategoryChange()" class="w-full px-3 py-2.5 bg-slate-950/90 border border-slate-850 rounded-xl text-xs text-white focus:outline-none">
+                                        <option value="Sliding Window">Sliding Window</option>
+                                        <option value="Sliding Door">Sliding Door</option>
+                                        <option value="Casement Door">Casement Door</option>
+                                        <option value="Fixed Partition">Fixed Glass Partition</option>
+                                        <option value="Glass Railing">Balcony Glass Railing</option>
+                                        <option value="Shower Cubicle">Shower Cubicle</option>
+                                        <option value="Mirror">Mirror / Toughened Glass</option>
+                                        <option value="CUSTOM_ITEM">+ Custom product select...</option>
+                                    </select>
+                                    <div id="customCategoryContainer" class="mt-2 hidden">
+                                        <input id="customCategoryInput" type="text" placeholder="Custom category..." class="w-full px-2.5 py-2 hover:border-cyan-500 rounded-lg text-xs glass-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 block mb-1">Width (Inches)</label>
+                                    <input id="itemWidth" type="number" step="0.1" placeholder="Inches" class="w-full px-2.5 py-2 rounded-lg text-xs glass-input font-bold text-center">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 block mb-1">Height (Inches)</label>
+                                    <input id="itemHeight" type="number" step="0.1" placeholder="Inches" class="w-full px-2.5 py-2 rounded-lg text-xs glass-input font-bold text-center">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 block mb-1">Quantity</label>
+                                    <input id="itemQty" type="number" min="1" value="1" class="w-full px-2.5 py-2 rounded-lg text-xs glass-input font-bold text-center">
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end pt-1">
+                                <button type="button" onclick="addSpecLineItem()" class="bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-650 text-white font-bold text-[11px] px-5 py-2.5 rounded-xl transition duration-200">
+                                    <i class="fa fa-circle-plus"></i> Add Specs to Inquiry
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step navigation controls -->
+                        <div class="pt-4 flex justify-between items-center">
+                            <button type="button" onclick="setWizardStep(1)" class="text-slate-400 hover:text-white font-bold text-xs transition px-4 py-2 uppercase tracking-wider">
+                                <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                            </button>
+                            <button type="button" onclick="setWizardStep(3)" class="bg-white hover:bg-slate-200 text-slate-950 font-bold text-xs px-6 py-3.5 rounded-xl transition duration-200 tracking-wider uppercase">
+                                Review & Confirm <i class="fa-solid fa-arrow-right ml-1.5"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <button type="submit" id="submitBtn" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-2xl font-bold uppercase tracking-wider hover:brightness-110 flex items-center justify-center space-x-2 shadow-xl shadow-indigo-600/15">
-                        <i class="fa-regular fa-paper-plane mr-2"></i>
-                        <span>Place Order Now</span>
-                    </button>
+                    <!-- STEP 3: REVIEWS & CONFIRMATION -->
+                    <div id="wizard-step-3" class="space-y-6 hidden">
+                        <!-- Selected Spec Table list inside modal selection -->
+                        <div id="specItemsContainer" class="hidden border border-slate-850 rounded-xl overflow-hidden bg-slate-950/60 transition mt-4 animate-fade-in text-xs">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="bg-slate-900 border-b border-slate-850 font-bold text-slate-300">
+                                        <th class="p-3 text-left">Specs Profile</th>
+                                        <th class="p-3 text-center">Width</th>
+                                        <th class="p-3 text-center">Height</th>
+                                        <th class="p-3 text-center">Qty</th>
+                                        <th class="p-3 text-center">Revoke</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="specItemsBody" class="divide-y divide-slate-850 font-medium">
+                                    <!-- Appended dynamic selection lines -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- General Requirements and Note -->
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Special Sizing / Framework Surcharge Notes</label>
+                            <textarea id="clientRequirements" rows="3" placeholder="Specify customized aluminum framework densities, mesh requirements, clear or safety laminated spec choice, site details..." class="w-full p-4 rounded-xl text-xs glass-input font-medium placeholder-slate-600"></textarea>
+                        </div>
+
+                        <!-- Step navigation controls -->
+                        <div class="pt-4 flex justify-between items-center gap-4">
+                            <button type="button" onclick="setWizardStep(2)" class="text-slate-400 hover:text-white font-bold text-xs transition px-4 py-2 uppercase tracking-wider">
+                                <i class="fa-solid fa-arrow-left mr-1"></i> Modify Specs
+                            </button>
+                            
+                            <button type="submit" id="submitBtn" class="flex-1 max-w-xs py-3.5 bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-650 text-white rounded-xl font-bold uppercase tracking-wider transition-all flex items-center justify-center space-x-2 shadow-xl shadow-cyan-600/15">
+                                <i class="fa-regular fa-paper-plane mr-2"></i>
+                                <span>Submit Inquiry</span>
+                            </button>
+                        </div>
+                    </div>
+
                 </form>
             </div>
 
@@ -602,7 +644,7 @@
                         </div>
                         <div class="space-y-2">
                             <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">WhatsApp or Mobile *</label>
-                            <input id="supportPhone" type="tel" required placeholder="e.g. +91 90000 00000" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
+                            <input id="supportPhone" type="tel" required placeholder="+91 90000 00000" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
                         </div>
                     </div>
 
@@ -617,8 +659,8 @@
                             </select>
                         </div>
                         <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Estimate / Ticket Reference (Optional)</label>
-                            <input id="supportRef" type="text" placeholder="e.g. #77526" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
+                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Ticket / Order Reference (Optional)</label>
+                            <input id="supportRef" type="text" placeholder="#77526" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
                         </div>
                     </div>
 
@@ -706,19 +748,80 @@
     </section>
 
     <!-- FOOTER CENTER -->
-    <footer class="py-16 border-t border-slate-900 max-w-5xl mx-auto px-6 z-10 relative text-center space-y-6">
-        <div class="flex items-center justify-center space-x-3 mb-2">
-            <svg class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
-            <span class="font-syne font-black tracking-widest text-lg text-white">AJANTA GLASS</span>
+    <footer class="py-20 border-t border-slate-900 max-w-5xl mx-auto px-6 z-10 relative space-y-12 text-left">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <!-- Col 1: Brand & Heritage -->
+            <div class="space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 flex items-center justify-center">
+                        <svg class="w-full h-full text-[#00B8D9] filter drop-shadow-[0_4px_12px_rgba(0,184,217,0.25)]" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="34" height="34" rx="10" fill="url(#logo-grad-footer)" stroke="#00B8D9" stroke-width="1.5" stroke-opacity="0.3"/>
+                            <path d="M20 3V37" stroke="#00B8D9" stroke-width="1.5" stroke-opacity="0.4"/>
+                            <path d="M3 18H37" stroke="#00B8D9" stroke-width="1.5" stroke-opacity="0.4"/>
+                            <path d="M7 7 L33 33" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.12"/>
+                            <circle cx="20" cy="18" r="2" fill="#00B8D9"/>
+                            <defs>
+                                <linearGradient id="logo-grad-footer" x1="3" y1="3" x2="37" y2="37" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#0F172A" stop-opacity="0.9"/>
+                                    <stop stop-color="#050505" stop-opacity="0.5"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <span class="font-syne font-black tracking-widest text-base text-white">AJANTA</span>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed font-light">
+                    Delivering premium architectural glazing and precision glass customization across generations. Combining legacy with innovative engineering.
+                </p>
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-950/40 border border-emerald-500/20 text-emerald-400 rounded-full">
+                    <i class="fa-solid fa-award text-[10px]"></i>
+                    <span class="text-[9px] uppercase tracking-widest font-bold">50 Years of Excellence (1976 – 2026)</span>
+                </div>
+            </div>
+
+            <!-- Col 2: Navigation & Quick Links -->
+            <div class="space-y-4">
+                <h4 class="text-xs font-bold text-white uppercase tracking-widest">Architectural Systems</h4>
+                <ul class="space-y-2 text-xs text-slate-400 font-light">
+                    <li><a href="#products" onclick="selectProductSpotlight(1)" class="hover:text-[#00B8D9] transition">Sliding Window Systems</a></li>
+                    <li><a href="#products" onclick="selectProductSpotlight(2)" class="hover:text-[#00B8D9] transition">Panoramic Glass Doors</a></li>
+                    <li><a href="#products" onclick="selectProductSpotlight(3)" class="hover:text-[#00B8D9] transition">Frameless Glass Partitions</a></li>
+                    <li><a href="#products" onclick="selectProductSpotlight(4)" class="hover:text-[#00B8D9] transition">Toughened Shower Cubicles</a></li>
+                    <li><a href="#products" onclick="selectProductSpotlight(5)" class="hover:text-[#00B8D9] transition">Safety Glass Railings</a></li>
+                </ul>
+            </div>
+
+            <!-- Col 3: Secure Controls & Support -->
+            <div class="space-y-4">
+                <h4 class="text-xs font-bold text-white uppercase tracking-widest">Secure Access</h4>
+                <p class="text-xs text-slate-400 leading-relaxed font-light">
+                    Access order synchronization and verification tools. Authorized administrators can open the live management console.
+                </p>
+                <div class="flex flex-col gap-2">
+                    <button onclick="openAdminPortal()" class="w-full inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white border border-slate-800 py-2.5 px-4 rounded-xl text-xs font-bold transition">
+                        <i class="fa-solid fa-lock-open text-cyan-400"></i>
+                        <span>Admin Console (Unlocked)</span>
+                    </button>
+                    <button onclick="openReviewModal()" class="w-full inline-flex items-center justify-center gap-2 bg-[#00B8D9]/10 hover:bg-[#00B8D9]/20 text-[#00B8D9] border border-[#00B8D9]/20 py-2.5 px-4 rounded-xl text-xs font-bold transition">
+                        <i class="fa-regular fa-star"></i>
+                        <span>Write a Live Review</span>
+                    </button>
+                </div>
+            </div>
         </div>
-        <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-            Delivering fine architectural glazing since 1986. Commited to legacy, generations of quality, and flawless execution.
-        </p>
-        <div class="text-[11px] text-slate-600 pt-6 space-y-1 select-none font-medium">
-            <div>Made by Pratham Mehta</div>
-            <div>© All Rights Reserved</div>
+
+        <div class="border-t border-slate-900 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-slate-500 text-[10px] select-none font-medium">
+            <div class="flex items-center space-x-1.5">
+                <span>Made by Pratham Mehta</span>
+                <span class="text-slate-700">•</span>
+                <span>Established Since 1976</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span>© 2026 Ajanta Door & Window Systems</span>
+                <div id="ownerStatusIcon" class="cursor-pointer text-slate-600 hover:text-indigo-400 transition text-sm flex items-center" title="Owner Admin Tools" onclick="openAdminPortal()">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -728,9 +831,9 @@
             <div class="w-14 h-14 bg-emerald-900/50 text-emerald-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 border border-emerald-800/20 shadow-lg animate-pulse">
                 <i class="fa fa-circle-check"></i>
             </div>
-            <h3 class="text-xl font-syne font-bold text-white mb-2">Transmission Success</h3>
+            <h3 class="text-xl font-syne font-bold text-white mb-2">Inquiry Submitted</h3>
             <p class="text-xs text-slate-400 leading-relaxed mb-6">
-                Your glass parameters or support complaints have been formatted and synchronized. Sunny Mehta's devices received a priority sound alert and will produce an estimation shortly.
+                Your inquiry has been submitted successfully. Our team will review your requirements and contact you with a personalized quotation.
             </p>
             <button onclick="closeSuccessModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl text-xs transition duration-205">
                 Excellent, Thank You!
@@ -752,12 +855,12 @@
             <form id="reviewForm" onsubmit="submitReview(event)" class="space-y-4">
                 <div class="space-y-1 text-left">
                     <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
-                    <input type="text" id="reviewAuthor" required placeholder="e.g. Priyesh Sharma" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    <input type="text" id="reviewAuthor" required placeholder="Priyesh Sharma" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
                 </div>
                 
                 <div class="space-y-1 text-left">
                     <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Your Role / Profession</label>
-                    <input type="text" id="reviewRole" required placeholder="e.g. Homeowner, Architect, Designer" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    <input type="text" id="reviewRole" required placeholder="Homeowner, Architect, Designer" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
                 </div>
 
                 <div class="space-y-1 text-left">
@@ -783,6 +886,160 @@
                     <span>Publish Testimonial</span>
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="adminLoginModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel p-8 rounded-3xl max-w-sm w-full relative space-y-6 shadow-2xl border border-indigo-500/20 animate-fade-in">
+            <button onclick="closeAdminLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-indigo-950/50 text-indigo-400 rounded-2xl flex items-center justify-center text-xl mx-auto border border-indigo-800/20 shadow-lg shadow-indigo-500/5">
+                    <i class="fa-solid fa-shield-halved animate-pulse"></i>
+                </div>
+                <h3 class="text-xl font-syne font-black text-white uppercase tracking-wider">Admin Portal</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">Authorized access to management dashboard, inquiries and verification panels.</p>
+            </div>
+            
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div class="space-y-1 text-left">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Username</label>
+                    <input type="text" id="adminUsername" required placeholder="Username" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                </div>
+                
+                <div class="space-y-1 text-left">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Password</label>
+                    <div class="relative">
+                        <input type="password" id="adminPassword" required placeholder="Password" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-4 pr-10 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                        <button type="button" onclick="toggleAdminPassword()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition">
+                            <i id="passwordToggleIcon" class="fa-solid fa-eye text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="adminLoginError" class="text-[10px] text-red-400 font-bold hidden text-center bg-red-950/30 border border-red-900/20 py-2 rounded-lg">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> Invalid username or password!
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-syne font-black text-xs uppercase py-3.5 rounded-xl transition shadow-lg shadow-indigo-600/10 border border-indigo-500/20 active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-lock-open"></i> Authenticate
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN PORTAL / DASHBOARD MODAL -->
+    <div id="adminDashboardModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-4xl w-full h-[90vh] md:h-[80vh] flex flex-col relative shadow-2xl border border-indigo-500/20 animate-fade-in">
+            <button onclick="closeAdminDashboard()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            
+            <!-- Admin Header -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-800 pb-5 mb-6 gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-emerald-950/50 text-emerald-400 rounded-2xl flex items-center justify-center text-xl border border-emerald-800/20 shadow-lg">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-emerald-400 uppercase tracking-widest font-display">Ajanta Glass Admin Panel</div>
+                        <h3 class="text-xl font-syne font-black text-white uppercase tracking-wider">Welcome, Sunny Mehta</h3>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button onclick="refreshAdminData()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold border border-slate-800 flex items-center gap-1.5 transition">
+                        <i id="adminRefreshIcon" class="fa-solid fa-arrows-rotate"></i> Sync Data
+                    </button>
+                    <button onclick="handleAdminLogout()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 px-4 py-2 rounded-xl text-xs font-bold border border-red-800/20 flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-slate-950/50 border border-slate-800/80 p-4 rounded-2xl text-center">
+                    <div id="statTotalLeads" class="text-2xl font-syne font-black text-indigo-400">0</div>
+                    <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mt-1">Total Inquiries</div>
+                </div>
+                <div class="bg-slate-950/50 border border-slate-800/80 p-4 rounded-2xl text-center">
+                    <div id="statTotalSupport" class="text-2xl font-syne font-black text-amber-400">0</div>
+                    <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mt-1">Support Tickets</div>
+                </div>
+                <div class="bg-slate-950/50 border border-slate-800/80 p-4 rounded-2xl text-center">
+                    <div id="statTotalReviews" class="text-2xl font-syne font-black text-pink-400">0</div>
+                    <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mt-1">Live Testimonials</div>
+                </div>
+                <div class="bg-slate-950/50 border border-slate-800/80 p-4 rounded-2xl text-center">
+                    <div class="text-xs font-black text-emerald-400 flex items-center justify-center gap-1.5 h-8 mt-1">
+                        <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping"></span> Live
+                    </div>
+                    <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Server Connection</div>
+                </div>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="flex border-b border-slate-800 mb-6 text-xs font-bold tracking-wider uppercase">
+                <button onclick="switchAdminTab('leads')" id="tabBtn-leads" class="border-b-2 border-indigo-500 text-white px-4 py-2.5 transition">
+                    Inquiries & Leads (<span id="tabCountLeads">0</span>)
+                </button>
+                <button onclick="switchAdminTab('reviews')" id="tabBtn-reviews" class="border-b-2 border-transparent text-slate-400 hover:text-white px-4 py-2.5 transition">
+                    Testimonials (<span id="tabCountReviews">0</span>)
+                </button>
+                <button onclick="switchAdminTab('tools')" id="tabBtn-tools" class="border-b-2 border-transparent text-slate-400 hover:text-white px-4 py-2.5 transition">
+                    Backup & Settings
+                </button>
+            </div>
+
+            <!-- Content Area (Scrollable) -->
+            <div class="flex-1 overflow-y-auto pr-1 space-y-4 min-h-[250px]" id="adminTabContent">
+                
+                <!-- LEADS TAB CONTENT (Default) -->
+                <div id="adminTab-leads" class="space-y-4">
+                    <div id="leadsLoading" class="text-center py-12 text-slate-500 space-y-3">
+                        <i class="fa-solid fa-circle-notch animate-spin text-2xl text-indigo-400"></i>
+                        <p class="text-xs">Synchronizing architectural orders and support reports from secure storage...</p>
+                    </div>
+                    <div id="leadsListContainer" class="hidden space-y-4">
+                        <!-- Card elements for each lead will be injected here -->
+                    </div>
+                </div>
+
+                <!-- REVIEWS TAB CONTENT -->
+                <div id="adminTab-reviews" class="space-y-4 hidden">
+                    <div id="reviewsListContainer" class="grid sm:grid-cols-2 gap-4">
+                        <!-- Mini cards for testimonials management -->
+                    </div>
+                </div>
+
+                <!-- TOOLS & SETTINGS TAB CONTENT -->
+                <div id="adminTab-tools" class="space-y-6 hidden">
+                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+                        <h4 class="text-sm font-syne font-black text-white uppercase tracking-wider">System Database Backup</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">Download a complete snapshot of current database contents (Testimonials and Client Specification Inquiries) to backup or migrate to another system.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="exportData('reviews')" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/20 px-4 py-2.5 rounded-xl text-xs font-bold transition">
+                                <i class="fa-solid fa-download mr-1.5"></i> Export Testimonials JSON
+                            </button>
+                            <button onclick="exportData('leads')" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/20 px-4 py-2.5 rounded-xl text-xs font-bold transition">
+                                <i class="fa-solid fa-download mr-1.5"></i> Export Client Inquiries JSON
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+                        <h4 class="text-sm font-syne font-black text-white uppercase tracking-wider">Storage Configuration</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">Your data is locked with the unique cryptographic hash of user account <strong id="debugAdminUser">sunny</strong>. No other tenant can view or alter your leads.</p>
+                        <div class="text-[10px] text-slate-500 font-mono bg-slate-950 p-3 rounded-lg border border-slate-900 break-all select-all" id="storageDebugInfo">
+                            ENDPOINT: https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 
@@ -911,11 +1168,10 @@
                         const ipData = await ipResponse.json();
                         const city = ipData.city || "";
                         const region = ipData.region || "";
-                        const country = ipData.country_name || "";
                         
-                        const addr = [city, region, country].filter(Boolean).join(', ');
+                        const addr = [city, region].filter(Boolean).join(', ');
                         if (addr) {
-                            addressInput.value = `${addr} (Estimated via Network)`;
+                            addressInput.value = `${addr} (Located via Network)`;
                             icon.className = "fa-solid fa-circle-check text-emerald-400";
                             setTimeout(() => icon.className = "fa-solid fa-compass", 3000);
                             return;
@@ -933,20 +1189,43 @@
                 const lng = position.coords.longitude;
                 let resolvedAddr = "";
 
-                // Reverse Geocoding calling BigDataCloud
+                // TIER 1: Reverse Geocoding via Nominatim (OpenStreetMap) for maximum precision
                 try {
-                    const bdcResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
-                    if (bdcResponse.ok) {
-                        const bdcData = await bdcResponse.json();
-                        let parts = [];
-                        if (bdcData.locality) parts.push(bdcData.locality);
-                        if (bdcData.principalSubdivision) parts.push(bdcData.principalSubdivision);
-                        if (bdcData.countryName) parts.push(bdcData.countryName);
-
-                        if (parts.length > 0) resolvedAddr = parts.join(", ");
+                    const nominatimResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+                        headers: {
+                            'Accept-Language': 'en'
+                        }
+                    });
+                    if (nominatimResponse.ok) {
+                        const data = await nominatimResponse.json();
+                        if (data && data.display_name) {
+                            const parts = data.display_name.split(',').map(p => p.trim());
+                            const filteredParts = parts.filter(p => {
+                                const lower = p.toLowerCase();
+                                return lower !== "india" && lower !== "republic of india";
+                            });
+                            resolvedAddr = filteredParts.join(', ');
+                        }
                     }
-                } catch (bdcErr) {
-                    console.error("BigDataCloud failed:", bdcErr);
+                } catch (nomErr) {
+                    console.error("Nominatim failed, trying BigDataCloud:", nomErr);
+                }
+
+                // TIER 2: Fallback to BigDataCloud
+                if (!resolvedAddr) {
+                    try {
+                        const bdcResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
+                        if (bdcResponse.ok) {
+                            const bdcData = await bdcResponse.json();
+                            let parts = [];
+                            if (bdcData.locality) parts.push(bdcData.locality);
+                            if (bdcData.principalSubdivision) parts.push(bdcData.principalSubdivision);
+                            
+                            if (parts.length > 0) resolvedAddr = parts.join(", ");
+                        }
+                    } catch (bdcErr) {
+                        console.error("BigDataCloud failed:", bdcErr);
+                    }
                 }
 
                 // Final application to UI
@@ -998,26 +1277,350 @@
             }
         }
 
-        function promptOwnerLogin() {
+        function openAdminPortal() {
             if (isOwnerMode) {
-                if (confirm("You are currently in Owner Mode. Would you like to exit Owner Mode?")) {
-                    isOwnerMode = false;
-                    sessionStorage.removeItem('isOwnerMode');
-                    updateOwnerStatusUI();
-                    renderReviews();
-                }
-                return;
+                document.getElementById('adminDashboardModal').classList.remove('hidden');
+                refreshAdminData();
+            } else {
+                document.getElementById('adminUsername').value = '';
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminLoginError').classList.add('hidden');
+                document.getElementById('adminLoginModal').classList.remove('hidden');
             }
-            const code = prompt("Enter Owner Passcode to access administrative tools:");
-            if (code === "ajanta123" || code === "1234") {
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById('adminDashboardModal').classList.add('hidden');
+        }
+
+        function toggleAdminPassword() {
+            const passInput = document.getElementById('adminPassword');
+            const toggleIcon = document.getElementById('passwordToggleIcon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                toggleIcon.className = 'fa-solid fa-eye-slash text-xs';
+            } else {
+                passInput.type = 'password';
+                toggleIcon.className = 'fa-solid fa-eye text-xs';
+            }
+        }
+
+        function promptOwnerLogin() {
+            openAdminPortal();
+        }
+
+        async function handleAdminLogin(event) {
+            event.preventDefault();
+            const u = document.getElementById('adminUsername').value.trim();
+            const p = document.getElementById('adminPassword').value;
+
+            if (u === 'sunny' && p === 'ajantaglasssirsa1234') {
                 isOwnerMode = true;
                 sessionStorage.setItem('isOwnerMode', 'true');
+                sessionStorage.setItem('adminUser', 'sunny');
+                
+                document.getElementById('adminLoginError').classList.add('hidden');
+                closeAdminLoginModal();
                 updateOwnerStatusUI();
                 renderReviews();
-                alert("Owner Mode unlocked! You can now edit or delete any review using the controls on each card.");
-            } else if (code !== null) {
-                alert("Invalid passcode!");
+                
+                // Open dashboard and load data
+                document.getElementById('adminDashboardModal').classList.remove('hidden');
+                refreshAdminData();
+            } else {
+                document.getElementById('adminLoginError').classList.remove('hidden');
             }
+        }
+
+        function handleAdminLogout() {
+            if (confirm("Are you sure you want to log out from Admin Panel?")) {
+                isOwnerMode = false;
+                sessionStorage.removeItem('isOwnerMode');
+                sessionStorage.removeItem('adminUser');
+                updateOwnerStatusUI();
+                renderReviews();
+                closeAdminDashboard();
+            }
+        }
+
+        let adminCurrentTab = 'leads';
+        function switchAdminTab(tabName) {
+            adminCurrentTab = tabName;
+            
+            // Buttons visual toggles
+            ['leads', 'reviews', 'tools'].forEach(t => {
+                const btn = document.getElementById(`tabBtn-${t}`);
+                const tabDiv = document.getElementById(`adminTab-${t}`);
+                if (t === tabName) {
+                    btn.className = "border-b-2 border-indigo-500 text-white px-4 py-2.5 transition font-bold";
+                    tabDiv.classList.remove('hidden');
+                } else {
+                    btn.className = "border-b-2 border-transparent text-slate-400 hover:text-white px-4 py-2.5 transition";
+                    tabDiv.classList.add('hidden');
+                }
+            });
+        }
+
+        let adminLeads = [];
+
+        async function refreshAdminData() {
+            const syncIcon = document.getElementById('adminRefreshIcon');
+            if (syncIcon) syncIcon.classList.add('animate-spin');
+
+            try {
+                // 1. Fetch reviews to show count
+                await fetchReviews();
+                const totalRevCount = activeReviews.length;
+                document.getElementById('statTotalReviews').textContent = totalRevCount;
+                document.getElementById('tabCountReviews').textContent = totalRevCount;
+
+                // 2. Fetch leads
+                const hashedKey = await sha256(fabricatorUser);
+                const endpoint = `https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/${hashedKey}_leads`;
+                
+                const res = await fetch(endpoint).catch(() => null);
+                if (res && res.ok) {
+                    const text = await res.text();
+                    try {
+                        adminLeads = JSON.parse(text);
+                    } catch(jsonErr) {
+                        adminLeads = [];
+                    }
+                    if (!Array.isArray(adminLeads)) adminLeads = [];
+                } else {
+                    adminLeads = [];
+                }
+
+                // Render Leads & statistics
+                renderAdminLeads();
+                renderAdminReviewsTab();
+
+            } catch(e) {
+                console.error("Error refreshing admin dashboard data:", e);
+            } finally {
+                if (syncIcon) syncIcon.classList.remove('animate-spin');
+            }
+        }
+
+        function renderAdminLeads() {
+            const container = document.getElementById('leadsListContainer');
+            const loader = document.getElementById('leadsLoading');
+            
+            if (!container || !loader) return;
+
+            if (adminLeads.length === 0) {
+                loader.classList.remove('hidden');
+                loader.innerHTML = `
+                    <div class="py-12 text-slate-500 space-y-2">
+                        <i class="fa-solid fa-folder-open text-3xl text-slate-600 mb-2"></i>
+                        <p class="text-xs font-bold uppercase tracking-wider">No Inquiries Found</p>
+                        <p class="text-[11px] text-slate-500 max-w-xs mx-auto">No orders specs or support reports have been transmitted on your database cluster yet.</p>
+                    </div>
+                `;
+                container.classList.add('hidden');
+                document.getElementById('statTotalLeads').textContent = '0';
+                document.getElementById('statTotalSupport').textContent = '0';
+                document.getElementById('tabCountLeads').textContent = '0';
+                return;
+            }
+
+            loader.classList.add('hidden');
+            container.classList.remove('hidden');
+
+            let inquiriesCount = 0;
+            let supportCount = 0;
+
+            let html = '';
+            // Render reverse chronological order (newest first)
+            const sortedLeads = [...adminLeads].reverse();
+
+            sortedLeads.forEach(lead => {
+                const isSupport = lead.requirements && lead.requirements.includes('[SUPPORT & COMPLAINT]');
+                if (isSupport) {
+                    supportCount++;
+                } else {
+                    inquiriesCount++;
+                }
+
+                const createdTime = parseInt(lead.createdAt || lead.id || Date.now());
+                const dateStr = new Date(createdTime).toLocaleString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                // Specs list nested markup if present
+                let specsHtml = '';
+                if (Array.isArray(lead.items) && lead.items.length > 0) {
+                    specsHtml = `
+                    <div class="mt-4 border-t border-slate-900 pt-3 space-y-2">
+                        <div class="text-[9px] uppercase tracking-wider text-indigo-400 font-extrabold font-display">Glass Architectural Specs:</div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-[10px] text-slate-400 border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-900/60 text-slate-500">
+                                        <th class="pb-1 font-bold">Spec Detail</th>
+                                        <th class="pb-1 font-bold text-center">Dimensions</th>
+                                        <th class="pb-1 font-bold text-center">Qty</th>
+                                        <th class="pb-1 font-bold text-right">Quotation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    lead.items.forEach(item => {
+                        specsHtml += `
+                                    <tr class="border-b border-slate-900/30">
+                                        <td class="py-1.5 text-slate-300 font-semibold">${item.name}</td>
+                                        <td class="py-1.5 text-center font-mono">${item.width}" × ${item.height}"</td>
+                                        <td class="py-1.5 text-center font-mono font-bold text-slate-300">${item.qty}</td>
+                                        <td class="py-1.5 text-right font-mono ${parseFloat(item.rate) > 0 ? 'text-emerald-400' : 'text-slate-500 italic'}">${parseFloat(item.rate) > 0 ? '₹' + parseFloat(item.rate).toLocaleString('en-IN') : 'Pending Manual Quote'}</td>
+                                    </tr>
+                        `;
+                    });
+                    specsHtml += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    `;
+                }
+
+                html += `
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4 relative group hover:border-indigo-500/30 transition-all duration-300">
+                    <div class="absolute top-4 right-4 z-20">
+                        <button onclick="deleteLead('${lead.id}', event)" class="w-7 h-7 rounded-lg bg-red-950/40 hover:bg-red-600 text-red-400 hover:text-white flex items-center justify-center border border-red-800/20 transition shadow" title="Delete Lead">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="${isSupport ? 'bg-amber-950 text-amber-300 border-amber-800/30' : 'bg-indigo-950 text-indigo-300 border-indigo-800/30'} text-[9px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider font-display">
+                            ${isSupport ? 'Support Ticket' : 'Order Specification'}
+                        </span>
+                        <span class="text-[10px] text-slate-500 font-mono">${dateStr}</span>
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Client Name</div>
+                            <div class="text-white font-bold text-sm mt-0.5">${lead.clientName}</div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Phone Number</div>
+                            <a href="tel:${lead.clientPhone}" class="text-indigo-400 hover:text-indigo-300 transition hover:underline font-bold text-sm mt-0.5 block">${lead.clientPhone}</a>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Address / Project Location</div>
+                            <div class="text-slate-300 mt-0.5">${lead.clientAddress}</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-900/60">
+                        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mb-1">Requirements / Details</div>
+                        <p class="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">${lead.requirements}</p>
+                        
+                        ${specsHtml}
+                    </div>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            document.getElementById('statTotalLeads').textContent = inquiriesCount;
+            document.getElementById('statTotalSupport').textContent = supportCount;
+            document.getElementById('tabCountLeads').textContent = adminLeads.length;
+        }
+
+        function renderAdminReviewsTab() {
+            const container = document.getElementById('reviewsListContainer');
+            if (!container) return;
+
+            if (activeReviews.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 py-12 text-center text-slate-500 space-y-2">
+                        <i class="fa-solid fa-face-frown text-3xl text-slate-600 mb-2"></i>
+                        <p class="text-xs font-bold uppercase tracking-wider">No Reviews Found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            activeReviews.forEach(review => {
+                let stars = '';
+                for(let i=0; i<5; i++) {
+                    stars += `<i class="fa fa-star ${i < review.rating ? 'text-yellow-500' : 'text-slate-700'} text-[9px]"></i>`;
+                }
+
+                html += `
+                <div class="glass-panel p-4 rounded-xl border border-slate-800 flex flex-col justify-between relative space-y-3 hover:border-pink-500/20 transition-all duration-300">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-white">${review.name}</span>
+                            <div class="flex gap-0.5">${stars}</div>
+                        </div>
+                        <div class="text-[9px] text-slate-400 font-light -mt-1 block">${review.role}</div>
+                        <p class="text-[11px] text-slate-300 line-clamp-3 leading-relaxed font-light italic">"${review.text}"</p>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-slate-900">
+                        <button onclick="editReview(${review.createdAt}, event); closeAdminDashboard();" class="text-[10px] bg-indigo-950/40 hover:bg-indigo-600 text-indigo-400 hover:text-white px-2.5 py-1.5 rounded border border-indigo-800/20 transition" title="Edit Review">
+                            <i class="fa-solid fa-pen mr-1 text-[8px]"></i> Edit
+                        </button>
+                        <button onclick="deleteReview(${review.createdAt}, event); refreshAdminData();" class="text-[10px] bg-red-950/40 hover:bg-red-600 text-red-400 hover:text-white px-2.5 py-1.5 rounded border border-red-800/20 transition" title="Delete Review">
+                            <i class="fa-solid fa-trash mr-1 text-[8px]"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        async function deleteLead(leadId, event) {
+            if (event) event.stopPropagation();
+            if (!confirm("Are you sure you want to permanently delete this client inquiry? This action cannot be undone.")) return;
+
+            const hashedKey = await sha256(fabricatorUser);
+            const endpoint = `https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/${hashedKey}_leads`;
+
+            try {
+                const updatedLeads = adminLeads.filter(lead => lead.id !== leadId);
+                
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedLeads)
+                });
+
+                if (res.ok) {
+                    alert("Inquiry deleted successfully.");
+                    await refreshAdminData();
+                } else {
+                    alert("Could not update data store. Check connection.");
+                }
+            } catch(e) {
+                console.error("Error deleting lead:", e);
+                alert("Network error trying to process request.");
+            }
+        }
+
+        function exportData(type) {
+            const data = (type === 'reviews') ? activeReviews : adminLeads;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 4));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `ajanta_glass_${type}_backup_${Date.now()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
         }
 
         async function fetchReviews() {
@@ -1258,13 +1861,12 @@
                 fabricatorUser = userParam.trim();
             }
             
-            const isUserParamOwner = (fabricatorUser.toLowerCase() === MAIN_OWNER_ACCOUNT.toLowerCase());
+            const isUserParamOwner = (userParam.trim() !== "" && userParam.trim().toLowerCase() === MAIN_OWNER_ACCOUNT.toLowerCase());
             if (isUserParamOwner || sessionStorage.getItem('isOwnerMode') === 'true') {
                 isOwnerMode = true;
             }
             
             updateOwnerStatusUI();
-            calculateLiveEstimate();
             fetchReviews();
         });
 
@@ -1277,145 +1879,103 @@
             } else {
                 customInput.classList.add('hidden');
             }
-            calculateLiveEstimate();
         }
 
-        function handleGlassTypeChange() {
-            const select = document.getElementById('itemGlassType');
-            const customContainer = document.getElementById('customMaterialContainer');
-            if (select.value === 'CUSTOM_MATERIAL') {
-                customContainer.classList.remove('hidden');
-            } else {
-                customContainer.classList.add('hidden');
+        function setWizardStep(step) {
+            // Validate step 1 if trying to go forward
+            if (step > 1) {
+                const nameInput = document.getElementById('clientName');
+                const phoneInput = document.getElementById('clientPhone');
+                if (!nameInput.value.trim() || !phoneInput.value.trim()) {
+                    if (!nameInput.value.trim()) nameInput.focus();
+                    else phoneInput.focus();
+                    nameInput.reportValidity();
+                    phoneInput.reportValidity();
+                    return;
+                }
             }
-            calculateLiveEstimate();
-        }
-
-        function handleThicknessChange() {
-            const select = document.getElementById('itemThickness');
-            const customContainer = document.getElementById('customThicknessContainer');
-            if (select.value === 'CUSTOM_THICKNESS') {
-                customContainer.classList.remove('hidden');
-            } else {
-                customContainer.classList.add('hidden');
+            // Validate step 2 if trying to go forward to step 3
+            if (step > 2) {
+                if (clientSpecsList.length === 0) {
+                    alert("Please add at least one specification to your inquiry before proceeding.");
+                    return;
+                }
             }
-            calculateLiveEstimate();
+
+            // Show current step and hide others
+            for (let i = 1; i <= 3; i++) {
+                const stepDiv = document.getElementById(`wizard-step-${i}`);
+                const indicator = document.getElementById(`wizard-indicator-${i}`);
+                const indicatorText = document.getElementById(`wizard-indicator-text-${i}`);
+                
+                if (i === step) {
+                    if (stepDiv) {
+                        stepDiv.classList.remove('hidden');
+                        gsap.fromTo(stepDiv, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" });
+                    }
+                    if (indicator) {
+                        indicator.className = "w-8 h-8 rounded-full bg-[#00B8D9] text-slate-950 flex items-center justify-center font-bold text-xs ring-4 ring-cyan-500/20";
+                    }
+                    if (indicatorText) {
+                        indicatorText.className = "text-[10px] font-bold text-white uppercase tracking-wider";
+                    }
+                } else {
+                    if (stepDiv) {
+                        stepDiv.classList.add('hidden');
+                    }
+                    if (indicator) {
+                        if (i < step) {
+                            indicator.className = "w-8 h-8 rounded-full bg-slate-900 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-xs";
+                        } else {
+                            indicator.className = "w-8 h-8 rounded-full bg-slate-900 border border-slate-850 text-slate-500 flex items-center justify-center font-bold text-xs";
+                        }
+                    }
+                    if (indicatorText) {
+                        if (i < step) {
+                            indicatorText.className = "text-[10px] font-semibold text-emerald-400 uppercase tracking-wider";
+                        } else {
+                            indicatorText.className = "text-[10px] font-semibold text-slate-600 uppercase tracking-wider";
+                        }
+                    }
+                }
+            }
         }
 
-        // Live Cost Calculation math
-        function getSpecPricingDetails() {
+        function addSpecLineItem() {
             const catSelect = document.getElementById('itemCategory');
             let category = catSelect.value;
             if (category === 'CUSTOM_ITEM') {
                 category = document.getElementById('customCategoryInput').value.trim() || 'Custom';
             }
 
-            const glassSelect = document.getElementById('itemGlassType');
-            let glassName = glassSelect.value;
-            let glassRate = 80.0;
-            if (glassName === 'CUSTOM_MATERIAL') {
-                glassName = document.getElementById('customMaterialName').value.trim() || 'Custom Glass';
-                glassRate = 180.0;
-            } else {
-                const opt = glassSelect.options[glassSelect.selectedIndex];
-                glassRate = parseFloat(opt.getAttribute('data-price')) || 80.0;
-            }
+            const widthInput = document.getElementById('itemWidth');
+            const heightInput = document.getElementById('itemHeight');
+            const qtyInput = document.getElementById('itemQty');
 
-            const thickSelect = document.getElementById('itemThickness');
-            let thicknessName = thickSelect.value;
-            let thicknessPremium = 0.0;
-            if (thicknessName === 'CUSTOM_THICKNESS') {
-                thicknessName = document.getElementById('customThicknessName').value.trim() || 'Custom Thick';
-                thicknessPremium = 50.0;
-            } else {
-                const opt = thickSelect.options[thickSelect.selectedIndex];
-                thicknessPremium = parseFloat(opt.getAttribute('data-price')) || 0.0;
-            }
+            const width = parseFloat(widthInput.value) || 0.0;
+            const height = parseFloat(heightInput.value) || 0.0;
+            const qty = parseInt(qtyInput.value) || 1;
 
-            const edgeSelect = document.getElementById('itemEdgework');
-            const edgeName = edgeSelect.value;
-            const optEdge = edgeSelect.options[edgeSelect.selectedIndex];
-            const edgePremium = parseFloat(optEdge.getAttribute('data-price')) || 0.0;
-
-            const width = parseFloat(document.getElementById('itemWidth').value) || 0.0;
-            const height = parseFloat(document.getElementById('itemHeight').value) || 0.0;
-            const qty = parseInt(document.getElementById('itemQty').value) || 1;
-
-            return {
-                category, glassName, glassRate, thicknessName, thicknessPremium, edgeName, edgePremium, width, height, qty
-            };
-        }
-
-        function roundGlassDimension(val) {
-            return Math.ceil(val);
-        }
-
-        function calculateLiveEstimate() {
-            const p = getSpecPricingDetails();
-            const estCard = document.getElementById('liveEstCard');
-            if (p.width > 0 && p.height > 0) {
-                const rW = roundGlassDimension(p.width);
-                const rH = roundGlassDimension(p.height);
-                const sqFt = (rW * rH) / 144.0;
-                const runningFeet = (2.0 * (rW + rH)) / 12.0;
-
-                const edgeworkCost = runningFeet * p.edgePremium * 12;
-                const materialCost = sqFt * (p.glassRate + p.thicknessPremium);
-                const unitPrice = materialCost + edgeworkCost;
-                const totalPrice = unitPrice * p.qty;
-
-                document.getElementById('liveEstSummary').innerHTML = `<strong class="text-white">${p.glassName} (${p.thicknessName})</strong> via <strong class="text-white">${p.edgeName}</strong> edge`;
-                document.getElementById('liveEstDims').innerText = `Math: ${rW}" x ${rH}" (${sqFt.toFixed(2)} SqFt) • ${p.qty} Qty`;
-                document.getElementById('liveEstPrice').innerText = `₹${totalPrice.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
-                
-                if (estCard && estCard.classList.contains('hidden')) {
-                    estCard.classList.remove('hidden');
-                    gsap.fromTo(estCard, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" });
-                }
-            } else {
-                if (estCard && !estCard.classList.contains('hidden')) {
-                    gsap.to(estCard, {
-                        opacity: 0,
-                        y: -10,
-                        duration: 0.25,
-                        onComplete: () => {
-                            estCard.classList.add('hidden');
-                        }
-                    });
-                }
-            }
-        }
-
-        function addSpecLineItem() {
-            const p = getSpecPricingDetails();
-            if (p.width <= 0 || p.height <= 0) {
+            if (width <= 0 || height <= 0) {
                 alert("Please specify positive width and height parameters.");
                 return;
             }
 
-            const rW = roundGlassDimension(p.width);
-            const rH = roundGlassDimension(p.height);
-            const sqFt = (rW * rH) / 144.0;
-            const runningFeet = (2.0 * (rW + rH)) / 12.0;
-            const unitPrice = (sqFt * (p.glassRate + p.thicknessPremium)) + (runningFeet * p.edgePremium * 12);
-
-            const specTitle = `${p.category} [${p.glassName}, ${p.thicknessName}, ${p.edgeName}]`;
             const itemSpec = {
                 id: `spec-${Date.now()}-${Math.floor(Math.random()*100)}`,
-                name: specTitle,
-                width: p.width,
-                height: p.height,
-                qty: p.qty,
-                rate: parseFloat(unitPrice.toFixed(2))
+                name: category,
+                width: width,
+                height: height,
+                qty: qty,
+                rate: 0.0
             };
 
             clientSpecsList.push(itemSpec);
             renderSpecLinesTable(itemSpec.id);
 
-            document.getElementById('itemWidth').value = '';
-            document.getElementById('itemHeight').value = '';
-            document.getElementById('itemQty').value = '1';
-            calculateLiveEstimate();
+            widthInput.value = '';
+            heightInput.value = '';
+            qtyInput.value = '1';
         }
 
         function removeSpecLineItem(id) {
@@ -1525,7 +2085,7 @@
             event.preventDefault();
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa fa-circle-notch animate-spin mr-2"></i> <span>Transmitting Order specs...</span>`;
+            btn.innerHTML = `<i class="fa fa-circle-notch animate-spin mr-2"></i> <span>Submitting Inquiry...</span>`;
 
             const name = document.getElementById('clientName').value.trim();
             const phone = document.getElementById('clientPhone').value.trim();
@@ -1566,13 +2126,16 @@
                 document.getElementById('requirementsForm').reset();
                 clientSpecsList = [];
                 renderSpecLinesTable();
+                
+                document.querySelector('#successModal h3').textContent = "Inquiry Submitted";
+                document.querySelector('#successModal p').textContent = "Your inquiry has been submitted successfully. Our team will review your requirements and contact you with a personalized quotation.";
                 document.getElementById('successModal').classList.remove('hidden');
             } catch(e) {
                 console.error(e);
                 alert("Submission network error. Check connectivity.");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i class="fa-regular fa-paper-plane mr-2"></i> <span>Place Order Now</span>`;
+                btn.innerHTML = `<i class="fa-regular fa-paper-plane mr-2"></i> <span>Submit Inquiry</span>`;
             }
         }
 
@@ -1833,13 +2396,13 @@
     </script>
 
     <!-- FLOATING MAPS DIRECT DIRECTIONS FAB (Sticky Location Control) -->
-    <a href="https://maps.app.goo.gl/1BENSd4XH3TQqmTw6" target="_blank" class="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-850 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs font-bold px-5 py-4 rounded-full shadow-[0_8px_32px_rgba(99,102,241,0.4)] border border-indigo-400/30 transition-all duration-350 hover:scale-105 active:scale-95 group select-none">
-        <span class="flex h-2.5 w-2.5 relative">
+    <a href="https://maps.app.goo.gl/1BENSd4XH3TQqmTw6" target="_blank" class="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-850 hover:from-indigo-500 hover:to-indigo-600 text-white text-[10px] sm:text-xs font-bold px-3.5 py-2.5 sm:px-5 sm:py-4 rounded-full shadow-[0_8px_32px_rgba(99,102,241,0.4)] border border-indigo-400/30 transition-all duration-350 hover:scale-105 active:scale-95 group select-none max-w-[calc(100vw-24px)]">
+        <span class="flex h-2 w-2 sm:h-2.5 sm:w-2.5 relative shrink-0">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-400"></span>
         </span>
-        <i class="fa-solid fa-map-location-dot text-indigo-200 group-hover:text-white transition-colors duration-300"></i>
-        <span class="tracking-widest uppercase font-syne font-black text-[10px]">Shop Direction</span>
+        <i class="fa-solid fa-map-location-dot text-indigo-200 group-hover:text-white transition-colors duration-300 shrink-0"></i>
+        <span class="tracking-wider sm:tracking-widest uppercase font-syne font-black text-[9px] sm:text-[10px] truncate">Shop Direction</span>
     </a>
 </body>
 </html>
