@@ -154,9 +154,16 @@
                 <a href="#products" class="hover:text-white transition duration-200 uppercase">Products</a>
                 <a href="#showroom" class="hover:text-white transition duration-200 uppercase">Showroom</a>
                 <a href="#configurator" class="hover:text-white transition duration-200 uppercase">Configurator</a>
+                <button onclick="toggleAiChatDrawer()" class="hover:text-[#00B8D9] transition duration-200 uppercase flex items-center gap-1.5 text-[#00B8D9] font-extrabold cursor-pointer">
+                    <i class="fa-solid fa-wand-magic-sparkles text-xs animate-pulse"></i> AI Consultant
+                </button>
             </div>
 
             <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                <button onclick="toggleAiChatDrawer()" class="bg-[#00B8D9]/15 hover:bg-[#00B8D9]/25 text-[#00B8D9] px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-[#00B8D9]/30 flex items-center gap-1.5 transition text-[9px] sm:text-[10px] uppercase font-bold tracking-wider cursor-pointer" title="AI Glass Consultant">
+                    <i class="fa-solid fa-wand-magic-sparkles text-[#00B8D9]"></i>
+                    <span class="hidden sm:inline">AI Consultant</span>
+                </button>
                 <button onclick="openAdminPortal()" class="bg-slate-900/85 hover:bg-slate-800 text-slate-300 hover:text-white px-2 py-1.5 sm:px-3.5 sm:py-2.5 rounded-xl border border-slate-800 flex items-center gap-1.5 transition text-[9px] sm:text-[10px] uppercase font-bold tracking-wider" title="Admin Panel">
                     <i class="fa-solid fa-shield-halved text-[#00B8D9]"></i>
                     <span class="hidden sm:inline">Admin</span>
@@ -2393,7 +2400,343 @@
                 }
             );
         });
+
+        /* ==========================================================================
+           AJANTA AI GLASS & WINDOW CONSULTANT (GEMINI INTEGRATION)
+           ========================================================================== */
+        let aiSpeechRecognizer = null;
+        let isAiVoiceListening = false;
+
+        function toggleAiChatDrawer() {
+            const drawer = document.getElementById('aiChatDrawer');
+            if (!drawer) return;
+            const isHidden = drawer.classList.contains('hidden');
+            if (isHidden) {
+                drawer.classList.remove('hidden');
+                setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
+                const savedKey = localStorage.getItem('gemini_api_key');
+                if (savedKey) {
+                    const keyInput = document.getElementById('geminiApiKeyInput');
+                    if (keyInput) keyInput.value = savedKey;
+                }
+                const chatInput = document.getElementById('aiChatInput');
+                if (chatInput) chatInput.focus();
+            } else {
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => drawer.classList.add('hidden'), 300);
+            }
+        }
+
+        function toggleAiKeySettings() {
+            const panel = document.getElementById('aiKeySettingsPanel');
+            if (panel) panel.classList.toggle('hidden');
+        }
+
+        function saveGeminiApiKey() {
+            const keyInput = document.getElementById('geminiApiKeyInput');
+            if (!keyInput) return;
+            const key = keyInput.value.trim();
+            if (key) {
+                localStorage.setItem('gemini_api_key', key);
+                alert("Gemini API Key saved successfully!");
+            } else {
+                localStorage.removeItem('gemini_api_key');
+                alert("Custom API key removed. Integrated Gemini AI active.");
+            }
+            toggleAiKeySettings();
+        }
+
+        function sendQuickAiQuery(queryText) {
+            const input = document.getElementById('aiChatInput');
+            if (input) input.value = queryText;
+            sendAiMessage(queryText);
+        }
+
+        function handleAiFormSubmit(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const input = document.getElementById('aiChatInput');
+            if (!input) return;
+            const promptText = input.value.trim();
+            if (!promptText) return;
+            sendAiMessage(promptText);
+        }
+
+        async function sendAiMessage(promptText) {
+            const chatContainer = document.getElementById('aiChatMessages');
+            const input = document.getElementById('aiChatInput');
+            if (!chatContainer) return;
+
+            if (input) input.value = '';
+
+            // Append User Message
+            const userMsgHtml = `
+                <div class="flex gap-2.5 justify-end">
+                    <div class="max-w-[85%] bg-gradient-to-r from-indigo-600 to-cyan-700 text-white p-3 rounded-2xl rounded-tr-none text-xs leading-relaxed shadow-md">
+                        ${escapeHtml(promptText)}
+                    </div>
+                    <div class="w-7 h-7 rounded-lg bg-indigo-600/30 border border-indigo-400/30 flex items-center justify-center shrink-0 text-indigo-300 text-xs">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+            `;
+            chatContainer.insertAdjacentHTML('beforeend', userMsgHtml);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Show typing indicator
+            const typingIndicator = document.getElementById('aiTypingIndicator');
+            if (typingIndicator) typingIndicator.classList.remove('hidden');
+
+            try {
+                const responseText = await fetchGeminiResponse(promptText);
+                
+                // Hide typing
+                if (typingIndicator) typingIndicator.classList.add('hidden');
+
+                // Append AI Message
+                const aiMsgHtml = `
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-[#00B8D9]/10 border border-[#00B8D9]/30 flex items-center justify-center shrink-0 text-[#00B8D9] mt-0.5">
+                            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                        </div>
+                        <div class="flex-1 bg-slate-900/80 border border-slate-800 rounded-2xl rounded-tl-none p-3.5 text-slate-200 leading-relaxed space-y-2">
+                            ${formatAiMarkdown(responseText)}
+                            <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
+                                <span class="text-cyan-400 font-medium">Ajanta AI Assistant</span>
+                                <button onclick="scrollToConfiguratorFromAi()" class="text-xs text-[#00B8D9] hover:underline font-bold flex items-center gap-1 cursor-pointer">
+                                    <span>Use Configurator</span> <i class="fa-solid fa-calculator text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatContainer.insertAdjacentHTML('beforeend', aiMsgHtml);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            } catch (err) {
+                if (typingIndicator) typingIndicator.classList.add('hidden');
+                console.error("AI Error:", err);
+                const errorHtml = `
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 text-amber-400 mt-0.5">
+                            <i class="fa-solid fa-triangle-exclamation text-xs"></i>
+                        </div>
+                        <div class="flex-1 bg-slate-900/80 border border-slate-800 rounded-2xl rounded-tl-none p-3.5 text-slate-300 leading-relaxed">
+                            <p>Sorry, I encountered a temporary issue. Please try asking again.</p>
+                        </div>
+                    </div>
+                `;
+                chatContainer.insertAdjacentHTML('beforeend', errorHtml);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        }
+
+        async function fetchGeminiResponse(promptText) {
+            const customApiKey = localStorage.getItem('gemini_api_key') || (typeof window !== 'undefined' ? window.GEMINI_API_KEY : '');
+            
+            const systemInstruction = "You are Ajanta AI — Lead Architectural Glass & Window Systems Engineering Consultant for Ajanta Door & Window Systems (Est. 1976, 50 Years of Mastery in Sirsa, Haryana, India).\nProvide clear, highly professional, structured, and helpful advice regarding:\n- Toughened Safety Glass (5mm, 6mm, 8mm, 10mm, 12mm, 15mm, 19mm)\n- Insulated Double Glazed Glass (DGU) for soundproofing and heat reduction\n- Laminated Glass (PVB Interlayer for safety railings, skylights)\n- UPVC & Slimline Aluminum Window & Door Systems (Sliding, Casement, Tilt & Turn, Folding)\n- Shower Enclosures, Frosted, Tinted, UV Printed, and Sandblasted architectural panels\n- Recommended glass thickness, wind load considerations, weight estimation, and architectural specs.\nFormat responses with clean headers, bullet points, and bold key parameters. Keep answers concise, helpful, and inviting.";
+
+            if (customApiKey && customApiKey.trim().length > 10) {
+                const models = ['gemini-2.5-flash', 'gemini-1.5-flash'];
+                for (const model of models) {
+                    try {
+                        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(customApiKey.trim())}`;
+                        const payload = {
+                            contents: [{
+                                parts: [{ text: promptText }]
+                            }],
+                            systemInstruction: {
+                                parts: [{ text: systemInstruction }]
+                            }
+                        };
+                        const res = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (res.ok) {
+                            const data = await res.json();
+                            const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                            if (text) return text;
+                        }
+                    } catch (apiErr) {
+                        console.warn(`Gemini API error with model ${model}:`, apiErr);
+                    }
+                }
+            }
+
+            return getGlazingIntelligenceFallback(promptText);
+        }
+
+        function formatAiMarkdown(text) {
+            if (!text) return '';
+            let formatted = escapeHtml(text);
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>');
+            formatted = formatted.replace(/^\s*[\*\-]\s+(.*)$/gm, '<li class="ml-4 list-disc text-slate-300">$1</li>');
+            formatted = formatted.replace(/(<li.*<\/li>\n?)+/g, '<ul class="space-y-1 my-1.5">$&</ul>');
+            formatted = formatted.replace(/\n/g, '<br>');
+            return formatted;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, "&amp;")
+                              .replace(/</g, "&lt;")
+                              .replace(/>/g, "&gt;")
+                              .replace(/"/g, "&quot;")
+                              .replace(/'/g, "&#039;");
+        }
+
+        function getGlazingIntelligenceFallback(prompt) {
+            const query = prompt.toLowerCase();
+
+            if (query.includes('toughened') && query.includes('laminated')) {
+                return "**Toughened Glass vs Laminated Glass Comparison:**\n\n" +
+                       "• **Toughened (Tempered) Glass:** 4x-5x stronger than regular annealed glass. If shattered, breaks into small harmless blunt fragments. Ideal for shower cubicles, glass doors, interior partition walls, and standard windows.\n\n" +
+                       "• **Laminated Glass:** Consists of 2 glass sheets bonded with a tough PVB/SGP interlayer. If shattered, glass adheres to the interlayer without falling. Mandatory for high-rise balcony railings, glass staircases, skylights, and high-security facades.\n\n" +
+                       "💡 **Recommendation:** For shower enclosures & standard windows, use 8mm–12mm Toughened Glass. For glass railings & overhead skylights, use 12mm (6mm+6mm) Laminated Glass!";
+            }
+
+            if (query.includes('sound') || query.includes('noise') || query.includes('acoustic')) {
+                return "**Acoustic Soundproofing Glass Guidance:**\n\n" +
+                       "To block heavy city traffic and ambient noise (up to 38-42 dB sound reduction):\n\n" +
+                       "1. **DGU (Double Glazed Unit / Insulated Glass):** 6mm Toughened + 12mm Air/Argon Gap + 6mm Toughened glass unit. Provides exceptional sound isolation and thermal insulation.\n" +
+                       "2. **Acoustic Laminated Glass:** Uses specialized acoustic PVB interlayers.\n" +
+                       "3. **Acoustic UPVC/Aluminum Profiles:** Ensure multi-point locking mechanisms and EPDM rubber seals for maximum airtight closure.\n\n" +
+                       "💡 **Pro Tip:** Use DGU glass in Ajanta UPVC or Slimline Aluminum Casement Windows for maximum tranquility!";
+            }
+
+            if (query.includes('shower') || query.includes('cubicle') || query.includes('bathroom')) {
+                return "**Shower Cubicle & Partition Glass Specifications:**\n\n" +
+                       "• **Recommended Thickness:** 8mm or 10mm Toughened Safety Glass.\n" +
+                       "• **Glass Options:** Ultra-Clear Low-Iron Glass, Frosted / Acid Etched for privacy, or Tinted (Grey/Bronze).\n" +
+                       "• **Edge Finish:** Flat polish with safety chamfered corners.\n" +
+                       "• **Hardware:** SS304 Stainless Steel rust-proof hinges, glass-to-wall brackets, and magnetic PVC seal gaskets.\n\n" +
+                       "💡 **Ajanta Guarantee:** All shower panels feature 100% heat-soak tested toughened safety glass with hydrophobic easy-clean coating!";
+            }
+
+            if (query.includes('window') || query.includes('upvc') || query.includes('aluminum') || query.includes('sliding')) {
+                return "**Window System & Frame Selection Guide:**\n\n" +
+                       "• **Slimline Aluminum Windows:** Modern ultra-thin sightlines, high structural strength for large floor-to-ceiling sliding glass panels (up to 12ft height).\n" +
+                       "• **UPVC Windows:** Superior thermal insulation, zero rust/corrosion, multi-chamber design for extreme noise block.\n" +
+                       "• **Glass Pairing:** 6mm Toughened for small/medium windows; 10mm–12mm Toughened or DGU for large span balcony windows.\n\n" +
+                       "💡 You can configure your exact window dimensions, glass type, and profile colors in our **Ajanta Live Configurator**!";
+            }
+
+            if (query.includes('railing') || query.includes('balcony') || query.includes('stair')) {
+                return "**Balcony & Staircase Glass Railing Recommendations:**\n\n" +
+                       "• **Standard Balconies:** 12mm Toughened Glass with SS304 spigots or continuous bottom aluminum profile channel.\n" +
+                       "• **High-Rise & Commercial Railings:** 13.52mm Laminated Glass (6mm Toughened + 1.52mm PVB + 6mm Toughened).\n" +
+                       "• **Safety Standard:** Handrail or top profile channel recommended for structural wind loads above 10th floor.\n\n" +
+                       "💡 Contact Ajanta for custom structural glass railing engineering & load tests!";
+            }
+
+            if (query.includes('price') || query.includes('cost') || query.includes('rate') || query.includes('estimate') || query.includes('sqft')) {
+                return "**Ajanta Glass & Glazing Price Factors:**\n\n" +
+                       "Glass rates depend on thickness, glass type, and customized edgework/processing:\n" +
+                       "• **5mm - 6mm Clear Glass:** Base architectural glazing\n" +
+                       "• **8mm - 12mm Toughened Glass:** Premium heavy-duty safety glass\n" +
+                       "• **DGU / Insulated Units:** Double pane thermal/acoustic glass\n" +
+                       "• **Custom Finishes:** Beveling, frost etching, UV printing, CNC cutouts & hole drilling.\n\n" +
+                       "💡 **Get an Instant Quote:** Use the **Ajanta Live Quote Configurator** on this page to enter your dimensions and get instant exact itemized calculations!";
+            }
+
+            return `**Ajanta Architectural Glass & Window Systems Advice:**\n\n` +
+                   `For **${escapeHtml(prompt)}**, here are key architectural recommendations:\n\n` +
+                   `• **Glass Selection:** We supply 5mm to 19mm Toughened Safety Glass, DGU Double Glazed Units, Laminated Safety Glass, and Frosted/Tinted decorative options.\n` +
+                   `• **Window Profiles:** High-grade UPVC and Slimline Italian Aluminum profiles with multi-point locking hardware.\n` +
+                   `• **Custom Processing:** CNC shape cutting, hole drilling, cutout processing, UV glass printing, and sandblasting.\n\n` +
+                   `💡 **Next Steps:** Scroll down to our **Live Configurator** to specify your project dimensions and generate a full itemized quote!`;
+        }
+
+        function toggleAiVoiceInput() {
+            const micBtn = document.getElementById('aiMicBtn');
+            const input = document.getElementById('aiChatInput');
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (!SpeechRecognition) {
+                alert("Voice recognition is not supported in this browser. Please type your query.");
+                return;
+            }
+
+            if (isAiVoiceListening && aiSpeechRecognizer) {
+                aiSpeechRecognizer.stop();
+                isAiVoiceListening = false;
+                if (micBtn) micBtn.innerHTML = `<i class="fa-solid fa-microphone text-sm"></i>`;
+                return;
+            }
+
+            aiSpeechRecognizer = new SpeechRecognition();
+            aiSpeechRecognizer.continuous = false;
+            aiSpeechRecognizer.interimResults = false;
+            aiSpeechRecognizer.lang = 'en-US';
+
+            aiSpeechRecognizer.onstart = function() {
+                isAiVoiceListening = true;
+                if (micBtn) micBtn.innerHTML = `<i class="fa-solid fa-microphone text-sm text-red-500 animate-ping"></i>`;
+                if (input) input.placeholder = "Listening... Speak now...";
+            };
+
+            aiSpeechRecognizer.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                if (input) {
+                    input.value = transcript;
+                    sendAiMessage(transcript);
+                }
+            };
+
+            aiSpeechRecognizer.onerror = function(event) {
+                console.error("Speech recognition error:", event.error);
+                isAiVoiceListening = false;
+                if (micBtn) micBtn.innerHTML = `<i class="fa-solid fa-microphone text-sm"></i>`;
+                if (input) input.placeholder = "Ask Ajanta AI about glass & windows...";
+            };
+
+            aiSpeechRecognizer.onend = function() {
+                isAiVoiceListening = false;
+                if (micBtn) micBtn.innerHTML = `<i class="fa-solid fa-microphone text-sm"></i>`;
+                if (input) input.placeholder = "Ask Ajanta AI about glass & windows...";
+            };
+
+            aiSpeechRecognizer.start();
+        }
+
+        function clearAiChatHistory() {
+            const chatContainer = document.getElementById('aiChatMessages');
+            if (!chatContainer) return;
+            chatContainer.innerHTML = `
+                <div class="flex gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-[#00B8D9]/10 border border-[#00B8D9]/30 flex items-center justify-center shrink-0 text-[#00B8D9] mt-0.5">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                    </div>
+                    <div class="flex-1 bg-slate-900/80 border border-slate-800 rounded-2xl rounded-tl-none p-3.5 text-slate-200 leading-relaxed space-y-2">
+                        <p class="font-bold text-white text-xs">Chat History Cleared ✨</p>
+                        <p>How else can Ajanta AI assist you with your architectural glass and window project today?</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function scrollToConfiguratorFromAi() {
+            const drawer = document.getElementById('aiChatDrawer');
+            if (drawer && window.innerWidth < 640) {
+                toggleAiChatDrawer();
+            }
+            const configurator = document.getElementById('configurator');
+            if (configurator) {
+                configurator.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
     </script>
+
+    <!-- FLOATING ASK AI CONSULTANT FAB -->
+    <button id="aiChatFab" onclick="toggleAiChatDrawer()" class="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-50 flex items-center gap-2.5 bg-slate-900/90 hover:bg-slate-800 text-white border border-[#00B8D9]/40 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full shadow-[0_8px_32px_rgba(0,184,217,0.3)] transition-all duration-300 hover:scale-105 active:scale-95 group select-none cursor-pointer">
+        <div class="relative flex items-center justify-center">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00B8D9] opacity-75"></span>
+            <i class="fa-solid fa-wand-magic-sparkles text-[#00B8D9] text-xs sm:text-sm relative z-10"></i>
+        </div>
+        <span class="tracking-wider uppercase font-syne font-bold text-[10px] sm:text-xs bg-gradient-to-r from-white via-cyan-100 to-[#00B8D9] bg-clip-text text-transparent">Ask Ajanta AI</span>
+        <span class="bg-[#00B8D9]/20 text-[#00B8D9] text-[9px] font-bold px-2 py-0.5 rounded-full border border-[#00B8D9]/30 hidden xs:inline">Gemini 3.5</span>
+    </button>
 
     <!-- FLOATING MAPS DIRECT DIRECTIONS FAB (Sticky Location Control) -->
     <a href="https://maps.app.goo.gl/1BENSd4XH3TQqmTw6" target="_blank" class="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-850 hover:from-indigo-500 hover:to-indigo-600 text-white text-[10px] sm:text-xs font-bold px-3.5 py-2.5 sm:px-5 sm:py-4 rounded-full shadow-[0_8px_32px_rgba(99,102,241,0.4)] border border-indigo-400/30 transition-all duration-350 hover:scale-105 active:scale-95 group select-none max-w-[calc(100vw-24px)]">
@@ -2404,5 +2747,122 @@
         <i class="fa-solid fa-map-location-dot text-indigo-200 group-hover:text-white transition-colors duration-300 shrink-0"></i>
         <span class="tracking-wider sm:tracking-widest uppercase font-syne font-black text-[9px] sm:text-[10px] truncate">Shop Direction</span>
     </a>
+
+    <!-- AI GLASS & WINDOW CONSULTANT DRAWER / MODAL -->
+    <div id="aiChatDrawer" class="fixed inset-y-0 right-0 z-50 w-full sm:w-[440px] bg-slate-950/95 backdrop-blur-2xl border-l border-cyan-500/20 shadow-2xl flex flex-col transition-transform duration-300 translate-x-full hidden">
+        <!-- Drawer Header -->
+        <div class="p-4 sm:p-5 border-b border-slate-800/80 bg-slate-900/60 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="relative shrink-0">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#00B8D9] via-indigo-600 to-cyan-400 p-0.5 shadow-lg shadow-cyan-500/20">
+                        <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+                            <i class="fa-solid fa-wand-magic-sparkles text-[#00B8D9] text-base"></i>
+                        </div>
+                    </div>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-slate-950 rounded-full animate-pulse"></span>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-syne font-black text-sm text-white tracking-wide truncate">Ajanta AI Consultant</h3>
+                        <span class="text-[8px] uppercase tracking-widest font-extrabold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/30">Gemini 3.5</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 truncate">24/7 Architectural Glass & Window Systems Specialist</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+                <button onclick="toggleAiKeySettings()" class="w-8 h-8 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition text-xs cursor-pointer" title="API Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+                <button onclick="toggleAiChatDrawer()" class="w-8 h-8 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition text-xs cursor-pointer">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- API Key Settings Panel (Collapsible) -->
+        <div id="aiKeySettingsPanel" class="hidden p-3 bg-slate-900/90 border-b border-slate-800 text-xs transition-all">
+            <div class="flex items-center justify-between mb-1.5">
+                <label class="text-[10px] uppercase font-bold text-slate-300 tracking-wider">Gemini API Key (Optional)</label>
+                <span class="text-[9px] text-cyan-400 font-medium">Auto-configured</span>
+            </div>
+            <div class="flex gap-2">
+                <input type="password" id="geminiApiKeyInput" placeholder="Enter custom Gemini API key..." class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#00B8D9]">
+                <button onclick="saveGeminiApiKey()" class="bg-[#00B8D9] hover:bg-cyan-500 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs transition cursor-pointer">Save</button>
+            </div>
+            <p class="text-[9px] text-slate-400 mt-1">Leave blank to use default integrated Gemini AI.</p>
+        </div>
+
+        <!-- Quick Topic Chips -->
+        <div class="p-3 bg-slate-950/60 border-b border-slate-900 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 text-[10px]">
+            <button onclick="sendQuickAiQuery('Toughened vs Laminated glass difference?')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <i class="fa-solid fa-shield-halved text-cyan-400"></i> Toughened vs Laminated
+            </button>
+            <button onclick="sendQuickAiQuery('What glass is best for acoustic soundproofing?')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <i class="fa-solid fa-volume-xmark text-cyan-400"></i> Soundproofing
+            </button>
+            <button onclick="sendQuickAiQuery('Recommended glass thickness for shower cubicle?')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <i class="fa-solid fa-shower text-cyan-400"></i> Shower Cubicle
+            </button>
+            <button onclick="sendQuickAiQuery('Suggest UPVC or Slimline Aluminum sliding windows for home')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <i class="fa-solid fa-window-maximize text-cyan-400"></i> Windows
+            </button>
+            <button onclick="sendQuickAiQuery('Glass specification for balcony railing')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+                <i class="fa-solid fa-grip-lines-vertical text-cyan-400"></i> Railings
+            </button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="aiChatMessages" class="flex-1 p-4 overflow-y-auto space-y-4 font-sans text-xs">
+            <!-- Welcome Bot Message -->
+            <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-xl bg-[#00B8D9]/10 border border-[#00B8D9]/30 flex items-center justify-center shrink-0 text-[#00B8D9] mt-0.5">
+                    <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                </div>
+                <div class="flex-1 bg-slate-900/80 border border-slate-800 rounded-2xl rounded-tl-none p-3.5 text-slate-200 leading-relaxed space-y-2">
+                    <p class="font-bold text-white text-xs">Hello! Welcome to Ajanta AI Consultant 👋</p>
+                    <p>I am your 24/7 AI Specialist powered by Gemini. I can assist you with selecting glass thickness, acoustic soundproofing, thermal insulation, UPVC/aluminum window profiles, shower partitions, or structural glazing for your home or project.</p>
+                    <div class="pt-2 border-t border-slate-800/80 text-[10px] text-slate-400 flex flex-wrap gap-1.5">
+                        <span class="font-bold text-cyan-400">Popular queries:</span>
+                        <span class="underline cursor-pointer hover:text-white" onclick="sendQuickAiQuery('Which glass thickness is suitable for a 6ft x 4ft window?')">"Glass for 6ft x 4ft window?"</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div id="aiTypingIndicator" class="hidden px-4 py-2 flex items-center gap-2 text-slate-400 text-[11px] bg-slate-950/80">
+            <div class="flex items-center gap-1">
+                <span class="w-1.5 h-1.5 bg-[#00B8D9] rounded-full animate-bounce" style="animation-delay: 0s"></span>
+                <span class="w-1.5 h-1.5 bg-[#00B8D9] rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                <span class="w-1.5 h-1.5 bg-[#00B8D9] rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+            </div>
+            <span class="italic text-[10px] font-medium text-cyan-400">Ajanta AI is analyzing specifications...</span>
+        </div>
+
+        <!-- Chat Input Bar -->
+        <div class="p-3 sm:p-4 bg-slate-900/80 border-t border-slate-800 shrink-0">
+            <form onsubmit="handleAiFormSubmit(event)" class="flex items-center gap-2">
+                <button type="button" id="aiMicBtn" onclick="toggleAiVoiceInput()" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition shrink-0 cursor-pointer" title="Voice Input">
+                    <i class="fa-solid fa-microphone text-sm"></i>
+                </button>
+                <div class="relative flex-1">
+                    <input type="text" id="aiChatInput" placeholder="Ask Ajanta AI about glass & windows..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-3.5 pr-8 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#00B8D9] transition">
+                    <button type="button" onclick="clearAiChatHistory()" class="absolute right-2.5 top-2.5 text-slate-500 hover:text-slate-300 text-xs cursor-pointer" title="Clear Chat">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+                <button type="submit" id="aiSendBtn" class="w-10 h-10 rounded-xl bg-gradient-to-r from-cyan-600 to-[#00B8D9] hover:from-[#00B8D9] hover:to-cyan-400 text-slate-950 font-bold flex items-center justify-center transition shadow-lg shadow-cyan-500/20 shrink-0 cursor-pointer">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+            </form>
+            <div class="flex items-center justify-between mt-2 px-1 text-[9px] text-slate-500">
+                <span>Powered by Gemini AI • Est. 1976</span>
+                <button onclick="scrollToConfiguratorFromAi()" class="text-[#00B8D9] hover:underline font-bold flex items-center gap-1 cursor-pointer">
+                    <span>Open Configurator</span> <i class="fa-solid fa-arrow-right text-[8px]"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
