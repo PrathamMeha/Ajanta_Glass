@@ -64,6 +64,50 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #00B8D9;
         }
+
+        /* Hide scrollbar utility for quick chips */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* AI Consultant Glow & Animations */
+        @keyframes aiPulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(0, 184, 217, 0.35), 0 0 30px rgba(0, 184, 217, 0.15);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(0, 184, 217, 0.6), 0 0 50px rgba(0, 184, 217, 0.3);
+            }
+        }
+        .ai-fab-glow {
+            animation: aiPulseGlow 3s infinite ease-in-out;
+        }
+
+        .ai-drawer-shadow {
+            box-shadow: -10px 0 40px rgba(0, 184, 217, 0.15), -20px 0 60px rgba(0, 0, 0, 0.8);
+        }
+        /* AI Modal Curved Borderless & Opening Animation */
+        .ai-modal-container {
+            border-radius: 28px !important;
+            border: none !important;
+            box-shadow: 0 25px 60px -15px rgba(0, 184, 217, 0.4), 0 15px 35px -10px rgba(0, 0, 0, 0.9) !important;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+        }
+
+        .ai-modal-enter {
+            opacity: 0 !important;
+            transform: scale(0.88) translateY(25px) !important;
+        }
+
+        .ai-modal-active {
+            opacity: 1 !important;
+            transform: scale(1) translateY(0) !important;
+        }
+
         /* Glassmorphism helpers */
         .glass-panel {
             background: rgba(15, 23, 42, 0.45);
@@ -155,14 +199,14 @@
                 <a href="#showroom" class="hover:text-white transition duration-200 uppercase">Showroom</a>
                 <a href="#configurator" class="hover:text-white transition duration-200 uppercase">Configurator</a>
                 <button onclick="toggleAiChatDrawer()" class="hover:text-[#00B8D9] transition duration-200 uppercase flex items-center gap-1.5 text-[#00B8D9] font-extrabold cursor-pointer">
-                    <i class="fa-solid fa-wand-magic-sparkles text-xs animate-pulse"></i> AI Consultant
+                    <i class="fa-solid fa-wand-magic-sparkles text-xs animate-pulse"></i> AI
                 </button>
             </div>
 
             <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                <button onclick="toggleAiChatDrawer()" class="bg-[#00B8D9]/15 hover:bg-[#00B8D9]/25 text-[#00B8D9] px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-[#00B8D9]/30 flex items-center gap-1.5 transition text-[9px] sm:text-[10px] uppercase font-bold tracking-wider cursor-pointer" title="AI Glass Consultant">
+                <button onclick="toggleAiChatDrawer()" class="bg-[#00B8D9]/15 hover:bg-[#00B8D9]/25 text-[#00B8D9] px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-[#00B8D9]/30 flex items-center gap-1.5 transition text-[9px] sm:text-[10px] uppercase font-bold tracking-wider cursor-pointer" title="Ajanta AI">
                     <i class="fa-solid fa-wand-magic-sparkles text-[#00B8D9]"></i>
-                    <span class="hidden sm:inline">AI Consultant</span>
+                    <span class="hidden sm:inline">AI</span>
                 </button>
                 <button onclick="openAdminPortal()" class="bg-slate-900/85 hover:bg-slate-800 text-slate-300 hover:text-white px-2 py-1.5 sm:px-3.5 sm:py-2.5 rounded-xl border border-slate-800 flex items-center gap-1.5 transition text-[9px] sm:text-[10px] uppercase font-bold tracking-wider" title="Admin Panel">
                     <i class="fa-solid fa-shield-halved text-[#00B8D9]"></i>
@@ -2402,10 +2446,13 @@
         });
 
         /* ==========================================================================
-           AJANTA AI GLASS & WINDOW CONSULTANT (GEMINI INTEGRATION)
+           AJANTA AI GLASS & WINDOW SYSTEM (GEMINI INTEGRATION)
            ========================================================================== */
         let aiSpeechRecognizer = null;
         let isAiVoiceListening = false;
+        let isAiDragging = false;
+        let aiDragStartX = 0, aiDragStartY = 0;
+        let aiInitialLeft = 0, aiInitialTop = 0;
 
         function toggleAiChatDrawer() {
             const drawer = document.getElementById('aiChatDrawer');
@@ -2413,37 +2460,90 @@
             const isHidden = drawer.classList.contains('hidden');
             if (isHidden) {
                 drawer.classList.remove('hidden');
-                setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
-                const savedKey = localStorage.getItem('gemini_api_key');
-                if (savedKey) {
-                    const keyInput = document.getElementById('geminiApiKeyInput');
-                    if (keyInput) keyInput.value = savedKey;
-                }
+                drawer.classList.add('ai-modal-enter');
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        drawer.classList.add('ai-modal-active');
+                    });
+                });
+                initAiDragEvents();
                 const chatInput = document.getElementById('aiChatInput');
                 if (chatInput) chatInput.focus();
             } else {
-                drawer.classList.add('translate-x-full');
-                setTimeout(() => drawer.classList.add('hidden'), 300);
+                drawer.classList.remove('ai-modal-active');
+                setTimeout(() => {
+                    drawer.classList.add('hidden');
+                    drawer.classList.remove('ai-modal-enter');
+                }, 300);
             }
         }
 
-        function toggleAiKeySettings() {
-            const panel = document.getElementById('aiKeySettingsPanel');
-            if (panel) panel.classList.toggle('hidden');
-        }
+        function initAiDragEvents() {
+            const drawer = document.getElementById('aiChatDrawer');
+            const handle = document.getElementById('aiHeaderDragHandle') || drawer;
+            if (!handle || handle.dataset.dragInited) return;
+            handle.dataset.dragInited = 'true';
 
-        function saveGeminiApiKey() {
-            const keyInput = document.getElementById('geminiApiKeyInput');
-            if (!keyInput) return;
-            const key = keyInput.value.trim();
-            if (key) {
-                localStorage.setItem('gemini_api_key', key);
-                alert("Gemini API Key saved successfully!");
-            } else {
-                localStorage.removeItem('gemini_api_key');
-                alert("Custom API key removed. Integrated Gemini AI active.");
+            function startDrag(e) {
+                // Don't trigger drag when clicking close button, inputs, or interactive controls
+                if (e.target.closest('button, input, a, form')) return;
+
+                isAiDragging = true;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                const rect = drawer.getBoundingClientRect();
+                
+                // Unset fixed right/bottom offsets once dragging starts
+                drawer.style.right = 'auto';
+                drawer.style.bottom = 'auto';
+                drawer.style.left = rect.left + 'px';
+                drawer.style.top = rect.top + 'px';
+
+                aiDragStartX = clientX;
+                aiDragStartY = clientY;
+                aiInitialLeft = rect.left;
+                aiInitialTop = rect.top;
+
+                document.addEventListener('mousemove', moveDrag);
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchmove', moveDrag, { passive: false });
+                document.addEventListener('touchend', stopDrag);
             }
-            toggleAiKeySettings();
+
+            function moveDrag(e) {
+                if (!isAiDragging) return;
+                if (e.cancelable) e.preventDefault();
+
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                const deltaX = clientX - aiDragStartX;
+                const deltaY = clientY - aiDragStartY;
+
+                let newLeft = aiInitialLeft + deltaX;
+                let newTop = aiInitialTop + deltaY;
+
+                const maxLeft = window.innerWidth - drawer.offsetWidth;
+                const maxTop = window.innerHeight - drawer.offsetHeight;
+
+                newLeft = Math.max(5, Math.min(newLeft, maxLeft - 5));
+                newTop = Math.max(5, Math.min(newTop, maxTop - 5));
+
+                drawer.style.left = newLeft + 'px';
+                drawer.style.top = newTop + 'px';
+            }
+
+            function stopDrag() {
+                isAiDragging = false;
+                document.removeEventListener('mousemove', moveDrag);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('touchmove', moveDrag);
+                document.removeEventListener('touchend', stopDrag);
+            }
+
+            handle.addEventListener('mousedown', startDrag);
+            handle.addEventListener('touchstart', startDrag, { passive: false });
         }
 
         function sendQuickAiQuery(queryText) {
@@ -2729,13 +2829,12 @@
     </script>
 
     <!-- FLOATING ASK AI CONSULTANT FAB -->
-    <button id="aiChatFab" onclick="toggleAiChatDrawer()" class="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-50 flex items-center gap-2.5 bg-slate-900/90 hover:bg-slate-800 text-white border border-[#00B8D9]/40 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full shadow-[0_8px_32px_rgba(0,184,217,0.3)] transition-all duration-300 hover:scale-105 active:scale-95 group select-none cursor-pointer">
+    <button id="aiChatFab" onclick="toggleAiChatDrawer()" class="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-50 flex items-center gap-2.5 bg-slate-900/90 hover:bg-slate-800 text-white border border-[#00B8D9]/40 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full ai-fab-glow transition-all duration-300 hover:scale-105 active:scale-95 group select-none cursor-pointer">
         <div class="relative flex items-center justify-center">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00B8D9] opacity-75"></span>
             <i class="fa-solid fa-wand-magic-sparkles text-[#00B8D9] text-xs sm:text-sm relative z-10"></i>
         </div>
         <span class="tracking-wider uppercase font-syne font-bold text-[10px] sm:text-xs bg-gradient-to-r from-white via-cyan-100 to-[#00B8D9] bg-clip-text text-transparent">Ask Ajanta AI</span>
-        <span class="bg-[#00B8D9]/20 text-[#00B8D9] text-[9px] font-bold px-2 py-0.5 rounded-full border border-[#00B8D9]/30 hidden xs:inline">Gemini 3.5</span>
     </button>
 
     <!-- FLOATING MAPS DIRECT DIRECTIONS FAB (Sticky Location Control) -->
@@ -2748,52 +2847,42 @@
         <span class="tracking-wider sm:tracking-widest uppercase font-syne font-black text-[9px] sm:text-[10px] truncate">Shop Direction</span>
     </a>
 
-    <!-- AI GLASS & WINDOW CONSULTANT DRAWER / MODAL -->
-    <div id="aiChatDrawer" class="fixed inset-y-0 right-0 z-50 w-full sm:w-[440px] bg-slate-950/95 backdrop-blur-2xl border-l border-cyan-500/20 shadow-2xl flex flex-col transition-transform duration-300 translate-x-full hidden">
-        <!-- Drawer Header -->
-        <div class="p-4 sm:p-5 border-b border-slate-800/80 bg-slate-900/60 flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="relative shrink-0">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#00B8D9] via-indigo-600 to-cyan-400 p-0.5 shadow-lg shadow-cyan-500/20">
-                        <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                            <i class="fa-solid fa-wand-magic-sparkles text-[#00B8D9] text-base"></i>
-                        </div>
-                    </div>
-                    <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-slate-950 rounded-full animate-pulse"></span>
-                </div>
-                <div class="min-w-0">
-                    <div class="flex items-center gap-2">
-                        <h3 class="font-syne font-black text-sm text-white tracking-wide truncate">Ajanta AI Consultant</h3>
-                        <span class="text-[8px] uppercase tracking-widest font-extrabold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/30">Gemini 3.5</span>
-                    </div>
-                    <p class="text-[10px] text-slate-400 truncate">24/7 Architectural Glass & Window Systems Specialist</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-                <button onclick="toggleAiKeySettings()" class="w-8 h-8 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition text-xs cursor-pointer" title="API Settings">
-                    <i class="fa-solid fa-gear"></i>
-                </button>
-                <button onclick="toggleAiChatDrawer()" class="w-8 h-8 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition text-xs cursor-pointer">
+    <!-- AI GLASS & WINDOW MODAL -->
+    <div id="aiChatDrawer" class="fixed bottom-4 right-3 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-24px)] sm:w-[440px] max-h-[88vh] bg-slate-950/95 backdrop-blur-2xl ai-modal-container flex flex-col hidden">
+        <!-- Draggable Drawer Header -->
+        <div id="aiHeaderDragHandle" class="p-3.5 sm:p-4 bg-slate-900/90 flex items-center justify-between shrink-0 cursor-grab active:cursor-grabbing select-none rounded-t-[28px] border-b border-slate-800/80">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <!-- Small Close Button 'X' on the LEFT where it opens -->
+                <button onclick="toggleAiChatDrawer()" class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition text-xs shrink-0 cursor-pointer border border-white/10 shadow mr-0.5" title="Close">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
-            </div>
-        </div>
 
-        <!-- API Key Settings Panel (Collapsible) -->
-        <div id="aiKeySettingsPanel" class="hidden p-3 bg-slate-900/90 border-b border-slate-800 text-xs transition-all">
-            <div class="flex items-center justify-between mb-1.5">
-                <label class="text-[10px] uppercase font-bold text-slate-300 tracking-wider">Gemini API Key (Optional)</label>
-                <span class="text-[9px] text-cyan-400 font-medium">Auto-configured</span>
+                <div class="relative shrink-0">
+                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#00B8D9] via-indigo-600 to-cyan-400 p-0.5 shadow-lg shadow-cyan-500/20">
+                        <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+                            <i class="fa-solid fa-wand-magic-sparkles text-[#00B8D9] text-sm"></i>
+                        </div>
+                    </div>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-slate-950 rounded-full animate-pulse"></span>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <h3 class="font-syne font-black text-sm text-white tracking-wide truncate">Ajanta AI</h3>
+                    </div>
+                    <p class="text-[9px] text-slate-400 truncate">24/7 Architectural Glass & Window Specialist</p>
+                </div>
             </div>
-            <div class="flex gap-2">
-                <input type="password" id="geminiApiKeyInput" placeholder="Enter custom Gemini API key..." class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#00B8D9]">
-                <button onclick="saveGeminiApiKey()" class="bg-[#00B8D9] hover:bg-cyan-500 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs transition cursor-pointer">Save</button>
+
+            <div class="flex items-center gap-1 shrink-0">
+                <div class="flex items-center gap-1 text-slate-400 text-xs px-2.5 py-1.5 rounded-xl bg-slate-800/60 border border-slate-700/50" title="Click and drag to move window">
+                    <i class="fa-solid fa-grip-vertical text-cyan-400 text-xs"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-wider hidden xs:inline">Drag</span>
+                </div>
             </div>
-            <p class="text-[9px] text-slate-400 mt-1">Leave blank to use default integrated Gemini AI.</p>
         </div>
 
         <!-- Quick Topic Chips -->
-        <div class="p-3 bg-slate-950/60 border-b border-slate-900 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 text-[10px]">
+        <div class="p-2.5 bg-slate-950/60 border-b border-slate-900 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 text-[10px]">
             <button onclick="sendQuickAiQuery('Toughened vs Laminated glass difference?')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
                 <i class="fa-solid fa-shield-halved text-cyan-400"></i> Toughened vs Laminated
             </button>
@@ -2812,15 +2901,15 @@
         </div>
 
         <!-- Messages Area -->
-        <div id="aiChatMessages" class="flex-1 p-4 overflow-y-auto space-y-4 font-sans text-xs">
+        <div id="aiChatMessages" class="flex-1 p-3.5 sm:p-4 overflow-y-auto space-y-3.5 font-sans text-xs">
             <!-- Welcome Bot Message -->
             <div class="flex gap-3">
                 <div class="w-8 h-8 rounded-xl bg-[#00B8D9]/10 border border-[#00B8D9]/30 flex items-center justify-center shrink-0 text-[#00B8D9] mt-0.5">
                     <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
                 </div>
                 <div class="flex-1 bg-slate-900/80 border border-slate-800 rounded-2xl rounded-tl-none p-3.5 text-slate-200 leading-relaxed space-y-2">
-                    <p class="font-bold text-white text-xs">Hello! Welcome to Ajanta AI Consultant 👋</p>
-                    <p>I am your 24/7 AI Specialist powered by Gemini. I can assist you with selecting glass thickness, acoustic soundproofing, thermal insulation, UPVC/aluminum window profiles, shower partitions, or structural glazing for your home or project.</p>
+                    <p class="font-bold text-white text-xs">Hello! Welcome to Ajanta AI 👋</p>
+                    <p>I am your 24/7 AI Specialist. I can assist you with selecting glass thickness, acoustic soundproofing, thermal insulation, UPVC/aluminum window profiles, shower partitions, or structural glazing for your home or project.</p>
                     <div class="pt-2 border-t border-slate-800/80 text-[10px] text-slate-400 flex flex-wrap gap-1.5">
                         <span class="font-bold text-cyan-400">Popular queries:</span>
                         <span class="underline cursor-pointer hover:text-white" onclick="sendQuickAiQuery('Which glass thickness is suitable for a 6ft x 4ft window?')">"Glass for 6ft x 4ft window?"</span>
@@ -2840,7 +2929,7 @@
         </div>
 
         <!-- Chat Input Bar -->
-        <div class="p-3 sm:p-4 bg-slate-900/80 border-t border-slate-800 shrink-0">
+        <div class="p-3 sm:p-4 bg-slate-900/80 border-t border-slate-800 shrink-0 rounded-b-[28px]">
             <form onsubmit="handleAiFormSubmit(event)" class="flex items-center gap-2">
                 <button type="button" id="aiMicBtn" onclick="toggleAiVoiceInput()" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition shrink-0 cursor-pointer" title="Voice Input">
                     <i class="fa-solid fa-microphone text-sm"></i>
@@ -2856,7 +2945,7 @@
                 </button>
             </form>
             <div class="flex items-center justify-between mt-2 px-1 text-[9px] text-slate-500">
-                <span>Powered by Gemini AI • Est. 1976</span>
+                <span>Ajanta Door & Window Systems • Est. 1976</span>
                 <button onclick="scrollToConfiguratorFromAi()" class="text-[#00B8D9] hover:underline font-bold flex items-center gap-1 cursor-pointer">
                     <span>Open Configurator</span> <i class="fa-solid fa-arrow-right text-[8px]"></i>
                 </button>
