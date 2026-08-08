@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AJANTA — Premium Architectural Glass & Window Systems</title>
+    <title>Ajanta Door & Window System</title>
+    <meta name="description" content="Ajanta Door & Window System — Lead Architectural Glass & Window Systems Specialists since 1976. Premium Toughened Glass, DGU Double Glazing, UPVC & Aluminum Windows.">
+    <!-- Favicon / Logo -->
+    <link rel="icon" type="image/webp" href="img_logo.webp">
+    <link rel="shortcut icon" type="image/webp" href="img_logo.webp">
+    <link rel="apple-touch-icon" href="img_logo.webp">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
@@ -187,7 +192,7 @@
                     </div>
                 </div>
                 <div class="min-w-0">
-                    <span class="font-syne font-extrabold tracking-wider text-xs sm:text-base bg-gradient-to-r from-white via-cyan-100 to-slate-300 bg-clip-text text-transparent block truncate">AJANTA</span>
+                    <span class="font-syne font-extrabold tracking-wider text-xs sm:text-base bg-gradient-to-r from-white via-cyan-100 to-slate-300 bg-clip-text text-transparent block truncate">AJANTA DOOR & WINDOW SYSTEM</span>
                     <span class="text-[8px] sm:text-[9px] font-bold text-[#00B8D9] hidden xs:block -mt-1 tracking-widest uppercase font-display truncate">Est. 1976 • 50 Years</span>
                 </div>
             </div>
@@ -2732,8 +2737,7 @@
                 return "**Window System & Frame Selection Guide:**\n\n" +
                        "• **Slimline Aluminum Windows:** Modern ultra-thin sightlines, high structural strength for large floor-to-ceiling sliding glass panels (up to 12ft height).\n" +
                        "• **UPVC Windows:** Superior thermal insulation, zero rust/corrosion, multi-chamber design for extreme noise block.\n" +
-                       "• **Glass Pairing:** 6mm Toughened for small/medium windows; 10mm–12mm Toughened or DGU for large span balcony windows.\n\n" +
-                       "💡 You can configure your exact window dimensions, glass type, and profile colors in our **Ajanta Live Configurator**!";
+                       "• **Glass Pairing:** 6mm Toughened for small/medium windows; 10mm–12mm Toughened or DGU for large span balcony windows.";
             }
 
             if (query.includes('railing') || query.includes('balcony') || query.includes('stair')) {
@@ -2755,11 +2759,11 @@
             }
 
             return `**Ajanta Architectural Glass & Window Systems Advice:**\n\n` +
-                   `Hello! I am **Ajanta AI**. Regarding your request **"${escapeHtml(prompt)}"**:\n\n` +
+                   `Regarding **"${escapeHtml(prompt)}"**:\n\n` +
                    `• **Glass Selection:** We supply 5mm to 19mm Toughened Safety Glass, DGU Double Glazed Units, Laminated Safety Glass, and Frosted/Tinted decorative options.\n` +
                    `• **Window Profiles:** High-grade UPVC and Slimline Italian Aluminum profiles with multi-point locking hardware.\n` +
                    `• **Custom Processing:** CNC shape cutting, hole drilling, cutout processing, UV glass printing, and sandblasting.\n\n` +
-                   `💡 **Next Steps:** Scroll down to our **Live Configurator** to specify your project dimensions and generate a full itemized quote!`;
+                   `Please let me know if you need specific details on glass thickness, soundproofing, or window profiles!`;
         }
 
         function toggleAiVoiceInput() {
