@@ -523,7 +523,7 @@ async function sendAiMessage(promptText) {
 }
 
 async function fetchGeminiResponse(promptText) {
-    const customApiKey = localStorage.getItem('gemini_api_key') || (typeof window !== 'undefined' ? window.GEMINI_API_KEY : '');
+    const customApiKey = localStorage.getItem('gemini_api_key') || (typeof window !== 'undefined' ? window.GEMINI_API_KEY : '') || 'AIzaSyDnxi96c4s7UpzCWOrIlkyD8qjeDQNfrM8';
     
     // System instruction prompt
     const systemInstruction = "Your name is Ajanta AI — Lead Architectural Glass & Window Systems Consultant for Ajanta Door & Window Systems (Est. 1976, Sirsa, Haryana, India).\n" +
@@ -535,7 +535,7 @@ async function fetchGeminiResponse(promptText) {
         "- Keep responses clean, concise, and formatted with bullet points and bold headers.";
 
     if (customApiKey && customApiKey.trim().length > 10) {
-        const models = ['gemini-2.5-flash', 'gemini-1.5-flash'];
+        const models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
         for (const model of models) {
             try {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(customApiKey.trim())}`;
@@ -592,7 +592,15 @@ function escapeHtml(str) {
 }
 
 function getGlazingIntelligenceFallback(prompt) {
-    const query = prompt.toLowerCase();
+    const query = prompt.toLowerCase().trim();
+
+    if (query.includes('who are you') || query.includes('who is this') || query.includes('what is your name') || query.includes('who created you') || query === 'who are u' || query === 'who u' || query.includes('tum kaun ho') || query.includes('aap kaun ho') || query.includes('kaun ho')) {
+        return "I am **Ajanta AI** — your friendly Architectural Glass & Window Systems consultant from Ajanta Door & Window Systems (Est. 1976, Sirsa, Haryana). How can I assist you with your project today?";
+    }
+
+    if (query === 'hi' || query === 'hello' || query === 'hey' || query.includes('namaste') || query.includes('kaise ho') || query.includes('kaisa hai')) {
+        return "Hello! I am **Ajanta AI**. Welcome to Ajanta Door & Window Systems! 👋\n\nHow can I help you today? You can ask me about glass thickness recommendations, soundproofing (DGU glass), UPVC/aluminum window profiles, shower partitions, or pricing!";
+    }
 
     if (query.includes('toughened') && query.includes('laminated')) {
         return "**Toughened Glass vs Laminated Glass Comparison:**\n\n" +
@@ -623,8 +631,7 @@ function getGlazingIntelligenceFallback(prompt) {
         return "**Window System & Frame Selection Guide:**\n\n" +
                "• **Slimline Aluminum Windows:** Modern ultra-thin sightlines, high structural strength for large floor-to-ceiling sliding glass panels (up to 12ft height).\n" +
                "• **UPVC Windows:** Superior thermal insulation, zero rust/corrosion, multi-chamber design for extreme noise block.\n" +
-               "• **Glass Pairing:** 6mm Toughened for small/medium windows; 10mm–12mm Toughened or DGU for large span balcony windows.\n\n" +
-               "💡 You can configure your exact window dimensions, glass type, and profile colors in our **Ajanta Live Configurator**!";
+               "• **Glass Pairing:** 6mm Toughened for small/medium windows; 10mm–12mm Toughened or DGU for large span balcony windows.";
     }
 
     if (query.includes('railing') || query.includes('balcony') || query.includes('stair')) {
@@ -646,11 +653,11 @@ function getGlazingIntelligenceFallback(prompt) {
     }
 
     return `**Ajanta Architectural Glass & Window Systems Advice:**\n\n` +
-           `For **${escapeHtml(prompt)}**, here are key architectural recommendations:\n\n` +
+           `Regarding **"${escapeHtml(prompt)}"**:\n\n` +
            `• **Glass Selection:** We supply 5mm to 19mm Toughened Safety Glass, DGU Double Glazed Units, Laminated Safety Glass, and Frosted/Tinted decorative options.\n` +
            `• **Window Profiles:** High-grade UPVC and Slimline Italian Aluminum profiles with multi-point locking hardware.\n` +
            `• **Custom Processing:** CNC shape cutting, hole drilling, cutout processing, UV glass printing, and sandblasting.\n\n` +
-           `💡 **Next Steps:** Scroll down to our **Live Configurator** to specify your project dimensions and generate a full itemized quote!`;
+           `Please let me know if you need specific details on glass thickness, soundproofing, or window profiles!`;
 }
 
 function toggleAiVoiceInput() {
