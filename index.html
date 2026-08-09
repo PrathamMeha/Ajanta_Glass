@@ -53,17 +53,7 @@
     </div>    <!-- HEADER / NAVIGATION (Tesla style floating menu) -->
     <header class="fixed top-2 sm:top-4 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-5xl">
         <nav class="glass-panel rounded-2xl px-3 py-2 sm:px-6 sm:py-3 flex items-center justify-between shadow-2xl">
-            <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
-                <!-- SVG Brand Logo -->
-                <div class="flex items-center shrink-0">
-                    <img src="img_logo.svg" alt="Ajanta Door &amp; Window System Logo" class="h-10 sm:h-12 w-10 sm:w-12 object-contain bg-black p-0.5 rounded-xl border border-white/10 shrink-0">
-
-                </div>
-                <div class="min-w-0">
-                    <span class="font-syne font-extrabold tracking-wider text-xs sm:text-base bg-gradient-to-r from-white via-cyan-100 to-slate-300 bg-clip-text text-transparent block truncate">AJANTA DOOR & WINDOW SYSTEM</span>
-                    <span class="text-[8px] sm:text-[9px] font-bold text-[#00B8D9] hidden xs:block -mt-1 tracking-widest uppercase font-display truncate">Est. 1976 • 50 Years</span>
-                </div>
-            </div>
+            <a href="#hero" class="flex items-center shrink-0 cursor-pointer" title="Ajanta Door & Window System">                <img src="img_logo.svg" alt="Ajanta Door &amp; Window System Logo" class="h-10 sm:h-12 w-10 sm:w-12 object-contain bg-black p-0.5 rounded-xl border border-white/10 shrink-0 hover:scale-105 transition">            </a>
             
             <div class="hidden md:flex items-center space-x-8 text-xs font-bold tracking-wider text-slate-400">
                 <a href="#hero" class="hover:text-white transition duration-200 uppercase">Home</a>
@@ -71,9 +61,6 @@
                 <a href="#products" class="hover:text-white transition duration-200 uppercase">Products</a>
                 <a href="#showroom" class="hover:text-white transition duration-200 uppercase">Showroom</a>
                 <a href="#configurator" class="hover:text-white transition duration-200 uppercase">Configurator</a>
-                <button onclick="toggleAiChatDrawer()" class="hover:text-[#00B8D9] transition duration-200 uppercase flex items-center gap-1.5 text-[#00B8D9] font-extrabold cursor-pointer">
-                    <i class="fa-solid fa-wand-magic-sparkles text-xs animate-pulse"></i> AI
-                </button>
             </div>
 
             <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
@@ -152,7 +139,7 @@
     </section>
 
     <!-- SECTION 2: LEGACY & TRUST STORY -->
-    <section id="legacy" class="py-24 max-w-5xl mx-auto px-6 z-10 relative">
+    <section id="legacy" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
             <div id="legacy-left" class="space-y-6">
                 <div class="text-xs font-bold text-[#00B8D9] uppercase tracking-widest font-display">Our Heritage</div>
@@ -202,7 +189,7 @@
     </section>
 
     <!-- SECTION 3: IMMERSIVE PRODUCT SHOWCASE -->
-    <section id="products" class="py-24 max-w-5xl mx-auto px-6 z-10 relative">
+    <section id="products" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
         <div class="text-center mb-16 space-y-3">
             <div class="text-xs font-bold text-[#00B8D9] uppercase tracking-widest font-display">Product Showcase</div>
             <h2 class="text-3xl md:text-5xl font-syne font-extrabold uppercase text-white">Architectural Collections</h2>
@@ -300,7 +287,7 @@
 
     <!-- SECTION 5: INFINITE TESTIMONIAL TICKER (Dynamic & Real-Time) -->
     <section class="py-24 overflow-hidden relative z-10 w-full bg-gradient-to-b from-slate-950/40 to-slate-950/80">
-        <div class="max-w-5xl mx-auto px-6 mb-12 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="text-center md:text-left">
                 <h2 class="text-2xl md:text-4xl font-syne font-extrabold uppercase text-white flex flex-wrap items-center justify-center md:justify-start gap-2">
                     <span>Verified Client Backing</span>
@@ -327,7 +314,7 @@
     </section>
 
     <!-- SECTION 6: WHY CHOOSE AJANTA CARD GRID -->
-    <section id="why-choose" class="py-24 max-w-5xl mx-auto px-6 z-10 relative">
+    <section id="why-choose" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
         <div class="text-center mb-16 space-y-3">
             <h2 class="text-3xl md:text-5xl font-syne font-extrabold uppercase text-white">Why Choose Ajanta Glass</h2>
             <p class="text-slate-400 text-xs md:text-sm max-w-md mx-auto font-light">With decades of proven structural craftsmanship, we have optimized layouts for total client satisfaction.</p>
@@ -374,7 +361,7 @@
     </section>
 
     <!-- SECTION 7: PLACE ORDER / SPEC CONFIGURATOR CENTER (THE HUB) -->
-    <section id="configurator" class="py-24 max-w-4xl mx-auto px-6 z-10 relative">
+    <section id="configurator" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
         <div id="configurator-card" class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden bg-slate-950/40">
             <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent pointer-events-none"></div>
             
@@ -603,20 +590,20 @@
     </section>
 
     <!-- SECTION 6.5: VISIT OUR SHOWROOM (GOOGLE MAPS ROUTING) -->
-    <section id="showroom" class="py-24 max-w-5xl mx-auto px-6 z-10 relative">
+    <section id="showroom" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
         <div class="glass-panel rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-indigo-500/20 shadow-2xl">
             <!-- Glow background decor -->
             <div class="absolute -right-24 -bottom-24 w-80 h-80 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none"></div>
             <div class="absolute -left-24 -top-24 w-80 h-80 rounded-full bg-emerald-650/5 blur-3xl pointer-events-none"></div>
             
-            <div class="grid md:grid-cols-2 gap-10 items-center">
-                <div id="showroom-left" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                <div id="showroom-left" class="lg:col-span-6 space-y-6 min-w-0">
                     <div class="inline-flex items-center space-x-2 bg-indigo-950/40 border border-indigo-500/20 rounded-full px-4 py-1.5 text-indigo-300">
                         <i class="fa-solid fa-map-location-dot text-indigo-400 text-xs animate-pulse"></i>
                         <span class="text-[10px] uppercase tracking-wider font-extrabold font-display">Showroom & Experience Center</span>
                     </div>
                     
-                    <h2 class="text-3xl md:text-5xl font-syne font-extrabold uppercase text-white leading-tight">
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-syne font-extrabold uppercase text-white leading-tight tracking-tight break-words">
                         Experience Premium <br class="hidden sm:block">
                         <span class="bg-gradient-to-r from-indigo-400 via-indigo-100 to-white bg-clip-text text-transparent">Glass Customization</span>
                     </h2>
@@ -672,7 +659,7 @@
     </section>
 
     <!-- FOOTER CENTER -->
-    <footer class="py-20 border-t border-slate-900 max-w-5xl mx-auto px-6 z-10 relative space-y-12 text-left">
+    <footer class="py-20 border-t border-slate-900 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative space-y-12 text-left">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
             <!-- Col 1: Brand & Heritage -->
             <div class="space-y-4">
