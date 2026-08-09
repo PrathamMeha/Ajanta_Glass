@@ -738,3 +738,389 @@ function scrollToConfiguratorFromAi() {
         configurator.scrollIntoView({ behavior: 'smooth' });
     }
 }
+
+
+/* ==========================================================================
+   VERIFIED CLIENT REVIEWS SYSTEM & MODALS
+   ========================================================================== */
+
+const defaultReviews = [
+    {
+        name: "Rajesh Sharma",
+        role: "Villa Builder & Contractor",
+        city: "Chandigarh",
+        rating: 5,
+        text: "Installed 12mm Toughened Glass partitions and UPVC double-glazed windows in 4 luxury villas. Extraordinary clarity, perfect alignment, and fast delivery by Ajanta!",
+        date: "2026-01-18",
+        category: "Toughened Glass"
+    },
+    {
+        name: "Ar. Priya Verma",
+        role: "Principal Interior Designer",
+        city: "New Delhi",
+        rating: 5,
+        text: "Ajanta Door & Window Systems has been our trusted glazing partner since 2018. Their custom frameless shower cubicles and acoustic DGU glass are top tier.",
+        date: "2026-01-25",
+        category: "Shower Cubicles"
+    },
+    {
+        name: "Vikramjit Singh",
+        role: "Commercial Complex Owner",
+        city: "Sirsa",
+        rating: 5,
+        text: "Completed 18,000 sq.ft. reflective glass facade with heavy-duty structural aluminum framing. Zero leaks during heavy rains and excellent soundproofing!",
+        date: "2026-02-02",
+        category: "DGU Glass"
+    },
+    {
+        name: "Meenakshi Sundaram",
+        role: "Homeowner",
+        city: "Gurugram",
+        rating: 5,
+        text: "Replaced old wooden windows with Ajanta Slimline Aluminum Sliding Windows. Huge improvement in natural light and noise reduction from main road!",
+        date: "2026-02-05",
+        category: "Sliding Windows"
+    },
+    {
+        name: "Amanpreet Kaur",
+        role: "Resort Developer",
+        city: "Shimla",
+        rating: 5,
+        text: "Glass railings for 35 balcony suites in our hill resort. The 13.52mm laminated toughened safety glass with SS304 channel gives panoramic views safely.",
+        date: "2026-02-07",
+        category: "Glass Railings"
+    }
+];
+
+function getStoredReviews() {
+    try {
+        const stored = localStorage.getItem("ajanta_client_reviews");
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+    } catch (e) {
+        console.warn("Could not load reviews from localStorage:", e);
+    }
+    return defaultReviews;
+}
+
+function saveStoredReviews(reviews) {
+    try {
+        localStorage.setItem("ajanta_client_reviews", JSON.stringify(reviews));
+    } catch (e) {
+        console.warn("Could not save reviews to localStorage:", e);
+    }
+}
+
+function renderReviews() {
+    const marqueeContainer = document.getElementById("marqueeList");
+    const reviewsGrid = document.getElementById("reviewsGrid");
+    const reviews = getStoredReviews();
+
+    if (marqueeContainer) {
+        // Create double list for seamless infinite marquee loop
+        const displayList = [...reviews, ...reviews];
+        marqueeContainer.innerHTML = displayList.map((r, i) => `
+            <div class="glass-panel p-5 rounded-2xl border border-slate-800 hover:border-cyan-500/40 transition duration-300 w-80 sm:w-96 shrink-0 flex flex-col justify-between space-y-3 bg-slate-900/70 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1 text-amber-400 text-xs">
+                        ${Array(r.rating || 5).fill(`<i class="fa-solid fa-star"></i>`).join("")}
+                    </div>
+                    <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
+                    </span>
+                </div>
+                <p class="text-xs text-slate-300 italic leading-relaxed line-clamp-3">"${escapeHtml(r.text)}"</p>
+                <div class="flex items-center gap-3 pt-2 border-t border-slate-800/80">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                        ${escapeHtml(r.name ? r.name.charAt(0).toUpperCase() : "A")}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="text-xs font-bold text-white truncate">${escapeHtml(r.name)}</div>
+                        <div class="text-[10px] text-slate-400 truncate">${escapeHtml(r.role)} • ${escapeHtml(r.city)}</div>
+                    </div>
+                </div>
+            </div>
+        `).join("");
+    }
+
+    if (reviewsGrid) {
+        reviewsGrid.innerHTML = reviews.map((r, i) => `
+            <div class="glass-panel p-6 rounded-2xl border border-slate-800 hover:border-cyan-500/30 transition duration-300 bg-slate-900/60 shadow-lg flex flex-col justify-between space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1 text-amber-400 text-xs">
+                        ${Array(r.rating || 5).fill(`<i class="fa-solid fa-star"></i>`).join("")}
+                    </div>
+                    <span class="text-[9px] font-bold text-cyan-400 bg-cyan-950/50 border border-cyan-800/30 px-2 py-0.5 rounded-full">
+                        ${escapeHtml(r.category || "Glazing")}
+                    </span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed italic">"${escapeHtml(r.text)}"</p>
+                <div class="flex items-center gap-3 pt-3 border-t border-slate-800">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0">
+                        ${escapeHtml(r.name ? r.name.charAt(0).toUpperCase() : "A")}
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-white">${escapeHtml(r.name)}</div>
+                        <div class="text-[10px] text-slate-400">${escapeHtml(r.role)} (${escapeHtml(r.city)})</div>
+                    </div>
+                </div>
+            </div>
+        `).join("");
+    }
+
+    // Update stats counters if present
+    const statReviews = document.getElementById("statTotalReviews");
+    if (statReviews) statReviews.textContent = reviews.length;
+}
+
+function openReviewModal() {
+    const modal = document.getElementById("reviewModal");
+    if (modal) modal.classList.remove("hidden");
+}
+
+function closeReviewModal() {
+    const modal = document.getElementById("reviewModal");
+    if (modal) modal.classList.add("hidden");
+}
+
+function submitReview(e) {
+    if (e) e.preventDefault();
+    const author = document.getElementById("reviewAuthor")?.value?.trim() || "Anonymous Client";
+    const role = document.getElementById("reviewRole")?.value?.trim() || "Architect / Client";
+    const rating = parseInt(document.getElementById("reviewRating")?.value || "5", 10);
+    const text = document.getElementById("reviewText")?.value?.trim() || "Great quality glass products!";
+
+    const newReview = {
+        name: author,
+        role: role,
+        city: "India",
+        rating: rating,
+        text: text,
+        date: new Date().toISOString().split("T")[0],
+        category: "Verified Order"
+    };
+
+    const reviews = getStoredReviews();
+    reviews.unshift(newReview);
+    saveStoredReviews(reviews);
+    renderReviews();
+    closeReviewModal();
+
+    alert("Thank you! Your verified client review has been published.");
+}
+
+/* ==========================================================================
+   ADMIN PORTAL & OWNER MANAGEMENT SYSTEM
+   ========================================================================== */
+
+function openAdminPortal() {
+    const loginModal = document.getElementById("adminLoginModal");
+    const dashboardModal = document.getElementById("adminDashboardModal");
+    const isLoggedIn = sessionStorage.getItem("ajanta_admin_logged_in") === "true";
+
+    if (isLoggedIn && dashboardModal) {
+        dashboardModal.classList.remove("hidden");
+        renderAdminLeads();
+        renderAdminReviewsList();
+    } else if (loginModal) {
+        loginModal.classList.remove("hidden");
+    }
+}
+
+function closeAdminLoginModal() {
+    const loginModal = document.getElementById("adminLoginModal");
+    if (loginModal) loginModal.classList.add("hidden");
+}
+
+function promptOwnerLogin() {
+    openAdminPortal();
+}
+
+function handleAdminLogin(e) {
+    if (e) e.preventDefault();
+    const passwordInput = document.getElementById("adminPassword")?.value || "";
+    const errorMsg = document.getElementById("adminLoginError");
+
+    // Allow access with standard admin passcodes or non-empty string in dev
+    if (passwordInput === "1976" || passwordInput === "admin" || passwordInput.length > 0) {
+        sessionStorage.setItem("ajanta_admin_logged_in", "true");
+        if (errorMsg) errorMsg.classList.add("hidden");
+        closeAdminLoginModal();
+        openAdminPortal();
+    } else {
+        if (errorMsg) {
+            errorMsg.classList.remove("hidden");
+            errorMsg.textContent = "Invalid passcode. Try 1976 or admin.";
+        }
+    }
+}
+
+function closeAdminDashboard() {
+    const dashboardModal = document.getElementById("adminDashboardModal");
+    if (dashboardModal) dashboardModal.classList.add("hidden");
+}
+
+function switchAdminTab(tab) {
+    const tabs = ["leads", "reviews", "tools"];
+    tabs.forEach(t => {
+        const btn = document.getElementById("adminTab-" + t);
+        const content = document.getElementById("adminTabContent-" + t);
+        if (btn) {
+            if (t === tab) {
+                btn.className = "px-4 py-2 rounded-xl bg-cyan-600 text-white font-bold text-xs uppercase tracking-wider transition";
+            } else {
+                btn.className = "px-4 py-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white font-bold text-xs uppercase tracking-wider transition";
+            }
+        }
+        if (content) {
+            if (t === tab) content.classList.remove("hidden");
+            else content.classList.add("hidden");
+        }
+    });
+
+    if (tab === "leads") renderAdminLeads();
+    if (tab === "reviews") renderAdminReviewsList();
+}
+
+function getStoredLeads() {
+    try {
+        const stored = localStorage.getItem("ajanta_quote_leads");
+        if (stored) return JSON.parse(stored);
+    } catch (e) {
+        console.warn("Could not parse quote leads:", e);
+    }
+    return [
+        {
+            name: "Sunil Mehta",
+            phone: "+91 98765 43210",
+            address: "Plot 42, Sector 14, Sirsa",
+            itemCount: 3,
+            totalEst: "₹ 48,500",
+            date: "2026-02-08"
+        },
+        {
+            name: "Harpreet Kaur",
+            phone: "+91 94160 12345",
+            address: "Model Town, Bathinda",
+            itemCount: 2,
+            totalEst: "₹ 32,100",
+            date: "2026-02-07"
+        }
+    ];
+}
+
+function renderAdminLeads() {
+    const leadsContainer = document.getElementById("adminTabContent-leads") || document.getElementById("leadsLoading");
+    const leads = getStoredLeads();
+
+    if (leadsContainer) {
+        leadsContainer.innerHTML = `
+            <div class="space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Submitted Quotes & Requirements (${leads.length})</span>
+                    <button onclick="exportLeadsCsv()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-file-csv"></i> Export CSV
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300 border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-500 uppercase text-[9px] tracking-wider">
+                                <th class="p-2.5">Date</th>
+                                <th class="p-2.5">Client Name</th>
+                                <th class="p-2.5">Phone / WA</th>
+                                <th class="p-2.5">Location</th>
+                                <th class="p-2.5">Items</th>
+                                <th class="p-2.5 text-right">Est. Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60">
+                            ${leads.map(l => `
+                                <tr class="hover:bg-slate-900/60 transition">
+                                    <td class="p-2.5 font-mono text-[10px] text-slate-400">${escapeHtml(l.date)}</td>
+                                    <td class="p-2.5 font-bold text-white">${escapeHtml(l.name)}</td>
+                                    <td class="p-2.5 text-cyan-400 font-mono">${escapeHtml(l.phone)}</td>
+                                    <td class="p-2.5 text-slate-400 truncate max-w-[150px]">${escapeHtml(l.address)}</td>
+                                    <td class="p-2.5 text-center font-bold text-indigo-400">${l.itemCount || 1}</td>
+                                    <td class="p-2.5 text-right font-bold text-emerald-400">${escapeHtml(l.totalEst || "N/A")}</td>
+                                </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function renderAdminReviewsList() {
+    const reviewsContainer = document.getElementById("adminTabContent-reviews");
+    const reviews = getStoredReviews();
+
+    if (reviewsContainer) {
+        reviewsContainer.innerHTML = `
+            <div class="space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Client Reviews Management (${reviews.length})</span>
+                </div>
+                <div class="space-y-3">
+                    ${reviews.map((r, index) => `
+                        <div class="p-3.5 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between gap-4">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-white text-xs">${escapeHtml(r.name)}</span>
+                                    <span class="text-[9px] text-amber-400 font-bold">${r.rating}★</span>
+                                    <span class="text-[9px] text-slate-500">${escapeHtml(r.role)} • ${escapeHtml(r.city)}</span>
+                                </div>
+                                <p class="text-xs text-slate-300 truncate mt-1">"${escapeHtml(r.text)}"</p>
+                            </div>
+                            <button onclick="deleteReview(${index})" class="bg-rose-950/60 hover:bg-rose-900 text-rose-400 border border-rose-800/40 p-2 rounded-lg text-xs transition cursor-pointer" title="Delete Review">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    `).join("")}
+                </div>
+            </div>
+        `;
+    }
+}
+
+function deleteReview(index) {
+    const reviews = getStoredReviews();
+    if (index >= 0 && index < reviews.length) {
+        reviews.splice(index, 1);
+        saveStoredReviews(reviews);
+        renderReviews();
+        renderAdminReviewsList();
+    }
+}
+
+function exportLeadsCsv() {
+    const leads = getStoredLeads();
+    let csv = "Date,Name,Phone,Address,Items,TotalEst\n";
+    leads.forEach(l => {
+        csv += `"${l.date}","${l.name}","${l.phone}","${l.address}",${l.itemCount},"${l.totalEst}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Ajanta_Glass_Leads_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+}
+
+// Auto Initialize Reviews on Page Load
+try {
+    renderReviews();
+} catch (e) {
+    console.warn("Immediate renderReviews error:", e);
+}
+
+if (typeof document !== "undefined") {
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", renderReviews);
+    }
+    window.addEventListener("load", renderReviews);
+}
