@@ -43,7 +43,7 @@
     
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-950 bg-[#020617] text-slate-200 selection:bg-cyan-500 selection:text-white overflow-x-hidden min-h-screen">
+<body class="bg-slate-950 bg-[#020617] text-slate-200 selection:bg-cyan-500/25 selection:text-cyan-100 overflow-x-hidden min-h-screen">
 
     <!-- Ambient background glowing elements (BMW/Apple premium design style) -->
     <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
@@ -53,7 +53,8 @@
     </div>    <!-- HEADER / NAVIGATION (Tesla style floating menu) -->
     <header class="fixed top-2 sm:top-4 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-5xl">
         <nav class="glass-panel rounded-2xl px-3 py-2 sm:px-6 sm:py-3 flex items-center justify-between shadow-2xl">
-            <a href="#hero" class="flex items-center shrink-0 cursor-pointer" title="Ajanta Door & Window System">                <img src="img_logo.svg" alt="Ajanta Door &amp; Window System Logo" class="h-10 sm:h-12 w-10 sm:w-12 object-contain bg-black p-0.5 rounded-xl border border-white/10 shrink-0 hover:scale-105 transition">            </a>
+            <a href="#hero" onclick="handleLogoClick(event)" class="flex items-center gap-2 shrink-0 cursor-pointer" title="Ajanta Door & Window System v1.2">                <img src="img_logo.svg" alt="Ajanta Door &amp; Window System Logo" class="h-10 sm:h-12 w-10 sm:w-12 object-contain bg-black p-0.5 rounded-xl border border-white/10 shrink-0 hover:scale-105 transition">
+                <span class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full font-mono">v1.2</span>            </a>
             
             <div class="hidden md:flex items-center space-x-8 text-xs font-bold tracking-wider text-slate-400">
                 <a href="#hero" class="hover:text-white transition duration-200 uppercase">Home</a>
@@ -68,10 +69,7 @@
                     <i class="fa-solid fa-wand-magic-sparkles text-[#00B8D9]"></i>
                     <span class="hidden sm:inline">AI</span>
                 </button>
-                <button onclick="openAdminPortal()" class="bg-slate-900/85 hover:bg-slate-800 text-slate-300 hover:text-white px-2 py-1.5 sm:px-3.5 sm:py-2.5 rounded-xl border border-slate-800 flex items-center gap-1.5 transition text-[9px] sm:text-[10px] uppercase font-bold tracking-wider" title="Admin Panel">
-                    <i class="fa-solid fa-shield-halved text-[#00B8D9]"></i>
-                    <span class="hidden sm:inline">Admin</span>
-                </button>
+                
                 <a href="#configurator" class="bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-600 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-xl transition duration-200 shadow-lg shadow-cyan-600/15 border border-cyan-400/20 uppercase tracking-wider sm:tracking-widest whitespace-nowrap">
                     Get a Quote
                 </a>
@@ -291,9 +289,7 @@
             <div class="text-center md:text-left">
                 <h2 class="text-2xl md:text-4xl font-syne font-extrabold uppercase text-white flex flex-wrap items-center justify-center md:justify-start gap-2">
                     <span>Verified Client Backing</span>
-                    <span onclick="promptOwnerLogin()" id="ownerStatusIcon" class="cursor-pointer text-slate-600 hover:text-cyan-400 transition text-sm flex items-center" title="Owner Admin Tools">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </span>
+                    
                 </h2>
                 <p class="text-xs text-slate-400 mt-1">Real-time feedback and testimonials submitted directly by our verified clients.</p>
             </div>
@@ -303,7 +299,7 @@
             </button>
         </div>
         
-        <div class="flex overflow-hidden relative w-full z-10">
+        <div class="flex overflow-hidden relative w-full z-10 py-2 marquee-mask">
             <div id="marqueeList" class="flex space-x-6 animate-marquee whitespace-nowrap min-w-full py-4">
                 <!-- Will be dynamically populated in real-time -->
                 <div class="glass-panel p-6 rounded-2xl inline-block w-80 shrink-0 text-slate-300">
@@ -663,10 +659,11 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
             <!-- Col 1: Brand & Heritage -->
             <div class="space-y-4">
-                <div class="flex items-center space-x-3">
+                <div onclick="handleLogoClick(event)" class="flex items-center space-x-3 cursor-pointer shrink-0">
                     <img src="img_logo.svg" alt="Ajanta Logo" class="h-10 w-10 object-contain bg-black p-0.5 rounded-xl border border-white/10 shrink-0">
 
                     <span class="font-syne font-black tracking-widest text-base text-white">AJANTA</span>
+                    <span class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full font-mono">v1.2</span>
                 </div>
                 <p class="text-xs text-slate-400 leading-relaxed font-light">
                     Delivering premium architectural glazing and precision glass customization across generations. Combining legacy with innovative engineering.
@@ -696,10 +693,7 @@
                     Access order synchronization and verification tools. Authorized administrators can open the live management console.
                 </p>
                 <div class="flex flex-col gap-2">
-                    <button onclick="openAdminPortal()" class="w-full inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white border border-slate-800 py-2.5 px-4 rounded-xl text-xs font-bold transition">
-                        <i class="fa-solid fa-lock-open text-cyan-400"></i>
-                        <span>Admin Console (Unlocked)</span>
-                    </button>
+                    
                     <button onclick="openReviewModal()" class="w-full inline-flex items-center justify-center gap-2 bg-[#00B8D9]/10 hover:bg-[#00B8D9]/20 text-[#00B8D9] border border-[#00B8D9]/20 py-2.5 px-4 rounded-xl text-xs font-bold transition">
                         <i class="fa-regular fa-star"></i>
                         <span>Write a Live Review</span>
@@ -716,9 +710,7 @@
             </div>
             <div class="flex items-center space-x-4">
                 <span>© 2026 Ajanta Door & Window Systems</span>
-                <div id="ownerStatusIcon" class="cursor-pointer text-slate-600 hover:text-indigo-400 transition text-sm flex items-center" title="Owner Admin Tools" onclick="openAdminPortal()">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
+                
             </div>
         </div>
     </footer>

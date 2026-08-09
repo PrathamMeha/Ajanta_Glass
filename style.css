@@ -190,3 +190,28 @@ input:focus, select:focus, textarea:focus {
 #specItemsContainer {
     transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
 }
+
+
+/* Glass Panel Base Styling */
+.glass-panel {
+    background: rgba(15, 23, 42, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Seamless Infinite Marquee Loop */
+@keyframes marqueeScroll {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+    display: flex;
+    width: max-content;
+    animation: marqueeScroll 35s linear infinite;
+}
+
+.animate-marquee:hover {
+    animation-play-state: paused;
+}

@@ -744,65 +744,40 @@ function scrollToConfiguratorFromAi() {
    VERIFIED CLIENT REVIEWS SYSTEM & MODALS
    ========================================================================== */
 
-const defaultReviews = [
-    {
-        name: "Rajesh Sharma",
-        role: "Villa Builder & Contractor",
-        city: "Chandigarh",
-        rating: 5,
-        text: "Installed 12mm Toughened Glass partitions and UPVC double-glazed windows in 4 luxury villas. Extraordinary clarity, perfect alignment, and fast delivery by Ajanta!",
-        date: "2026-01-18",
-        category: "Toughened Glass"
-    },
-    {
-        name: "Ar. Priya Verma",
-        role: "Principal Interior Designer",
-        city: "New Delhi",
-        rating: 5,
-        text: "Ajanta Door & Window Systems has been our trusted glazing partner since 2018. Their custom frameless shower cubicles and acoustic DGU glass are top tier.",
-        date: "2026-01-25",
-        category: "Shower Cubicles"
-    },
-    {
-        name: "Vikramjit Singh",
-        role: "Commercial Complex Owner",
-        city: "Sirsa",
-        rating: 5,
-        text: "Completed 18,000 sq.ft. reflective glass facade with heavy-duty structural aluminum framing. Zero leaks during heavy rains and excellent soundproofing!",
-        date: "2026-02-02",
-        category: "DGU Glass"
-    },
-    {
-        name: "Meenakshi Sundaram",
-        role: "Homeowner",
-        city: "Gurugram",
-        rating: 5,
-        text: "Replaced old wooden windows with Ajanta Slimline Aluminum Sliding Windows. Huge improvement in natural light and noise reduction from main road!",
-        date: "2026-02-05",
-        category: "Sliding Windows"
-    },
-    {
-        name: "Amanpreet Kaur",
-        role: "Resort Developer",
-        city: "Shimla",
-        rating: 5,
-        text: "Glass railings for 35 balcony suites in our hill resort. The 13.52mm laminated toughened safety glass with SS304 channel gives panoramic views safely.",
-        date: "2026-02-07",
-        category: "Glass Railings"
+const defaultReviews = [];
+
+function cleanLegacyFakeReviews() {
+    try {
+        const stored = localStorage.getItem("ajanta_client_reviews");
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) {
+                const fakeNames = ["Rajesh Sharma", "Ar. Priya Verma", "Vikramjit Singh", "Meenakshi Sundaram", "Amanpreet Kaur"];
+                const clean = parsed.filter(r => !fakeNames.includes(r.name));
+                localStorage.setItem("ajanta_client_reviews", JSON.stringify(clean));
+            }
+        }
+    } catch (e) {
+        console.warn("Could not clean legacy fake reviews:", e);
     }
-];
+}
+
+cleanLegacyFakeReviews();
 
 function getStoredReviews() {
     try {
         const stored = localStorage.getItem("ajanta_client_reviews");
         if (stored) {
             const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            if (Array.isArray(parsed)) {
+                const fakeNames = ["Rajesh Sharma", "Ar. Priya Verma", "Vikramjit Singh", "Meenakshi Sundaram", "Amanpreet Kaur"];
+                return parsed.filter(r => !fakeNames.includes(r.name));
+            }
         }
     } catch (e) {
         console.warn("Could not load reviews from localStorage:", e);
     }
-    return defaultReviews;
+    return [];
 }
 
 function saveStoredReviews(reviews) {
@@ -819,58 +794,109 @@ function renderReviews() {
     const reviews = getStoredReviews();
 
     if (marqueeContainer) {
-        // Create double list for seamless infinite marquee loop
-        const displayList = [...reviews, ...reviews];
-        marqueeContainer.innerHTML = displayList.map((r, i) => `
-            <div class="glass-panel p-5 rounded-2xl border border-slate-800 hover:border-cyan-500/40 transition duration-300 w-80 sm:w-96 shrink-0 flex flex-col justify-between space-y-3 bg-slate-900/70 shadow-xl">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-1 text-amber-400 text-xs">
-                        ${Array(r.rating || 5).fill(`<i class="fa-solid fa-star"></i>`).join("")}
+        if (reviews.length === 0) {
+            const inviteCard = `
+                <div class="glass-panel p-5 rounded-2xl border border-cyan-500/30 w-80 sm:w-96 shrink-0 flex flex-col justify-between space-y-3 bg-slate-900/80 shadow-xl cursor-pointer hover:scale-[1.02] transition" onclick="openReviewModal()">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1 text-amber-400 text-xs">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <span class="text-[9px] font-extrabold uppercase tracking-widest text-cyan-400 bg-cyan-950/60 border border-cyan-800/40 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-pen-nib text-[8px]"></i> Write Review
+                        </span>
                     </div>
-                    <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded-full flex items-center gap-1">
-                        <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
-                    </span>
+                    <p class="text-xs text-slate-200 italic leading-relaxed">"Be the first verified client to leave a live review for Ajanta Door & Window System!"</p>
+                    <div class="flex items-center gap-3 pt-2 border-t border-slate-800/80">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-500 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                            +
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-white">Share Your Feedback</div>
+                            <div class="text-[10px] text-cyan-400">Click here to write a live review</div>
+                        </div>
+                    </div>
                 </div>
-                <p class="text-xs text-slate-300 italic leading-relaxed line-clamp-3">"${escapeHtml(r.text)}"</p>
-                <div class="flex items-center gap-3 pt-2 border-t border-slate-800/80">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
-                        ${escapeHtml(r.name ? r.name.charAt(0).toUpperCase() : "A")}
+            `;
+            marqueeContainer.innerHTML = Array(6).fill(inviteCard).join("");
+        } else {
+            let displayList = [...reviews];
+            while (displayList.length < 8) {
+                displayList = displayList.concat(reviews);
+            }
+            displayList = displayList.concat(displayList);
+
+            marqueeContainer.innerHTML = displayList.map((r, i) => `
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 hover:border-cyan-500/40 transition duration-300 w-80 sm:w-96 shrink-0 flex flex-col justify-between space-y-3 bg-slate-900/80 shadow-xl">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1 text-amber-400 text-xs">
+                            ${Array(r.rating || 5).fill('<i class="fa-solid fa-star"></i>').join("")}
+                        </div>
+                        <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-circle-check text-[8px]"></i> Verified Client
+                        </span>
                     </div>
-                    <div class="min-w-0 flex-1">
-                        <div class="text-xs font-bold text-white truncate">${escapeHtml(r.name)}</div>
-                        <div class="text-[10px] text-slate-400 truncate">${escapeHtml(r.role)} • ${escapeHtml(r.city)}</div>
+                    <p class="text-xs text-slate-300 italic leading-relaxed line-clamp-3">"${escapeHtml(r.text)}"</p>
+                    <div class="flex items-center gap-3 pt-2 border-t border-slate-800/80">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                            ${escapeHtml(r.name ? r.name.charAt(0).toUpperCase() : "A")}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-white truncate">${escapeHtml(r.name)}</div>
+                            <div class="text-[10px] text-slate-400 truncate">${escapeHtml(r.role)} • ${escapeHtml(r.city || "India")}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join("");
+            `).join("");
+        }
     }
 
     if (reviewsGrid) {
-        reviewsGrid.innerHTML = reviews.map((r, i) => `
-            <div class="glass-panel p-6 rounded-2xl border border-slate-800 hover:border-cyan-500/30 transition duration-300 bg-slate-900/60 shadow-lg flex flex-col justify-between space-y-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-1 text-amber-400 text-xs">
-                        ${Array(r.rating || 5).fill(`<i class="fa-solid fa-star"></i>`).join("")}
+        if (reviews.length === 0) {
+            reviewsGrid.innerHTML = `
+                <div class="col-span-full glass-panel p-10 text-center rounded-2xl border border-slate-800 space-y-4 max-w-xl mx-auto">
+                    <div class="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto text-xl">
+                        <i class="fa-solid fa-comments"></i>
                     </div>
-                    <span class="text-[9px] font-bold text-cyan-400 bg-cyan-950/50 border border-cyan-800/30 px-2 py-0.5 rounded-full">
-                        ${escapeHtml(r.category || "Glazing")}
-                    </span>
+                    <div class="space-y-1">
+                        <h4 class="text-base font-bold text-white">No Fake Reviews</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">We only display authentic, real-time client feedback. Be the first to share your experience with Ajanta Door & Window System!</p>
+                    </div>
+                    <button onclick="openReviewModal()" class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg transition">
+                        <i class="fa-solid fa-pen-nib"></i> Write First Review
+                    </button>
                 </div>
-                <p class="text-xs text-slate-300 leading-relaxed italic">"${escapeHtml(r.text)}"</p>
-                <div class="flex items-center gap-3 pt-3 border-t border-slate-800">
-                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0">
-                        ${escapeHtml(r.name ? r.name.charAt(0).toUpperCase() : "A")}
+            `;
+        } else {
+            reviewsGrid.innerHTML = reviews.map((r, i) => `
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 hover:border-cyan-500/30 transition duration-300 bg-slate-900/60 shadow-lg flex flex-col justify-between space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1 text-amber-400 text-xs">
+                            ${Array(r.rating || 5).fill('<i class="fa-solid fa-star"></i>').join("")}
+                        </div>
+                        <span class="text-[9px] font-bold text-cyan-400 bg-cyan-950/50 border border-cyan-800/30 px-2 py-0.5 rounded-full">
+                            ${escapeHtml(r.category || "Verified Client")}
+                        </span>
                     </div>
-                    <div>
-                        <div class="text-xs font-bold text-white">${escapeHtml(r.name)}</div>
-                        <div class="text-[10px] text-slate-400">${escapeHtml(r.role)} (${escapeHtml(r.city)})</div>
+                    <p class="text-xs text-slate-300 leading-relaxed italic">"${escapeHtml(r.text)}"</p>
+                    <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0">
+                                ${escapeHtml(r.name ? r.name.charAt(0).toUpperCase() : "A")}
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-xs font-bold text-white truncate">${escapeHtml(r.name)}</div>
+                                <div class="text-[10px] text-slate-400 truncate">${escapeHtml(r.role)} (${escapeHtml(r.city || "India")})</div>
+                            </div>
+                        </div>
+                        <button onclick="deleteReview(${i})" class="text-slate-500 hover:text-rose-400 text-xs p-1 transition" title="Delete Review">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-        `).join("");
+            `).join("");
+        }
     }
 
-    // Update stats counters if present
     const statReviews = document.getElementById("statTotalReviews");
     if (statReviews) statReviews.textContent = reviews.length;
 }
@@ -1123,4 +1149,143 @@ if (typeof document !== "undefined") {
         document.addEventListener("DOMContentLoaded", renderReviews);
     }
     window.addEventListener("load", renderReviews);
+}
+
+
+/* ==========================================================================
+   CONFIGURATOR WIZARD & PORTAL TAB SYSTEM
+   ========================================================================== */
+
+function setWizardStep(stepNum) {
+    const steps = [1, 2, 3];
+    steps.forEach(s => {
+        const stepEl = document.getElementById("wizard-step-" + s);
+        const indEl = document.getElementById("wizard-indicator-" + s);
+        const indTxt = document.getElementById("wizard-indicator-text-" + s);
+
+        if (stepEl) {
+            if (s === stepNum) {
+                stepEl.classList.remove("hidden");
+            } else {
+                stepEl.classList.add("hidden");
+            }
+        }
+
+        if (indEl) {
+            if (s === stepNum) {
+                indEl.className = "w-8 h-8 rounded-full bg-[#00B8D9] text-slate-950 flex items-center justify-center font-bold text-xs ring-4 ring-cyan-500/20";
+            } else if (s < stepNum) {
+                indEl.className = "w-8 h-8 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold text-xs";
+            } else {
+                indEl.className = "w-8 h-8 rounded-full bg-slate-900 border border-slate-850 text-slate-500 flex items-center justify-center font-bold text-xs";
+            }
+        }
+
+        if (indTxt) {
+            if (s <= stepNum) {
+                indTxt.className = "text-[10px] font-bold text-white uppercase tracking-wider";
+            } else {
+                indTxt.className = "text-[10px] font-semibold text-slate-600 uppercase tracking-wider";
+            }
+        }
+    });
+
+    // If entering step 3, render spec line items summary if table exists
+    if (stepNum === 3 && typeof renderSpecLinesTable === "function") {
+        renderSpecLinesTable();
+    }
+}
+
+function switchPortalTab(tab) {
+    const btnQuoting = document.getElementById("tabBtnQuoting");
+    const btnSupport = document.getElementById("tabBtnSupport");
+    const quotingSection = document.getElementById("quotingFormSection");
+    const supportSection = document.getElementById("supportFormSection") || document.getElementById("customerSupportSection");
+
+    if (tab === "quoting") {
+        if (btnQuoting) btnQuoting.className = "px-4 py-2 font-bold text-xs rounded-lg transition duration-200 bg-gradient-to-r from-cyan-600 to-cyan-850 text-white";
+        if (btnSupport) btnSupport.className = "px-4 py-2 font-bold text-xs rounded-lg transition duration-200 text-slate-400 hover:text-white";
+        if (quotingSection) quotingSection.classList.remove("hidden");
+        if (supportSection) supportSection.classList.add("hidden");
+    } else {
+        if (btnQuoting) btnQuoting.className = "px-4 py-2 font-bold text-xs rounded-lg transition duration-200 text-slate-400 hover:text-white";
+        if (btnSupport) btnSupport.className = "px-4 py-2 font-bold text-xs rounded-lg transition duration-200 bg-gradient-to-r from-cyan-600 to-cyan-850 text-white";
+        if (quotingSection) quotingSection.classList.add("hidden");
+        if (supportSection) supportSection.classList.remove("hidden");
+    }
+}
+
+function selectProductSpotlight(productName) {
+    const configEl = document.getElementById("configurator");
+    if (configEl) {
+        configEl.scrollIntoView({ behavior: "smooth" });
+    }
+    const catSelect = document.getElementById("itemCategory");
+    if (catSelect) {
+        let found = false;
+        for (let i = 0; i < catSelect.options.length; i++) {
+            if (catSelect.options[i].value.toLowerCase().includes(productName.toLowerCase()) ||
+                catSelect.options[i].text.toLowerCase().includes(productName.toLowerCase())) {
+                catSelect.selectedIndex = i;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            catSelect.value = "CUSTOM_ITEM";
+            const customInput = document.getElementById("customCategoryInput");
+            if (customInput) customInput.value = productName;
+        }
+        if (typeof handleCategoryChange === "function") {
+            handleCategoryChange();
+        }
+    }
+    setWizardStep(2);
+}
+
+function toggleAdminPassword() {
+    const input = document.getElementById("adminPassword");
+    if (input) {
+        input.type = input.type === "password" ? "text" : "password";
+    }
+}
+
+function refreshAdminData() {
+    if (typeof renderAdminLeads === "function") renderAdminLeads();
+    if (typeof renderAdminReviewsList === "function") renderAdminReviewsList();
+}
+
+function handleAdminLogout() {
+    sessionStorage.removeItem("ajanta_admin_logged_in");
+    closeAdminDashboard();
+}
+
+function exportData() {
+    if (typeof exportLeadsCsv === "function") exportLeadsCsv();
+}
+
+function closeLightbox() {
+    const modal = document.getElementById("lightboxModal");
+    if (modal) modal.classList.add("hidden");
+}
+
+
+// 5-Click Secret Admin Portal Trigger
+let logoClickCount = 0;
+let logoClickTimer = null;
+
+function handleLogoClick(e) {
+    logoClickCount++;
+    if (logoClickTimer) clearTimeout(logoClickTimer);
+    
+    logoClickTimer = setTimeout(() => {
+        logoClickCount = 0;
+    }, 2500);
+
+    if (logoClickCount >= 5) {
+        if (e) e.preventDefault();
+        logoClickCount = 0;
+        if (logoClickTimer) clearTimeout(logoClickTimer);
+        openAdminPortal();
+    }
 }
