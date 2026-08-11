@@ -1,12 +1,11 @@
 /* Ajanta Glass - Customer Portal Premium Stylesheet */
-
 :root {
-    --color-primary: #6366f1; /* Indigo 500 */
-    --color-primary-dark: #4f46e5; /* Indigo 600 */
-    --color-success: #10b981; /* Emerald 500 */
-    --color-danger: #f43f5e; /* Rose 500 */
-    --font-heading: 'Space Grotesk', sans-serif;
-    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --color-primary: #00B8D9;
+    --color-primary-dark: #008299;
+    --color-success: #10b981;
+    --color-danger: #f43f5e;
+    --font-heading: "Space Grotesk", sans-serif;
+    --font-body: "Plus Jakarta Sans", sans-serif;
 }
 
 /* Base custom background and scrollbar */
@@ -19,98 +18,70 @@ body {
 ::-webkit-scrollbar {
     width: 8px;
 }
-
 ::-webkit-scrollbar-track {
     background: #020617;
 }
-
 ::-webkit-scrollbar-thumb {
     background: #1e293b;
     border-radius: 999px;
     transition: background 0.3s ease;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+    background: #00B8D9;
 }
 
-/* Stylish placeholders with brand-distinct bold italic typeface */
+/* Stylish placeholders */
 ::placeholder {
     font-family: var(--font-heading) !important;
     font-weight: 700 !important;
     font-style: italic !important;
     letter-spacing: -0.025em !important;
     color: #475569 !important;
-    opacity: 1; /* Firefox */
+    opacity: 1;
 }
 
-::-ms-input-placeholder {
-    font-family: var(--font-heading) !important;
-    font-weight: 700 !important;
-    font-style: italic !important;
-    letter-spacing: -0.025em !important;
-    color: #475569 !important;
-}
-
-/* Custom Gradient Helpers */
-.custom-gradient {
-    background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
-    background-size: 200% 200%;
-    animation: gradientShift 12s ease infinite;
-}
-
-/* Advanced CSS Keyframe Animations */
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(8px); /* Smaller, snappier offset for fluid premium loading */
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Redesigned fade and highlight row intro to bypass layout collapse/flicker bugs on chromium tables */
-@keyframes slideInUpRow {
+/* Advanced Pop-Out & Entrance Animations */
+@keyframes popOutEntrance {
     0% {
         opacity: 0;
-        background-color: rgba(99, 102, 241, 0.25);
+        transform: scale(0.85) translateY(40px);
     }
-    50% {
-        background-color: rgba(99, 102, 241, 0.12);
+    70% {
+        transform: scale(1.02) translateY(-4px);
     }
     100% {
         opacity: 1;
-        background-color: transparent;
-    }
-}
-
-@keyframes pulseGlow {
-    0%, 100% {
-        box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
-        border-color: rgba(99, 102, 241, 0.2);
-    }
-    50% {
-        box-shadow: 0 0 25px rgba(99, 102, 241, 0.35);
-        border-color: rgba(99, 102, 241, 0.55);
+        transform: scale(1) translateY(0);
     }
 }
 
 @keyframes popIn {
     0% {
-        transform: scale(0.94);
+        transform: scale(0.8) translateY(20px);
         opacity: 0;
     }
+    70% {
+        transform: scale(1.03) translateY(-2px);
+    }
     100% {
-        transform: scale(1);
+        transform: scale(1) translateY(0);
         opacity: 1;
+    }
+}
+
+@keyframes floatSlow {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(0.5deg); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(0, 184, 217, 0.2);
+        border-color: rgba(0, 184, 217, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(0, 184, 217, 0.6);
+        border-color: rgba(0, 184, 217, 0.8);
     }
 }
 
@@ -120,81 +91,92 @@ body {
         box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
     }
     50% {
-        transform: scale(1.04);
-        box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+        transform: scale(1.08);
+        box-shadow: 0 0 0 14px rgba(16, 185, 129, 0);
     }
+}
+
+/* Pop-Out Reveal Classes for Scroll Animations */
+.reveal-pop {
+    opacity: 0;
+    transform: scale(0.88) translateY(35px);
+    transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: opacity, transform;
+}
+
+.reveal-pop.is-visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+/* Dynamic Interactive Pop-Out Card Styles */
+.glass-panel, .pop-card, .product-card, .feature-card, .stat-card {
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                border-color 0.3s ease,
+                background-color 0.3s ease !important;
+    will-change: transform, box-shadow;
+}
+
+.glass-panel:hover, .pop-card:hover, .product-card:hover, .feature-card:hover, .stat-card:hover {
+    transform: translateY(-8px) scale(1.025) !important;
+    box-shadow: 0 20px 40px -10px rgba(0, 184, 217, 0.35), 0 0 25px rgba(0, 184, 217, 0.25) !important;
+    border-color: rgba(0, 184, 217, 0.6) !important;
+}
+
+.glass-panel:active, .pop-card:active, .product-card:active {
+    transform: translateY(-2px) scale(0.98) !important;
+}
+
+/* Pop-Out Buttons */
+button, a.bg-gradient-to-r, .pop-btn {
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 0.2s ease !important;
+}
+
+button:hover, a.bg-gradient-to-r:hover, .pop-btn:hover {
+    transform: translateY(-3px) scale(1.04) !important;
+    box-shadow: 0 12px 28px -6px rgba(0, 184, 217, 0.45) !important;
+}
+
+button:active, a.bg-gradient-to-r:active, .pop-btn:active {
+    transform: translateY(1px) scale(0.95) !important;
 }
 
 /* Smooth Entrance Classes */
 .animate-fade-in-up {
-    animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; /* Snappier golden ratio duration */
+    animation: popOutEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
 
-.delay-100 { animation-delay: 0.08s; }
-.delay-200 { animation-delay: 0.16s; }
-.delay-300 { animation-delay: 0.24s; }
-
-/* Dynamic Addition Slide In */
-.animate-slide-in {
-    animation: slideInUpRow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Form interactions: replaced expensive all transitions and layout shaking translateY transforms */
-input, select, textarea {
-    transition: border-color 0.18s cubic-bezier(0.4, 0, 0.2, 1), 
-                box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1), 
-                background-color 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* Pure, visual-only glow focus (never shift positions or fonts during active user typing) */
+/* Pure, visual-only glow focus */
 input:focus, select:focus, textarea:focus {
-    border-color: rgba(99, 102, 241, 0.75) !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
-}
-
-/* Hover scales for specialized interactive buttons */
-.interactive-hover-btn {
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
-                box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
-                filter 0.2s ease;
-}
-
-/* Tactile hovering states */
-.interactive-hover-btn:hover {
-    transform: translateY(-1.5px);
-    box-shadow: 0 8px 16px -6px rgba(99, 102, 241, 0.4);
-    filter: brightness(1.08);
-}
-
-/* Press Down action produces tactile physical feedback, very satisfying inside web views */
-.interactive-hover-btn:active {
-    transform: translateY(1px) scale(0.97);
-    filter: brightness(0.95);
+    border-color: rgba(0, 184, 217, 0.75) !important;
+    box-shadow: 0 0 0 3px rgba(0, 184, 217, 0.25) !important;
 }
 
 /* Glowing Border Effect */
 .glow-pulse-border {
-    animation: pulseGlow 4s ease-in-out infinite;
+    animation: pulseGlow 3s ease-in-out infinite;
 }
 
-/* Smooth Success Modal Entrance Animation */
-#successModal > div {
-    animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+/* Floating Badges */
+.float-badge {
+    animation: floatSlow 4s ease-in-out infinite;
 }
 
-#successModal .success-badge {
-    animation: successPulse 2s infinite ease-in-out;
+/* Modal Pop-Out Entrance */
+#adminLoginModal > div, #adminDashboardModal > div, #reviewModal > div, #lightboxModal > div, #successModal > div {
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
-
-/* Dynamic Item Card Transition styling */
-#specItemsContainer {
-    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
-}
-
 
 /* Glass Panel Base Styling */
 .glass-panel {
-    background: rgba(15, 23, 42, 0.65) !important;
+    background: rgba(15, 23, 42, 0.75) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -205,13 +187,11 @@ input:focus, select:focus, textarea:focus {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-50%); }
 }
-
 .animate-marquee {
     display: flex;
     width: max-content;
     animation: marqueeScroll 35s linear infinite;
 }
-
 .animate-marquee:hover {
     animation-play-state: paused;
 }

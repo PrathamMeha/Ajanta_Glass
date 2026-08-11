@@ -52,28 +52,20 @@
         <div class="absolute -bottom-45 left-[20%] w-[600px] h-[600px] rounded-full bg-cyan-900/5 blur-[150px]" style="animation-delay: 4s;"></div>
     </div>    <!-- HEADER / NAVIGATION (Tesla style floating menu) -->
     <header class="fixed top-2 sm:top-4 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-5xl">
-        <nav class="glass-panel rounded-2xl px-3 py-2 sm:px-6 sm:py-3 flex items-center justify-between shadow-2xl">
-            <a href="#hero" onclick="handleLogoClick(event)" class="flex items-center gap-2 shrink-0 cursor-pointer" title="Ajanta Door & Window System v1.2">                <img src="img_logo.svg" alt="Ajanta Door &amp; Window System Logo" class="h-10 sm:h-12 w-10 sm:w-12 object-contain bg-black p-0.5 rounded-xl border border-white/10 shrink-0 hover:scale-105 transition">
-                <span class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full font-mono">v1.2</span>            </a>
+        <nav class="glass-panel pop-card rounded-2xl px-4 py-2.5 sm:px-6 sm:py-3 flex items-center justify-between shadow-2xl">
+            <a href="#hero" onclick="handleLogoClick(event)" class="flex items-center gap-2 shrink-0 cursor-pointer" title="Ajanta Door & Window System">
+                <img src="img_logo.svg" alt="Ajanta Door &amp; Window System Logo" class="h-10 sm:h-12 w-10 sm:w-12 object-contain bg-black p-0.5 rounded-xl border border-white/10 shrink-0 hover:scale-105 transition">
+            </a>
             
-            <div class="hidden md:flex items-center space-x-8 text-xs font-bold tracking-wider text-slate-400">
-                <a href="#hero" class="hover:text-white transition duration-200 uppercase">Home</a>
-                <a href="#legacy" class="hover:text-white transition duration-200 uppercase">Legacy</a>
-                <a href="#products" class="hover:text-white transition duration-200 uppercase">Products</a>
-                <a href="#showroom" class="hover:text-white transition duration-200 uppercase">Showroom</a>
-                <a href="#configurator" class="hover:text-white transition duration-200 uppercase">Configurator</a>
+            <div class="flex-1 flex items-center justify-center space-x-5 sm:space-x-10 text-[11px] sm:text-xs font-bold tracking-wider text-slate-300 overflow-x-auto no-scrollbar px-2">
+                <a href="#hero" class="hover:text-cyan-400 transition duration-200 uppercase whitespace-nowrap">Home</a>
+                <a href="#legacy" class="hover:text-cyan-400 transition duration-200 uppercase whitespace-nowrap">Legacy</a>
+                <a href="#products" class="hover:text-cyan-400 transition duration-200 uppercase whitespace-nowrap">Products</a>
+                <a href="#showroom" class="hover:text-cyan-400 transition duration-200 uppercase whitespace-nowrap">Showroom</a>
+                <a href="#configurator" class="hover:text-cyan-400 transition duration-200 uppercase whitespace-nowrap">Configurator</a>
             </div>
 
-            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                <button onclick="toggleAiChatDrawer()" class="bg-[#00B8D9]/15 hover:bg-[#00B8D9]/25 text-[#00B8D9] px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-[#00B8D9]/30 flex items-center gap-1.5 transition text-[9px] sm:text-[10px] uppercase font-bold tracking-wider cursor-pointer" title="Ajanta AI">
-                    <i class="fa-solid fa-wand-magic-sparkles text-[#00B8D9]"></i>
-                    <span class="hidden sm:inline">AI</span>
-                </button>
-                
-                <a href="#configurator" class="bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-600 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-xl transition duration-200 shadow-lg shadow-cyan-600/15 border border-cyan-400/20 uppercase tracking-wider sm:tracking-widest whitespace-nowrap">
-                    Get a Quote
-                </a>
-            </div>
+            <div class="w-10 sm:w-12 shrink-0 hidden sm:block"></div>
         </nav>
     </header>
 
@@ -114,7 +106,7 @@
 
         <!-- Animated statistics floated under Hero (Apple/BMW style) -->
         <div class="w-full max-w-5xl mx-auto z-10 relative mt-8 sm:mt-12">
-            <div class="glass-panel rounded-2xl p-4 sm:p-6 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 text-center border border-white/5 bg-slate-950/30">
+            <div class="glass-panel pop-card rounded-2xl p-4 sm:p-6 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 text-center border border-white/5 bg-slate-950/30">
                 <div>
                     <div class="text-xl sm:text-2xl md:text-3xl font-syne font-black text-[#00B8D9]">50+</div>
                     <div class="text-[8px] sm:text-[9px] uppercase tracking-wider sm:tracking-widest text-slate-400 font-bold mt-1">Years of Craftsmanship</div>
@@ -152,7 +144,7 @@
             </div>
 
             <!-- Stats and Journey Panel -->
-            <div id="legacy-right" class="glass-panel p-6 sm:p-8 rounded-3xl space-y-8 relative overflow-hidden bg-slate-900/25">
+            <div id="legacy-right" class="glass-panel pop-card p-6 sm:p-8 rounded-3xl space-y-8 relative overflow-hidden bg-slate-900/25">
                 <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent pointer-events-none"></div>
 
                 <!-- Interactive Timeline Graphic -->
@@ -198,7 +190,7 @@
             <!-- Sidebar Selection List -->
             <div id="products-sidebar" class="md:col-span-2 space-y-4">
                 <!-- Product 1 Header Button -->
-                <div onclick="selectProductSpotlight(1)" id="prodTab-1" class="glass-panel p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-[#00B8D9] spotlight-active flex items-center justify-between">
+                <div onclick="selectProductSpotlight(1)" id="prodTab-1" class="glass-panel pop-card p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-[#00B8D9] spotlight-active flex items-center justify-between">
                     <div>
                         <h4 class="font-bold text-sm tracking-wide text-white">Sliding Windows</h4>
                         <span class="text-[10px] text-slate-500">Premium slim profiles</span>
@@ -206,7 +198,7 @@
                     <span class="text-[#00B8D9] text-xs font-bold"><i class="fa-solid fa-angle-right"></i></span>
                 </div>
                 <!-- Product 2 Header Button -->
-                <div onclick="selectProductSpotlight(2)" id="prodTab-2" class="glass-panel p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
+                <div onclick="selectProductSpotlight(2)" id="prodTab-2" class="glass-panel pop-card p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
                     <div>
                         <h4 class="font-bold text-sm tracking-wide text-white">Sliding Doors</h4>
                         <span class="text-[10px] text-slate-500">Panoramic luxury sliding panels</span>
@@ -214,7 +206,7 @@
                     <span class="text-slate-500 text-xs font-bold"><i class="fa-solid fa-angle-right"></i></span>
                 </div>
                 <!-- Product 3 Header Button -->
-                <div onclick="selectProductSpotlight(3)" id="prodTab-3" class="glass-panel p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
+                <div onclick="selectProductSpotlight(3)" id="prodTab-3" class="glass-panel pop-card p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
                     <div>
                         <h4 class="font-bold text-sm tracking-wide text-white">Glass Partitions</h4>
                         <span class="text-[10px] text-slate-500">Office & Home frameless glass</span>
@@ -222,7 +214,7 @@
                     <span class="text-slate-500 text-xs font-bold"><i class="fa-solid fa-angle-right"></i></span>
                 </div>
                 <!-- Product 4 Header Button -->
-                <div onclick="selectProductSpotlight(4)" id="prodTab-4" class="glass-panel p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
+                <div onclick="selectProductSpotlight(4)" id="prodTab-4" class="glass-panel pop-card p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
                     <div>
                         <h4 class="font-bold text-sm tracking-wide text-white">Shower Cubicles</h4>
                         <span class="text-[10px] text-slate-500">Custom premium cubicle glass</span>
@@ -230,7 +222,7 @@
                     <span class="text-slate-500 text-xs font-bold"><i class="fa-solid fa-angle-right"></i></span>
                 </div>
                 <!-- Product 5 Header Button -->
-                <div onclick="selectProductSpotlight(5)" id="prodTab-5" class="glass-panel p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
+                <div onclick="selectProductSpotlight(5)" id="prodTab-5" class="glass-panel pop-card p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
                     <div>
                         <h4 class="font-bold text-sm tracking-wide text-white">Glass Railings</h4>
                         <span class="text-[10px] text-slate-500">Minimal safety railings</span>
@@ -302,7 +294,7 @@
         <div class="flex overflow-hidden relative w-full z-10 py-2 marquee-mask">
             <div id="marqueeList" class="flex space-x-6 animate-marquee whitespace-nowrap min-w-full py-4">
                 <!-- Will be dynamically populated in real-time -->
-                <div class="glass-panel p-6 rounded-2xl inline-block w-80 shrink-0 text-slate-300">
+                <div class="glass-panel pop-card p-6 rounded-2xl inline-block w-80 shrink-0 text-slate-300">
                     <p class="text-xs leading-relaxed font-light whitespace-normal italic">Loading real-time client reviews...</p>
                 </div>
             </div>
@@ -318,37 +310,37 @@
 
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
             <!-- Card 1 -->
-            <div class="glass-panel p-6 rounded-2xl space-y-3">
+            <div class="glass-panel pop-card p-6 rounded-2xl space-y-3">
                 <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-business-time text-accent-glow"></i></span>
                 <h4 class="font-bold text-sm text-white">50 Years of Excellence</h4>
                 <p class="text-slate-400 text-xs leading-relaxed font-light">An unbroken timeline of delivering quality, performance, and trusted family reliability on every single commission.</p>
             </div>
             <!-- Card 2 -->
-            <div class="glass-panel p-6 rounded-2xl space-y-3">
+            <div class="glass-panel pop-card p-6 rounded-2xl space-y-3">
                 <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-gem text-accent-glow"></i></span>
                 <h4 class="font-bold text-sm text-white">Premium Quality Materials</h4>
                 <p class="text-slate-400 text-xs leading-relaxed font-light">We exclusively utilize top-grade toughened float glass paired with anodized heavy-duty structural aluminium.</p>
             </div>
             <!-- Card 3 -->
-            <div class="glass-panel p-6 rounded-2xl space-y-3">
+            <div class="glass-panel pop-card p-6 rounded-2xl space-y-3">
                 <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-users-gear text-accent-glow"></i></span>
                 <h4 class="font-bold text-sm text-white">Skilled Installation Team</h4>
                 <p class="text-slate-400 text-xs leading-relaxed font-light">We deploy certified field glaziers to verify dimensions, site installation layouts, and seamless anchoring.</p>
             </div>
             <!-- Card 4 -->
-            <div class="glass-panel p-6 rounded-2xl space-y-3">
+            <div class="glass-panel pop-card p-6 rounded-2xl space-y-3">
                 <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-file-invoice text-accent-glow"></i></span>
                 <h4 class="font-bold text-sm text-white">Personalized Quotations</h4>
                 <p class="text-slate-400 text-xs leading-relaxed font-light">Our team will review your custom size requirements and contact you with a personalized quotation after submission.</p>
             </div>
             <!-- Card 5 -->
-            <div class="glass-panel p-6 rounded-2xl space-y-3">
+            <div class="glass-panel pop-card p-6 rounded-2xl space-y-3">
                 <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-certificate text-accent-glow"></i></span>
                 <h4 class="font-bold text-sm text-white">Thousands of Customers</h4>
                 <p class="text-slate-400 text-xs leading-relaxed font-light">Thousands of private residences, commercial showrooms, and housing complexes have trusted us since 1976.</p>
             </div>
             <!-- Card 6 -->
-            <div class="glass-panel p-6 rounded-2xl space-y-3">
+            <div class="glass-panel pop-card p-6 rounded-2xl space-y-3">
                 <span class="text-[#00B8D9] text-2xl font-bold"><i class="fa-solid fa-headset text-accent-glow"></i></span>
                 <h4 class="font-bold text-sm text-white">Reliable After-Sales Support</h4>
                 <p class="text-slate-400 text-xs leading-relaxed font-light">Direct priority channels built to file swift service inquiries or complaint reviews directly onto owner screens.</p>
@@ -358,7 +350,7 @@
 
     <!-- SECTION 7: PLACE ORDER / SPEC CONFIGURATOR CENTER (THE HUB) -->
     <section id="configurator" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
-        <div id="configurator-card" class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden bg-slate-950/40">
+        <div id="configurator-card" class="glass-panel pop-card rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden bg-slate-950/40">
             <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent pointer-events-none"></div>
             
             <div class="flex flex-col sm:flex-row items-center justify-between border-b border-slate-850 pb-5 mb-8 gap-4">
@@ -587,7 +579,7 @@
 
     <!-- SECTION 6.5: VISIT OUR SHOWROOM (GOOGLE MAPS ROUTING) -->
     <section id="showroom" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
-        <div class="glass-panel rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-indigo-500/20 shadow-2xl">
+        <div class="glass-panel pop-card rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-indigo-500/20 shadow-2xl">
             <!-- Glow background decor -->
             <div class="absolute -right-24 -bottom-24 w-80 h-80 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none"></div>
             <div class="absolute -left-24 -top-24 w-80 h-80 rounded-full bg-emerald-650/5 blur-3xl pointer-events-none"></div>
@@ -663,7 +655,7 @@
                     <img src="img_logo.svg" alt="Ajanta Logo" class="h-10 w-10 object-contain bg-black p-0.5 rounded-xl border border-white/10 shrink-0">
 
                     <span class="font-syne font-black tracking-widest text-base text-white">AJANTA</span>
-                    <span class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full font-mono">v1.2</span>
+                    
                 </div>
                 <p class="text-xs text-slate-400 leading-relaxed font-light">
                     Delivering premium architectural glazing and precision glass customization across generations. Combining legacy with innovative engineering.
@@ -717,7 +709,7 @@
 
     <!-- SUCCESS DYNAMIC MODAL POPUP -->
     <div id="successModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-panel p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl relative animate-fade-in border border-indigo-500/25">
+        <div class="glass-panel pop-card p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl relative animate-fade-in border border-indigo-500/25">
             <div class="w-14 h-14 bg-emerald-900/50 text-emerald-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 border border-emerald-800/20 shadow-lg animate-pulse">
                 <i class="fa fa-circle-check"></i>
             </div>
@@ -733,7 +725,7 @@
 
     <!-- SUBMIT REVIEW MODAL -->
     <div id="reviewModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-md w-full relative space-y-6 shadow-2xl border border-indigo-500/15">
+        <div class="glass-panel pop-card p-6 md:p-8 rounded-3xl max-w-md w-full relative space-y-6 shadow-2xl border border-indigo-500/15">
             <button onclick="closeReviewModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -781,7 +773,7 @@
 
     <!-- ADMIN LOGIN MODAL -->
     <div id="adminLoginModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-panel p-8 rounded-3xl max-w-sm w-full relative space-y-6 shadow-2xl border border-indigo-500/20 animate-fade-in">
+        <div class="glass-panel pop-card p-8 rounded-3xl max-w-sm w-full relative space-y-6 shadow-2xl border border-indigo-500/20 animate-fade-in">
             <button onclick="closeAdminLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -822,7 +814,7 @@
 
     <!-- ADMIN PORTAL / DASHBOARD MODAL -->
     <div id="adminDashboardModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-4xl w-full h-[90vh] md:h-[80vh] flex flex-col relative shadow-2xl border border-indigo-500/20 animate-fade-in">
+        <div class="glass-panel pop-card p-6 md:p-8 rounded-3xl max-w-4xl w-full h-[90vh] md:h-[80vh] flex flex-col relative shadow-2xl border border-indigo-500/20 animate-fade-in">
             <button onclick="closeAdminDashboard()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
@@ -907,7 +899,7 @@
 
                 <!-- TOOLS & SETTINGS TAB CONTENT -->
                 <div id="adminTab-tools" class="space-y-6 hidden">
-                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="glass-panel pop-card p-6 rounded-2xl border border-slate-800 space-y-4">
                         <h4 class="text-sm font-syne font-black text-white uppercase tracking-wider">System Database Backup</h4>
                         <p class="text-xs text-slate-400 leading-relaxed">Download a complete snapshot of current database contents (Testimonials and Client Specification Inquiries) to backup or migrate to another system.</p>
                         <div class="flex flex-wrap gap-3">
@@ -920,7 +912,7 @@
                         </div>
                     </div>
 
-                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="glass-panel pop-card p-6 rounded-2xl border border-slate-800 space-y-4">
                         <h4 class="text-sm font-syne font-black text-white uppercase tracking-wider">Storage Configuration</h4>
                         <p class="text-xs text-slate-400 leading-relaxed">Your data is locked with the unique cryptographic hash of user account <strong id="debugAdminUser">sunny</strong>. No other tenant can view or alter your leads.</p>
                         <div class="text-[10px] text-slate-500 font-mono bg-slate-950 p-3 rounded-lg border border-slate-900 break-all select-all" id="storageDebugInfo">

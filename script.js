@@ -1289,3 +1289,106 @@ function handleLogoClick(e) {
         openAdminPortal();
     }
 }
+
+
+/* ==========================================================================
+   POP-OUT & SCROLL ENTRANCE ANIMATIONS (GSAP ScrollTrigger + IntersectionObserver)
+   ========================================================================== */
+function initPopOutAnimations() {
+    // 1. Add reveal-pop class to all major elements if not present
+    const selectors = [
+        "section > div",
+        ".glass-panel",
+        ".grid > div",
+        "header",
+        "#hero h1",
+        "#hero p",
+        "#hero .inline-flex",
+        "#legacy .border-l-2 > div",
+        "#products .grid > div",
+        "#why-choose .grid > div",
+        "#configurator .grid > div",
+        "#showroom .grid > div",
+        ".animate-marquee"
+    ];
+
+    selectors.forEach(sel => {
+        document.querySelectorAll(sel).forEach((el, idx) => {
+            if (!el.classList.contains("reveal-pop") && !el.classList.contains("no-pop")) {
+                el.classList.add("reveal-pop");
+            }
+        });
+    });
+
+    // 2. GSAP ScrollTrigger Integration
+    if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
+        gsap.registerPlugin(ScrollTrigger);
+
+        document.querySelectorAll(".reveal-pop").forEach((el) => {
+            gsap.fromTo(el, 
+                { opacity: 0, scale: 0.86, y: 45 },
+                {
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                    duration: 0.7,
+                    ease: "back.out(1.5)",
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 88%",
+                        toggleActions: "play none none none"
+                    }
+                }
+            );
+        });
+
+        // 3D Parallax Tilt Effect on Pop Cards
+        document.querySelectorAll(".pop-card, .glass-panel, .product-card").forEach((card) => {
+            card.addEventListener("mousemove", (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                const rotateX = (-y / rect.height) * 12;
+                const rotateY = (x / rect.width) * 12;
+
+                gsap.to(card, {
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    scale: 1.03,
+                    transformPerspective: 1000,
+                    duration: 0.25,
+                    ease: "power1.out"
+                });
+            });
+
+            card.addEventListener("mouseleave", () => {
+                gsap.to(card, {
+                    rotateX: 0,
+                    rotateY: 0,
+                    scale: 1,
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            });
+        });
+    } else {
+        // Fallback: IntersectionObserver for smooth reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll(".reveal-pop").forEach(el => observer.observe(el));
+    }
+}
+
+// Auto Initialize on DOM Ready
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initPopOutAnimations);
+} else {
+    initPopOutAnimations();
+}
