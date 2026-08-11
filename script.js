@@ -1328,13 +1328,84 @@ function closeLightbox() {
 let logoClickCount = 0;
 let logoClickTimer = null;
 
+// 5-Click Secret Admin Portal Trigger with Bouncy Animation & Progress Toast
+let logoClickCount = 0;
+let logoClickTimer = null;
+
+function showClickToast(count) {
+    let toast = document.getElementById("adminClickToast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "adminClickToast";
+        toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-slate-900/95 text-cyan-400 border border-cyan-500/50 px-5 py-2.5 rounded-full shadow-2xl shadow-cyan-500/30 text-xs font-bold tracking-wider uppercase backdrop-blur-md flex items-center gap-2 transition-all duration-300 pointer-events-none opacity-0 transform translate-y-4";
+        document.body.appendChild(toast);
+    }
+    
+    if (count >= 5) {
+        toast.innerHTML = '<i class="fa-solid fa-unlock text-emerald-400 animate-bounce"></i> <span class="text-emerald-300">Admin Portal Unlocked!</span>';
+        toast.style.opacity = "1";
+        toast.style.transform = "translate(-50%, 0) scale(1.1)";
+    } else {
+        toast.innerHTML = `<i class="fa-solid fa-key text-cyan-400 animate-pulse"></i> <span>Admin Secret: ${count} / 5 Clicks</span>`;
+        toast.style.opacity = "1";
+        toast.style.transform = "translate(-50%, 0) scale(1.05)";
+        setTimeout(() => {
+            if (toast) toast.style.transform = "translate(-50%, 0) scale(1)";
+        }, 120);
+    }
+
+    if (toast.hideTimer) clearTimeout(toast.hideTimer);
+    toast.hideTimer = setTimeout(() => {
+        if (toast) {
+            toast.style.opacity = "0";
+            toast.style.transform = "translate(-50%, 20px) scale(0.9)";
+        }
+    }, 2200);
+}
+
 function handleLogoClick(e) {
+    if (e) {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+    }
+    
     logoClickCount++;
     if (logoClickTimer) clearTimeout(logoClickTimer);
     
+    // Animate clicked logo element with spring pop
+    const target = (e && e.currentTarget) ? e.currentTarget : document.querySelector("header img");
+    if (target) {
+        if (typeof gsap !== "undefined") {
+            gsap.killTweensOf(target);
+            gsap.fromTo(target, 
+                { scale: 0.8, rotate: -12 }, 
+                { scale: 1.3, rotate: 0, duration: 0.18, ease: "back.out(2.5)", onComplete: () => {
+                    gsap.to(target, { scale: 1, duration: 0.25, ease: "power2.out" });
+                }}
+            );
+        } else {
+            target.style.transition = "transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)";
+            target.style.transform = "scale(1.3) rotate(-10deg)";
+            setTimeout(() => {
+                target.style.transform = "scale(1) rotate(0deg)";
+            }, 180);
+        }
+    }
+
+    showClickToast(logoClickCount);
+
     logoClickTimer = setTimeout(() => {
         logoClickCount = 0;
-    }, 2500);
+    }, 3000);
+
+    if (logoClickCount >= 5) {
+        logoClickCount = 0;
+        if (logoClickTimer) clearTimeout(logoClickTimer);
+        setTimeout(() => {
+            openAdminPortal();
+        }, 250);
+    }
+}, 2500);
 
     if (logoClickCount >= 5) {
         if (e) e.preventDefault();
