@@ -1046,8 +1046,8 @@ function renderAdminLeads() {
             <div class="space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-800">
                     <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Submitted Quotes & Requirements (${leads.length})</span>
-                    <button onclick="exportLeadsCsv()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-file-csv"></i> Export CSV
+                    <button onclick="exportLeadsExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-file-excel text-white"></i> Export Excel Sheet
                     </button>
                 </div>
                 <div class="overflow-x-auto">
@@ -1123,11 +1123,65 @@ function deleteReview(index) {
     }
 }
 
-function exportLeadsCsv() {
+function exportLeadsExcel() {
     const leads = getStoredLeads();
-    let csv = "Date,Name,Phone,Address,Items,TotalEst\n";
-    leads.forEach(l => {
-        csv += `"${l.date}","${l.name}","${l.phone}","${l.address}",${l.itemCount},"${l.totalEst}"\n`;
+    if (!leads || leads.length === 0) {
+        alert("No leads/inquiries found to export.");
+        return;
+    }
+
+    let excelHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' +
+    '<head>' +
+        '<meta charset="utf-8">' +
+        '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Ajanta Glass Inquiries</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' +
+        '<style>' +
+            'body { font-family: Arial, sans-serif; }' +
+            'th { background-color: #0284C7; color: #FFFFFF; font-weight: bold; border: 1px solid #00B8D9; padding: 10px; font-size: 11pt; }' +
+            'td { border: 1px solid #CBD5E1; padding: 8px; font-size: 10pt; vertical-align: middle; }' +
+            '.header-title { font-size: 16pt; font-weight: bold; color: #0F172A; text-align: center; background-color: #E0F2FE; border: none; }' +
+            '.header-subtitle { font-size: 10pt; color: #0284C7; text-align: center; border: none; }' +
+            '.num { text-align: right; }' +
+            '.center { text-align: center; }' +
+        '</style>' +
+    '</head>' +
+    '<body>' +
+        '<table>' +
+            '<tr><td colspan="6" class="header-title">AJANTA DOOR &amp; WINDOW SYSTEMS</td></tr>' +
+            '<tr><td colspan="6" class="header-subtitle">Client Inquiries &amp; Quotations Master Register</td></tr>' +
+            '<tr><td colspan="6" style="border:none; font-size:9pt; color:#64748B;">Exported Date: ' + new Date().toLocaleString() + '</td></tr>' +
+            '<tr></tr>' +
+            '<tr>' +
+                '<th>Date &amp; Time</th>' +
+                '<th>Client Name</th>' +
+                '<th>Phone / WhatsApp</th>' +
+                '<th>Location / Address</th>' +
+                '<th>Total Items</th>' +
+                '<th>Estimated Amount (₹)</th>' +
+            '</tr>' +
+            leads.map(l => 
+                '<tr>' +
+                    '<td>' + escapeHtml(l.date || "") + '</td>' +
+                    '<td><b>' + escapeHtml(l.name || "") + '</b></td>' +
+                    '<td>' + escapeHtml(l.phone || "") + '</td>' +
+                    '<td>' + escapeHtml(l.address || "") + '</td>' +
+                    '<td class="center"><b>' + (l.itemCount || 1) + '</b></td>' +
+                    '<td class="num"><b>' + escapeHtml(l.totalEst || "N/A") + '</b></td>' +
+                '</tr>'
+            ).join('') +
+        '</table>' +
+    '</body>' +
+    '</html>';
+
+    const blob = new Blob(['\ufeff' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "Ajanta_Glass_Leads_" + new Date().toISOString().split("T")[0] + ".xls";
+    link.click();
+}
+
+function exportLeadsCsv() {
+    exportLeadsExcel();
+}","${l.name}","${l.phone}","${l.address}",${l.itemCount},"${l.totalEst}"\n`;
     });
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
