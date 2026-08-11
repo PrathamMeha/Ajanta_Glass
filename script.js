@@ -1181,14 +1181,6 @@ function exportLeadsExcel() {
 
 function exportLeadsCsv() {
     exportLeadsExcel();
-}","${l.name}","${l.phone}","${l.address}",${l.itemCount},"${l.totalEst}"\n`;
-    });
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `Ajanta_Glass_Leads_${new Date().toISOString().split("T")[0]}.csv`;
-    link.click();
 }
 
 // Auto Initialize Reviews on Page Load
@@ -1323,11 +1315,6 @@ function closeLightbox() {
     if (modal) modal.classList.add("hidden");
 }
 
-
-// 5-Click Secret Admin Portal Trigger
-let logoClickCount = 0;
-let logoClickTimer = null;
-
 // 5-Click Secret Admin Portal Trigger with Bouncy Animation & Progress Toast
 let logoClickCount = 0;
 let logoClickTimer = null;
@@ -1342,13 +1329,13 @@ function showClickToast(count) {
     }
     
     if (count >= 5) {
-        toast.innerHTML = '<i class="fa-solid fa-unlock text-emerald-400 animate-bounce"></i> <span class="text-emerald-300">Admin Portal Unlocked!</span>';
+        toast.innerHTML = '<i class="fa-solid fa-unlock text-emerald-400 animate-bounce"></i> <span class="text-emerald-300 font-extrabold">Admin Portal Unlocked!</span>';
         toast.style.opacity = "1";
-        toast.style.transform = "translate(-50%, 0) scale(1.1)";
+        toast.style.transform = "translate(-50%, 0) scale(1.15)";
     } else {
-        toast.innerHTML = `<i class="fa-solid fa-key text-cyan-400 animate-pulse"></i> <span>Admin Secret: ${count} / 5 Clicks</span>`;
+        toast.innerHTML = `<i class="fa-solid fa-key text-cyan-400 animate-pulse"></i> <span>Admin Secret: <strong class="text-white font-mono font-bold">${count} / 5</strong> Clicks</span>`;
         toast.style.opacity = "1";
-        toast.style.transform = "translate(-50%, 0) scale(1.05)";
+        toast.style.transform = "translate(-50%, 0) scale(1.08)";
         setTimeout(() => {
             if (toast) toast.style.transform = "translate(-50%, 0) scale(1)";
         }, 120);
@@ -1372,20 +1359,26 @@ function handleLogoClick(e) {
     logoClickCount++;
     if (logoClickTimer) clearTimeout(logoClickTimer);
     
-    // Animate clicked logo element with spring pop
-    const target = (e && e.currentTarget) ? e.currentTarget : document.querySelector("header img");
+    // Target logo element to animate
+    let target = null;
+    if (e && e.currentTarget) {
+        target = e.currentTarget.querySelector("img") || e.currentTarget;
+    } else {
+        target = document.querySelector("header img");
+    }
+
     if (target) {
         if (typeof gsap !== "undefined") {
             gsap.killTweensOf(target);
             gsap.fromTo(target, 
-                { scale: 0.8, rotate: -12 }, 
-                { scale: 1.3, rotate: 0, duration: 0.18, ease: "back.out(2.5)", onComplete: () => {
+                { scale: 0.7, rotate: -15 }, 
+                { scale: 1.4, rotate: 0, duration: 0.2, ease: "back.out(3.0)", onComplete: () => {
                     gsap.to(target, { scale: 1, duration: 0.25, ease: "power2.out" });
                 }}
             );
         } else {
             target.style.transition = "transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)";
-            target.style.transform = "scale(1.3) rotate(-10deg)";
+            target.style.transform = "scale(1.4) rotate(-12deg)";
             setTimeout(() => {
                 target.style.transform = "scale(1) rotate(0deg)";
             }, 180);
@@ -1403,18 +1396,9 @@ function handleLogoClick(e) {
         if (logoClickTimer) clearTimeout(logoClickTimer);
         setTimeout(() => {
             openAdminPortal();
-        }, 250);
-    }
-}, 2500);
-
-    if (logoClickCount >= 5) {
-        if (e) e.preventDefault();
-        logoClickCount = 0;
-        if (logoClickTimer) clearTimeout(logoClickTimer);
-        openAdminPortal();
+        }, 200);
     }
 }
-
 
 /* ==========================================================================
    POP-OUT & SCROLL ENTRANCE ANIMATIONS (GSAP ScrollTrigger + IntersectionObserver)
