@@ -1315,11 +1315,13 @@ function closeLightbox() {
     if (modal) modal.classList.add("hidden");
 }
 
-// 5-Click Secret Admin Portal Trigger with Bouncy Animation & Progress Toast
+// 5-Click Secret Admin Portal Trigger
 let logoClickCount = 0;
 let logoClickTimer = null;
 
 function showClickToast(count) {
+    if (count < 5) return; // Do NOT show any attempts/counter toast for 1-4 clicks
+    
     let toast = document.getElementById("adminClickToast");
     if (!toast) {
         toast = document.createElement("div");
@@ -1328,18 +1330,9 @@ function showClickToast(count) {
         document.body.appendChild(toast);
     }
     
-    if (count >= 5) {
-        toast.innerHTML = '<i class="fa-solid fa-unlock text-emerald-400 animate-bounce"></i> <span class="text-emerald-300 font-extrabold">Admin Portal Unlocked!</span>';
-        toast.style.opacity = "1";
-        toast.style.transform = "translate(-50%, 0) scale(1.15)";
-    } else {
-        toast.innerHTML = `<i class="fa-solid fa-key text-cyan-400 animate-pulse"></i> <span>Admin Secret: <strong class="text-white font-mono font-bold">${count} / 5</strong> Clicks</span>`;
-        toast.style.opacity = "1";
-        toast.style.transform = "translate(-50%, 0) scale(1.08)";
-        setTimeout(() => {
-            if (toast) toast.style.transform = "translate(-50%, 0) scale(1)";
-        }, 120);
-    }
+    toast.innerHTML = '<i class="fa-solid fa-unlock text-emerald-400 animate-bounce"></i> <span class="text-emerald-300 font-extrabold">Admin Portal Unlocked!</span>';
+    toast.style.opacity = "1";
+    toast.style.transform = "translate(-50%, 0) scale(1.15)";
 
     if (toast.hideTimer) clearTimeout(toast.hideTimer);
     toast.hideTimer = setTimeout(() => {
@@ -1347,7 +1340,7 @@ function showClickToast(count) {
             toast.style.opacity = "0";
             toast.style.transform = "translate(-50%, 20px) scale(0.9)";
         }
-    }, 2200);
+    }, 2500);
 }
 
 function handleLogoClick(e) {
@@ -1359,7 +1352,7 @@ function handleLogoClick(e) {
     logoClickCount++;
     if (logoClickTimer) clearTimeout(logoClickTimer);
     
-    // Target logo element to animate
+    // Animate logo spring effect on every click
     let target = null;
     if (e && e.currentTarget) {
         target = e.currentTarget.querySelector("img") || e.currentTarget;
@@ -1385,13 +1378,12 @@ function handleLogoClick(e) {
         }
     }
 
-    showClickToast(logoClickCount);
-
     logoClickTimer = setTimeout(() => {
         logoClickCount = 0;
     }, 3000);
 
     if (logoClickCount >= 5) {
+        showClickToast(logoClickCount);
         logoClickCount = 0;
         if (logoClickTimer) clearTimeout(logoClickTimer);
         setTimeout(() => {
