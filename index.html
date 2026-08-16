@@ -841,34 +841,15 @@
                 </div>
             </div>
 
-            <!-- Stats Bar -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-slate-950/50 border border-slate-800/80 p-4 rounded-2xl text-center">
-                    <div id="statTotalLeads" class="text-2xl font-syne font-black text-indigo-400">0</div>
-                    <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mt-1">Total Inquiries</div>
-                </div>
-                <div class="bg-slate-950/50 border border-slate-800/80 p-4 rounded-2xl text-center">
-                    <div id="statTotalSupport" class="text-2xl font-syne font-black text-amber-400">0</div>
-                    <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mt-1">Support Tickets</div>
-                </div>
-                <div class="bg-slate-950/50 border border-slate-800/80 p-4 rounded-2xl text-center">
-                    <div id="statTotalReviews" class="text-2xl font-syne font-black text-pink-400">0</div>
-                    <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mt-1">Live Testimonials</div>
-                </div>
-                <div class="bg-slate-950/50 border border-slate-800/80 p-4 rounded-2xl text-center">
-                    <div class="text-xs font-black text-emerald-400 flex items-center justify-center gap-1.5 h-8 mt-1">
-                        <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping"></span> Live
-                    </div>
-                    <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Server Connection</div>
-                </div>
-            </div>
-
             <!-- Tabs Navigation -->
             <div class="flex border-b border-slate-800 mb-6 text-xs font-bold tracking-wider uppercase">
-                <button onclick="switchAdminTab('leads')" id="tabBtn-leads" class="border-b-2 border-indigo-500 text-white px-4 py-2.5 transition">
-                    Inquiries & Leads (<span id="tabCountLeads">0</span>)
+                <button onclick="switchAdminTab('leads')" id="tabBtn-leads" class="border-b-2 border-cyan-400 text-cyan-400 font-bold px-4 py-2.5 transition whitespace-nowrap">
+                    Inquiries (<span id="tabCountLeads">0</span>)
                 </button>
-                <button onclick="switchAdminTab('reviews')" id="tabBtn-reviews" class="border-b-2 border-transparent text-slate-400 hover:text-white px-4 py-2.5 transition">
+                <button onclick="switchAdminTab('products')" id="tabBtn-products" class="border-b-2 border-transparent text-slate-400 hover:text-white px-4 py-2.5 transition whitespace-nowrap">
+                    Products Catalog (<span id="tabCountProducts">0</span>)
+                </button>
+                <button onclick="switchAdminTab('reviews')" id="tabBtn-reviews" class="border-b-2 border-transparent text-slate-400 hover:text-white px-4 py-2.5 transition whitespace-nowrap">
                     Testimonials (<span id="tabCountReviews">0</span>)
                 </button>
                 <button onclick="switchAdminTab('tools')" id="tabBtn-tools" class="border-b-2 border-transparent text-slate-400 hover:text-white px-4 py-2.5 transition">
@@ -891,6 +872,29 @@
                 </div>
 
                 <!-- REVIEWS TAB CONTENT -->
+                <!-- PRODUCTS TAB CONTENT -->
+                <div id="adminTab-products" class="space-y-4 hidden">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800 flex-wrap gap-2">
+                        <div>
+                            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Product Catalog Management</span>
+                            <p class="text-[11px] text-slate-500 font-normal">Add, edit or remove architectural products. Added items appear on the website immediately.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="resetDefaultProducts()" class="bg-slate-900 hover:bg-slate-800 text-slate-400 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-slate-800 transition">
+                                <i class="fa-solid fa-rotate-left mr-1"></i> Reset Defaults
+                            </button>
+                            <button onclick="toggleAddProductModal(true)" class="bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 transition cursor-pointer">
+                                <i class="fa-solid fa-plus"></i> Add New Product
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid Container -->
+                    <div id="adminProductsContainer" class="grid sm:grid-cols-2 gap-4">
+                        <!-- Dynamic Product Admin Cards -->
+                    </div>
+                </div>
+
                 <div id="adminTab-reviews" class="space-y-4 hidden">
                     <div id="reviewsListContainer" class="grid sm:grid-cols-2 gap-4">
                         <!-- Mini cards for testimonials management -->
@@ -1065,5 +1069,85 @@
     </div>
 
     <script src="script.js"></script>
+
+    <!-- ADD / EDIT PRODUCT MODAL -->
+    <div id="addProductModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[60] flex items-center justify-center p-4 hidden">
+        <div class="glass-panel pop-card p-6 md:p-8 rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl border border-cyan-500/30 animate-fade-in">
+            <button onclick="toggleAddProductModal(false)" class="absolute top-6 right-6 text-slate-400 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-cyan-950/80 text-cyan-400 rounded-xl flex items-center justify-center text-lg border border-cyan-800/30 shadow-md">
+                    <i class="fa-solid fa-boxes-packing"></i>
+                </div>
+                <div>
+                    <h3 id="productFormTitle" class="text-lg font-syne font-bold text-white uppercase tracking-wider">Add New Product</h3>
+                    <p class="text-xs text-slate-400">Fill in details to publish a new product on the live website.</p>
+                </div>
+            </div>
+
+            <form id="productForm" onsubmit="saveProductSubmit(event)" class="space-y-4">
+                <input type="hidden" id="prodFormId" value="">
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Product Title *</label>
+                    <input type="text" id="prodFormTitle" required placeholder="e.g. Aluminium Louver Windows" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Tagline / Subtitle *</label>
+                        <input type="text" id="prodFormSubtitle" required placeholder="e.g. Architectural airflow louvers" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Category Badge *</label>
+                        <input type="text" id="prodFormBadge" required placeholder="e.g. Sun Control & Ventilation" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Preset Image Options</label>
+                        <select id="prodFormPresetImg" onchange="applyPresetImage(this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500">
+                            <option value="">Custom Image URL</option>
+                            <option value="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80">Sliding Windows</option>
+                            <option value="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80">Sliding Doors</option>
+                            <option value="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80">Glass Partition</option>
+                            <option value="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80">Shower Cubicle</option>
+                            <option value="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80">Glass Railings</option>
+                            <option value="https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=800&q=80">Facade Glazing</option>
+                            <option value="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80">Skylight / Dome</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Product Image URL *</label>
+                    <input type="url" id="prodFormImage" required placeholder="https://images.unsplash.com/..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Detailed Description *</label>
+                    <textarea id="prodFormDesc" rows="3" required placeholder="Describe specifications, glass thickness, thermal insulation, or hardware..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Key Features (comma separated) *</label>
+                    <input type="text" id="prodFormFeatures" required placeholder="e.g. Noise Reduction, Weather Proof, Double Glazed, Custom Color" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
+                    <button type="button" onclick="toggleAddProductModal(false)" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-400 text-xs font-bold rounded-xl transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white text-xs font-bold rounded-xl shadow-lg shadow-cyan-500/20 transition cursor-pointer">
+                        <i class="fa-solid fa-check mr-1.5"></i> Save &amp; Publish Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>

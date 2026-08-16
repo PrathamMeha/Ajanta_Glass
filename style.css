@@ -109,39 +109,27 @@ body {
     transform: scale(1) translateY(0);
 }
 
-/* Dynamic Interactive Pop-Out Card Styles */
+/* Dynamic Interactive Card Styles - Clean & Stable */
 .glass-panel, .pop-card, .product-card, .feature-card, .stat-card {
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-                box-shadow 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-                border-color 0.3s ease,
-                background-color 0.3s ease !important;
-    will-change: transform, box-shadow;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .glass-panel:hover, .pop-card:hover, .product-card:hover, .feature-card:hover, .stat-card:hover {
-    transform: translateY(-8px) scale(1.025) !important;
-    box-shadow: 0 20px 40px -10px rgba(0, 184, 217, 0.35), 0 0 25px rgba(0, 184, 217, 0.25) !important;
-    border-color: rgba(0, 184, 217, 0.6) !important;
+    border-color: rgba(0, 184, 217, 0.4) !important;
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.5) !important;
 }
 
-.glass-panel:active, .pop-card:active, .product-card:active {
-    transform: translateY(-2px) scale(0.98) !important;
-}
-
-/* Pop-Out Buttons */
+/* Stable Buttons */
 button, a.bg-gradient-to-r, .pop-btn {
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-                box-shadow 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-                filter 0.2s ease !important;
+    transition: opacity 0.2s ease, background-color 0.2s ease, border-color 0.2s ease !important;
 }
 
 button:hover, a.bg-gradient-to-r:hover, .pop-btn:hover {
-    transform: translateY(-3px) scale(1.04) !important;
-    box-shadow: 0 12px 28px -6px rgba(0, 184, 217, 0.45) !important;
+    opacity: 0.95;
 }
 
 button:active, a.bg-gradient-to-r:active, .pop-btn:active {
-    transform: translateY(1px) scale(0.95) !important;
+    opacity: 0.85;
 }
 
 /* Smooth Entrance Classes */
