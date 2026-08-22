@@ -1741,6 +1741,44 @@ function applyPresetImage(url) {
     }
 }
 
+async function handleMainProductFileUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        alert("Please choose a valid image file");
+        return;
+    }
+
+    try {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+                const maxWidth = 1200;
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+                const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+                const imgInput = document.getElementById("prodFormImage");
+                if (imgInput) imgInput.value = dataUrl;
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    } catch (err) {
+        console.error("Upload error:", err);
+    }
+}
+
 function saveProductSubmit(e) {
     if (e) e.preventDefault();
 

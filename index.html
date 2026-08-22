@@ -910,26 +910,34 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Preset Image Options</label>
-                        <select id="prodFormPresetImg" onchange="applyPresetImage(this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500">
-                            <option value="">Custom Image URL</option>
-                            <option value="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80">Sliding Windows</option>
-                            <option value="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80">Sliding Doors</option>
-                            <option value="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80">Glass Partition</option>
-                            <option value="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80">Shower Cubicle</option>
-                            <option value="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80">Glass Railings</option>
-                            <option value="https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=800&q=80">Facade Glazing</option>
-                            <option value="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80">Skylight / Dome</option>
-                        </select>
-                    </div>
-                </div>
-
+                <!-- Product Image Section -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Product Image URL *</label>
-                    <input type="url" id="prodFormImage" required placeholder="https://images.unsplash.com/..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Product Image *</label>
+                    
+                    <label for="mainProdFileInput" class="flex flex-col items-center justify-center p-3.5 border-2 border-dashed border-slate-800 hover:border-cyan-500/60 rounded-xl bg-slate-950/60 hover:bg-slate-900/60 transition cursor-pointer group text-center mb-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-cyan-400 text-lg mb-1 group-hover:scale-110 transition"></i>
+                        <span class="text-xs font-bold text-white">Choose photo from phone/PC</span>
+                        <span class="text-[10px] text-slate-500">Auto-compressed JPG, PNG, WebP</span>
+                        <input type="file" id="mainProdFileInput" accept="image/*" onchange="handleMainProductFileUpload(event)" class="hidden">
+                    </label>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <select id="prodFormPresetImg" onchange="applyPresetImage(this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-cyan-500">
+                                <option value="">Or Select Preset Photo...</option>
+                                <option value="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80">Sliding Windows</option>
+                                <option value="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80">Sliding Doors</option>
+                                <option value="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80">Glass Partition</option>
+                                <option value="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80">Shower Cubicle</option>
+                                <option value="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80">Glass Railings</option>
+                                <option value="https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=800&q=80">Facade Glazing</option>
+                                <option value="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80">Skylight / Dome</option>
+                            </select>
+                        </div>
+                        <div>
+                            <input type="text" id="prodFormImage" required placeholder="Or paste image URL" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                        </div>
+                    </div>
                 </div>
 
                 <div>
