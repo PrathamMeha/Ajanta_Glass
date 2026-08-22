@@ -792,8 +792,31 @@ function getStoredReviews() {
 function saveStoredReviews(reviews) {
     try {
         localStorage.setItem("ajanta_client_reviews", JSON.stringify(reviews));
+        // Background Cloud Sync to KVDB
+        fetch("https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/ajanta_client_reviews", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(reviews)
+        }).catch(e => console.warn("Reviews cloud sync note:", e));
     } catch (e) {
         console.warn("Could not save reviews to localStorage:", e);
+    }
+}
+
+async function syncReviewsFromCloud() {
+    try {
+        const res = await fetch("https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/ajanta_client_reviews").catch(() => null);
+        if (res && res.ok) {
+            const cloudReviews = await res.json().catch(() => null);
+            if (Array.isArray(cloudReviews)) {
+                localStorage.setItem("ajanta_client_reviews", JSON.stringify(cloudReviews));
+                requestAnimationFrame(() => {
+                    renderReviews();
+                });
+            }
+        }
+    } catch (err) {
+        console.warn("Could not sync cloud reviews:", err);
     }
 }
 
@@ -1455,55 +1478,9 @@ if (document.readyState === "loading") {
 
 
 /* ==========================================================================
-   DYNAMIC PRODUCT CATALOG MANAGEMENT SYSTEM
+   DYNAMIC PRODUCT CATALOG MANAGEMENT SYSTEM (Real-Time Cloud & Local Sync)
    ========================================================================== */
-const DEFAULT_PRODUCTS = [
-  {
-    id: "prod-1",
-    title: "Sliding Window Systems",
-    subtitle: "Premium slim profiles",
-    categoryBadge: "Premium Sizing Profile",
-    description: "Elegant sliding systems designed for modern homes and offices with smooth operation, weather resistance and high sound reduction.",
-    features: ["Noise Reduction", "Weather Resistant", "Premium Aluminium", "Custom Sizing"],
-    image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "prod-2",
-    title: "Sliding Doors & Slim Casements",
-    subtitle: "Panoramic luxury sliding panels",
-    categoryBadge: "Architectural Glazing",
-    description: "Ultra-slim aluminium profile sliding doors offering floor-to-ceiling glass view, effortless movement, and multipoint lock safety.",
-    features: ["Panoramic View", "Multi-Point Security", "Thermal Break", "Double Tempered"],
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "prod-3",
-    title: "Frameless Glass Partitions",
-    subtitle: "Office & Home frameless glass",
-    categoryBadge: "Interior Acoustic",
-    description: "Sleek toughened glass partition systems for modern corporate workspaces and residential interiors with acoustic sound dampening.",
-    features: ["10-12mm Toughened Glass", "Sound Proofing", "Matte Black Hardware", "Custom Etching"],
-    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "prod-4",
-    title: "Luxury Shower Cubicles",
-    subtitle: "Custom premium cubicle glass",
-    categoryBadge: "Hydrophobic Glass",
-    description: "Bespoke frameless and sliding glass shower enclosures with water-repellent nano coating and heavy-duty brass hinges.",
-    features: ["Anti-Limescale Coating", "Brass SS304 Hinges", "Magnetic Door Seals", "Zero Leak Design"],
-    image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "prod-5",
-    title: "Structural Glass Railings",
-    subtitle: "Minimal safety railings",
-    categoryBadge: "Safety Laminated",
-    description: "Balcony and staircase frameless glass railing systems with concealed aluminium base channels or stainless steel spigots.",
-    features: ["12mm-15mm Laminated", "Wind Pressure Resistant", "Base Channel Mounted", "Top Handrail Options"],
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
-  }
-];
+const DEFAULT_PRODUCTS = [];
 
 let currentSelectedProductIndex = 0;
 
@@ -1517,14 +1494,37 @@ function getStoredProducts() {
     } catch (e) {
         console.warn("Error reading stored products:", e);
     }
-    return DEFAULT_PRODUCTS;
+    return [];
 }
 
 function saveStoredProducts(products) {
     try {
         localStorage.setItem("ajanta_products_catalog", JSON.stringify(products));
+        // Background Cloud Sync to KVDB
+        fetch("https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/ajanta_products_catalog", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(products)
+        }).catch(e => console.warn("Cloud sync note:", e));
     } catch (e) {
         console.warn("Error saving products:", e);
+    }
+}
+
+async function syncCatalogFromCloud() {
+    try {
+        const res = await fetch("https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/ajanta_products_catalog").catch(() => null);
+        if (res && res.ok) {
+            const cloudProducts = await res.json().catch(() => null);
+            if (Array.isArray(cloudProducts)) {
+                localStorage.setItem("ajanta_products_catalog", JSON.stringify(cloudProducts));
+                requestAnimationFrame(() => {
+                    renderProductsCatalog();
+                });
+            }
+        }
+    } catch (err) {
+        console.warn("Could not sync cloud catalog:", err);
     }
 }
 
@@ -1802,17 +1802,25 @@ function resetDefaultProducts() {
     });
 }
 
-// Auto Initialize Products on DOM Load
+// Auto Initialize Products and Cloud Sync on DOM Load
 try {
     renderProductsCatalog();
+    syncCatalogFromCloud();
+    syncReviewsFromCloud();
 } catch (err) {
     console.warn("Immediate renderProductsCatalog error:", err);
 }
 
 if (typeof document !== "undefined") {
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", renderProductsCatalog);
+        document.addEventListener("DOMContentLoaded", () => {
+            renderProductsCatalog();
+            syncCatalogFromCloud();
+            syncReviewsFromCloud();
+        });
     } else {
         renderProductsCatalog();
+        syncCatalogFromCloud();
+        syncReviewsFromCloud();
     }
 }
