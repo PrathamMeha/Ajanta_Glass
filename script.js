@@ -6,8 +6,8 @@
 
 // Array to store customer glass specification inputs
 if (typeof window.clientSpecsList === 'undefined') window.clientSpecsList = [];
-// Hardcoded to submit directly to owner sunny mehta
-if (typeof window.MAIN_OWNER_ACCOUNT === 'undefined') window.MAIN_OWNER_ACCOUNT = "sunnymehta123@gmail.com";
+// Hardcoded to submit directly to owner
+if (typeof window.MAIN_OWNER_ACCOUNT === 'undefined') window.MAIN_OWNER_ACCOUNT = "ajnatafenestration@gmail.com";
 if (typeof window.fabricatorUser === 'undefined') window.fabricatorUser = window.MAIN_OWNER_ACCOUNT;
 
 // Web Geolocation detection with OpenStreetMap and BigDataCloud fallback geocoding plus IP fallback
