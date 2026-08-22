@@ -187,48 +187,9 @@
         </div>
 
         <div class="grid md:grid-cols-5 gap-8 items-stretch">
-            <!-- Sidebar Selection List -->
+            <!-- Sidebar Selection List (Dynamically Rendered from JavaScript) -->
             <div id="products-sidebar" class="md:col-span-2 space-y-4">
-                <!-- Product 1 Header Button -->
-                <div onclick="selectProductSpotlight(1)" id="prodTab-1" class="glass-panel pop-card p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-[#00B8D9] spotlight-active flex items-center justify-between">
-                    <div>
-                        <h4 class="font-bold text-sm tracking-wide text-white">Sliding Windows</h4>
-                        <span class="text-[10px] text-slate-500">Premium slim profiles</span>
-                    </div>
-                    <span class="text-[#00B8D9] text-xs font-bold"><i class="fa-solid fa-angle-right"></i></span>
-                </div>
-                <!-- Product 2 Header Button -->
-                <div onclick="selectProductSpotlight(2)" id="prodTab-2" class="glass-panel pop-card p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
-                    <div>
-                        <h4 class="font-bold text-sm tracking-wide text-white">Sliding Doors</h4>
-                        <span class="text-[10px] text-slate-500">Panoramic luxury sliding panels</span>
-                    </div>
-                    <span class="text-slate-500 text-xs font-bold"><i class="fa-solid fa-angle-right"></i></span>
-                </div>
-                <!-- Product 3 Header Button -->
-                <div onclick="selectProductSpotlight(3)" id="prodTab-3" class="glass-panel pop-card p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
-                    <div>
-                        <h4 class="font-bold text-sm tracking-wide text-white">Glass Partitions</h4>
-                        <span class="text-[10px] text-slate-500">Office & Home frameless glass</span>
-                    </div>
-                    <span class="text-slate-500 text-xs font-bold"><i class="fa-solid fa-angle-right"></i></span>
-                </div>
-                <!-- Product 4 Header Button -->
-                <div onclick="selectProductSpotlight(4)" id="prodTab-4" class="glass-panel pop-card p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
-                    <div>
-                        <h4 class="font-bold text-sm tracking-wide text-white">Shower Cubicles</h4>
-                        <span class="text-[10px] text-slate-500">Custom premium cubicle glass</span>
-                    </div>
-                    <span class="text-slate-500 text-xs font-bold"><i class="fa-solid fa-angle-right"></i></span>
-                </div>
-                <!-- Product 5 Header Button -->
-                <div onclick="selectProductSpotlight(5)" id="prodTab-5" class="glass-panel pop-card p-5 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between">
-                    <div>
-                        <h4 class="font-bold text-sm tracking-wide text-white">Glass Railings</h4>
-                        <span class="text-[10px] text-slate-500">Minimal safety railings</span>
-                    </div>
-                    <span class="text-slate-500 text-xs font-bold"><i class="fa-solid fa-angle-right"></i></span>
-                </div>
+                <!-- Dynamically populated from JS catalog -->
             </div>
 
             <!-- Spotlight Visual Details Screen -->
@@ -237,7 +198,7 @@
                     <img id="spotlightImage" class="w-full h-full object-cover opacity-20 filter brightness-50 transition-all duration-500 ease-out" src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" alt="product detail view">
                 </div>
 
-                <div class="relative z-10 space-y-6">
+                <div id="spotlightContent" class="relative z-10 space-y-6">
                     <div id="spotlightBadge" class="inline-block bg-slate-900/60 border border-[#00B8D9]/30 text-cyan-300 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                         Premium Sizing Profile
                     </div>
@@ -678,18 +639,21 @@
                 </ul>
             </div>
 
-            <!-- Col 3: Secure Controls & Support -->
+            <!-- Col 3: Customer Feedback & Support -->
             <div class="space-y-4">
-                <h4 class="text-xs font-bold text-white uppercase tracking-widest">Secure Access</h4>
+                <h4 class="text-xs font-bold text-white uppercase tracking-widest">Customer Support</h4>
                 <p class="text-xs text-slate-400 leading-relaxed font-light">
-                    Access order synchronization and verification tools. Authorized administrators can open the live management console.
+                    Have a project in mind or visited our showroom recently? Share your feedback or get in touch with our design engineers.
                 </p>
                 <div class="flex flex-col gap-2">
-                    
-                    <button onclick="openReviewModal()" class="w-full inline-flex items-center justify-center gap-2 bg-[#00B8D9]/10 hover:bg-[#00B8D9]/20 text-[#00B8D9] border border-[#00B8D9]/20 py-2.5 px-4 rounded-xl text-xs font-bold transition">
+                    <button onclick="openReviewModal()" class="w-full inline-flex items-center justify-center gap-2 bg-[#00B8D9]/15 hover:bg-[#00B8D9]/25 text-[#00B8D9] border border-[#00B8D9]/30 py-2.5 px-4 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer">
                         <i class="fa-regular fa-star"></i>
-                        <span>Write a Live Review</span>
+                        <span>Write a Customer Review</span>
                     </button>
+                    <a href="tel:9215400355" class="w-full inline-flex items-center justify-center gap-2 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 hover:border-slate-700 py-2.5 px-4 rounded-xl text-xs font-bold transition">
+                        <i class="fa-solid fa-phone text-emerald-400 text-xs"></i>
+                        <span>Call +91 92154-00355</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -701,8 +665,7 @@
                 <span>Established Since 1976</span>
             </div>
             <div class="flex items-center space-x-4">
-                <span>© 2026 Ajanta Door & Window Systems</span>
-                
+                <span>© 2026 Ajanta Door & Window Systems. All Rights Reserved.</span>
             </div>
         </div>
     </footer>
@@ -768,164 +731,6 @@
                     <span>Publish Testimonial</span>
                 </button>
             </form>
-        </div>
-    </div>
-
-    <!-- ADMIN LOGIN MODAL -->
-    <div id="adminLoginModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-panel pop-card p-8 rounded-3xl max-w-sm w-full relative space-y-6 shadow-2xl border border-indigo-500/20 animate-fade-in">
-            <button onclick="closeAdminLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <div class="text-center space-y-2">
-                <div class="w-12 h-12 bg-indigo-950/50 text-indigo-400 rounded-2xl flex items-center justify-center text-xl mx-auto border border-indigo-800/20 shadow-lg shadow-indigo-500/5">
-                    <i class="fa-solid fa-shield-halved animate-pulse"></i>
-                </div>
-                <h3 class="text-xl font-syne font-black text-white uppercase tracking-wider">Admin Portal</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">Authorized access to management dashboard, inquiries and verification panels.</p>
-            </div>
-            
-            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                <div class="space-y-1 text-left">
-                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Username</label>
-                    <input type="text" id="adminUsername" required placeholder="Username" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
-                </div>
-                
-                <div class="space-y-1 text-left">
-                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Password</label>
-                    <div class="relative">
-                        <input type="password" id="adminPassword" required placeholder="Password" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-4 pr-10 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
-                        <button type="button" onclick="toggleAdminPassword()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition">
-                            <i id="passwordToggleIcon" class="fa-solid fa-eye text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div id="adminLoginError" class="text-[10px] text-red-400 font-bold hidden text-center bg-red-950/30 border border-red-900/20 py-2 rounded-lg">
-                    <i class="fa-solid fa-circle-exclamation mr-1"></i> Invalid username or password!
-                </div>
-
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-syne font-black text-xs uppercase py-3.5 rounded-xl transition shadow-lg shadow-indigo-600/10 border border-indigo-500/20 active:scale-95 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-lock-open"></i> Authenticate
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- ADMIN PORTAL / DASHBOARD MODAL -->
-    <div id="adminDashboardModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="glass-panel pop-card p-6 md:p-8 rounded-3xl max-w-4xl w-full h-[90vh] md:h-[80vh] flex flex-col relative shadow-2xl border border-indigo-500/20 animate-fade-in">
-            <button onclick="closeAdminDashboard()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            
-            <!-- Admin Header -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-800 pb-5 mb-6 gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-emerald-950/50 text-emerald-400 rounded-2xl flex items-center justify-center text-xl border border-emerald-800/20 shadow-lg">
-                        <i class="fa-solid fa-user-shield"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs font-bold text-emerald-400 uppercase tracking-widest font-display">Ajanta Glass Admin Panel</div>
-                        <h3 class="text-xl font-syne font-black text-white uppercase tracking-wider">Welcome, Sunny Mehta</h3>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-2">
-                    <button onclick="refreshAdminData()" class="bg-slate-900 hover:bg-slate-800 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold border border-slate-800 flex items-center gap-1.5 transition">
-                        <i id="adminRefreshIcon" class="fa-solid fa-arrows-rotate"></i> Sync Data
-                    </button>
-                    <button onclick="handleAdminLogout()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 px-4 py-2 rounded-xl text-xs font-bold border border-red-800/20 flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tabs Navigation -->
-            <div class="flex border-b border-slate-800 mb-6 text-xs font-bold tracking-wider uppercase">
-                <button onclick="switchAdminTab('leads')" id="tabBtn-leads" class="border-b-2 border-cyan-400 text-cyan-400 font-bold px-4 py-2.5 transition whitespace-nowrap">
-                    Inquiries (<span id="tabCountLeads">0</span>)
-                </button>
-                <button onclick="switchAdminTab('products')" id="tabBtn-products" class="border-b-2 border-transparent text-slate-400 hover:text-white px-4 py-2.5 transition whitespace-nowrap">
-                    Products Catalog (<span id="tabCountProducts">0</span>)
-                </button>
-                <button onclick="switchAdminTab('reviews')" id="tabBtn-reviews" class="border-b-2 border-transparent text-slate-400 hover:text-white px-4 py-2.5 transition whitespace-nowrap">
-                    Testimonials (<span id="tabCountReviews">0</span>)
-                </button>
-                <button onclick="switchAdminTab('tools')" id="tabBtn-tools" class="border-b-2 border-transparent text-slate-400 hover:text-white px-4 py-2.5 transition">
-                    Backup & Settings
-                </button>
-            </div>
-
-            <!-- Content Area (Scrollable) -->
-            <div class="flex-1 overflow-y-auto pr-1 space-y-4 min-h-[250px]" id="adminTabContent">
-                
-                <!-- LEADS TAB CONTENT (Default) -->
-                <div id="adminTab-leads" class="space-y-4">
-                    <div id="leadsLoading" class="text-center py-12 text-slate-500 space-y-3">
-                        <i class="fa-solid fa-circle-notch animate-spin text-2xl text-indigo-400"></i>
-                        <p class="text-xs">Synchronizing architectural orders and support reports from secure storage...</p>
-                    </div>
-                    <div id="leadsListContainer" class="hidden space-y-4">
-                        <!-- Card elements for each lead will be injected here -->
-                    </div>
-                </div>
-
-                <!-- REVIEWS TAB CONTENT -->
-                <!-- PRODUCTS TAB CONTENT -->
-                <div id="adminTab-products" class="space-y-4 hidden">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-800 flex-wrap gap-2">
-                        <div>
-                            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Product Catalog Management</span>
-                            <p class="text-[11px] text-slate-500 font-normal">Add, edit or remove architectural products. Added items appear on the website immediately.</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="resetDefaultProducts()" class="bg-slate-900 hover:bg-slate-800 text-slate-400 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-slate-800 transition">
-                                <i class="fa-solid fa-rotate-left mr-1"></i> Reset Defaults
-                            </button>
-                            <button onclick="toggleAddProductModal(true)" class="bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 transition cursor-pointer">
-                                <i class="fa-solid fa-plus"></i> Add New Product
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Products Grid Container -->
-                    <div id="adminProductsContainer" class="grid sm:grid-cols-2 gap-4">
-                        <!-- Dynamic Product Admin Cards -->
-                    </div>
-                </div>
-
-                <div id="adminTab-reviews" class="space-y-4 hidden">
-                    <div id="reviewsListContainer" class="grid sm:grid-cols-2 gap-4">
-                        <!-- Mini cards for testimonials management -->
-                    </div>
-                </div>
-
-                <!-- TOOLS & SETTINGS TAB CONTENT -->
-                <div id="adminTab-tools" class="space-y-6 hidden">
-                    <div class="glass-panel pop-card p-6 rounded-2xl border border-slate-800 space-y-4">
-                        <h4 class="text-sm font-syne font-black text-white uppercase tracking-wider">System Database Backup</h4>
-                        <p class="text-xs text-slate-400 leading-relaxed">Download a complete snapshot of current database contents (Testimonials and Client Specification Inquiries) to backup or migrate to another system.</p>
-                        <div class="flex flex-wrap gap-3">
-                            <button onclick="exportData('reviews')" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/20 px-4 py-2.5 rounded-xl text-xs font-bold transition">
-                                <i class="fa-solid fa-download mr-1.5"></i> Export Testimonials JSON
-                            </button>
-                            <button onclick="exportLeadsExcel()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/20 px-4 py-2.5 rounded-xl text-xs font-bold transition">
-                                <i class="fa-solid fa-file-excel mr-1.5 text-emerald-400"></i> Export Excel Sheet (.xls)
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="glass-panel pop-card p-6 rounded-2xl border border-slate-800 space-y-4">
-                        <h4 class="text-sm font-syne font-black text-white uppercase tracking-wider">Storage Configuration</h4>
-                        <p class="text-xs text-slate-400 leading-relaxed">Your data is locked with the unique cryptographic hash of user account <strong id="debugAdminUser">sunny</strong>. No other tenant can view or alter your leads.</p>
-                        <div class="text-[10px] text-slate-500 font-mono bg-slate-950 p-3 rounded-lg border border-slate-900 break-all select-all" id="storageDebugInfo">
-                            ENDPOINT: https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/
-                        </div>
-                    </div>
-                </div>
-
-            </div>
         </div>
     </div>
 

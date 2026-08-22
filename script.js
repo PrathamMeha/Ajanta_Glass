@@ -1530,7 +1530,26 @@ function saveStoredProducts(products) {
 
 function selectProductSpotlight(indexOrId) {
     const products = getStoredProducts();
-    if (!products || products.length === 0) return;
+    const spotlightContent = document.getElementById("spotlightContent");
+    const spotlightImg = document.getElementById("spotlightImage");
+    const spotlightBadge = document.getElementById("spotlightBadge");
+    const spotlightTitle = document.getElementById("spotlightTitle");
+    const spotlightDesc = document.getElementById("spotlightDescription");
+    const spotlightFeatures = document.getElementById("spotlightFeatures");
+
+    if (!products || products.length === 0) {
+        if (spotlightBadge) spotlightBadge.textContent = "Custom Glass Studio";
+        if (spotlightTitle) spotlightTitle.textContent = "Ajanta Premium Glass Works";
+        if (spotlightDesc) spotlightDesc.textContent = "Browse our custom glass sizing options or contact Sunny Mehta directly for custom architectural glazing solutions.";
+        if (spotlightFeatures) {
+            spotlightFeatures.innerHTML = `
+                <div class="flex items-center space-x-2"><span class="text-[#00B8D9] font-bold"><i class="fa-regular fa-square-check"></i></span><span>Custom Dimensions</span></div>
+                <div class="flex items-center space-x-2"><span class="text-[#00B8D9] font-bold"><i class="fa-regular fa-square-check"></i></span><span>Factory Toughened</span></div>
+                <div class="flex items-center space-x-2"><span class="text-[#00B8D9] font-bold"><i class="fa-regular fa-square-check"></i></span><span>Quality Certified</span></div>
+            `;
+        }
+        return;
+    }
 
     let index = 0;
     if (typeof indexOrId === "number") {
@@ -1547,12 +1566,6 @@ function selectProductSpotlight(indexOrId) {
     if (!p) return;
 
     // Update Spotlight elements
-    const spotlightImg = document.getElementById("spotlightImage");
-    const spotlightBadge = document.getElementById("spotlightBadge");
-    const spotlightTitle = document.getElementById("spotlightTitle");
-    const spotlightDesc = document.getElementById("spotlightDescription");
-    const spotlightFeatures = document.getElementById("spotlightFeatures");
-
     if (spotlightImg) {
         spotlightImg.style.opacity = "0";
         setTimeout(() => {
@@ -1601,16 +1614,25 @@ function renderProductsCatalog() {
     if (countBadge) countBadge.textContent = products.length;
 
     if (sidebar) {
-        sidebar.innerHTML = products.map((p, i) => {
-            const isSel = (i === currentSelectedProductIndex);
-            return '<div onclick="selectProductSpotlight(' + i + ')" id="prodTab-' + p.id + '" class="glass-panel pop-card p-4 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 ' + (isSel ? 'border-l-[#00B8D9] bg-slate-900/80' : 'border-l-transparent hover:bg-slate-900/40') + ' flex items-center justify-between">' +
-                '<div class="min-w-0 pr-2">' +
-                    '<h4 class="font-bold text-sm tracking-wide text-white truncate">' + escapeHtml(p.title) + '</h4>' +
-                    '<span class="text-[10px] text-slate-400 truncate block">' + escapeHtml(p.subtitle || p.categoryBadge || "Architectural Glass") + '</span>' +
-                '</div>' +
-                '<span class="' + (isSel ? 'text-[#00B8D9]' : 'text-slate-500') + ' text-xs font-bold shrink-0"><i class="fa-solid fa-angle-right"></i></span>' +
-            '</div>';
-        }).join("");
+        if (products.length === 0) {
+            sidebar.innerHTML = `
+                <div class="glass-panel p-6 rounded-2xl text-center text-slate-500 space-y-2">
+                    <i class="fa-solid fa-box-open text-2xl text-slate-600"></i>
+                    <p class="text-xs">Catalog is being customized. Use the Configurator below for custom sizing.</p>
+                </div>
+            `;
+        } else {
+            sidebar.innerHTML = products.map((p, i) => {
+                const isSel = (i === currentSelectedProductIndex);
+                return '<div onclick="selectProductSpotlight(' + i + ')" id="prodTab-' + p.id + '" class="glass-panel pop-card p-4 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 ' + (isSel ? 'border-l-[#00B8D9] bg-slate-900/80' : 'border-l-transparent hover:bg-slate-900/40') + ' flex items-center justify-between">' +
+                    '<div class="min-w-0 pr-2">' +
+                        '<h4 class="font-bold text-sm tracking-wide text-white truncate">' + escapeHtml(p.title) + '</h4>' +
+                        '<span class="text-[10px] text-slate-400 truncate block">' + escapeHtml(p.subtitle || p.categoryBadge || "Architectural Glass") + '</span>' +
+                    '</div>' +
+                    '<span class="' + (isSel ? 'text-[#00B8D9]' : 'text-slate-500') + ' text-xs font-bold shrink-0"><i class="fa-solid fa-angle-right"></i></span>' +
+                '</div>';
+            }).join("");
+        }
     }
 
     // Also update Configurator dropdown options so new products appear in the estimator!
