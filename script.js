@@ -359,6 +359,15 @@ async function submitForm(event) {
         // Append the brand new lead!
         existingLeads.push(newLead);
 
+        // Also save directly to local storage for instant offline & admin accessibility
+        try {
+            const localLeads = JSON.parse(localStorage.getItem("ajanta_quote_leads") || "[]");
+            localLeads.unshift(newLead);
+            localStorage.setItem("ajanta_quote_leads", JSON.stringify(localLeads));
+        } catch (storageErr) {
+            console.warn("Could not write to local storage:", storageErr);
+        }
+
         // Save back to KVDB
         const postRes = await fetch(endpoint, {
             method: 'POST',
@@ -643,7 +652,7 @@ function getGlazingIntelligenceFallback(prompt) {
     }
 
     if (query.includes('price') || query.includes('cost') || query.includes('rate') || query.includes('estimate') || query.includes('sqft')) {
-        return "**Ajanta Glass & Glazing Price Factors:**\n\n" +
+        return "**Ajanta Glass & Glazing Custom Specification Guidelines:**\n\n" +
                "Glass rates depend on thickness, glass type, and customized edgework/processing:\n" +
                "• **5mm - 6mm Clear Glass:** Base architectural glazing\n" +
                "• **8mm - 12mm Toughened Glass:** Premium heavy-duty safety glass\n" +
@@ -949,6 +958,7 @@ function openAdminPortal() {
     if (isLoggedIn && dashboardModal) {
         dashboardModal.classList.remove("hidden");
         renderAdminLeads();
+        renderAdminProductsList();
         renderAdminReviewsList();
     } else if (loginModal) {
         loginModal.classList.remove("hidden");
@@ -989,15 +999,15 @@ function closeAdminDashboard() {
 }
 
 function switchAdminTab(tab) {
-    const tabs = ["leads", "reviews", "tools"];
+    const tabs = ["leads", "products", "reviews", "tools"];
     tabs.forEach(t => {
-        const btn = document.getElementById("adminTab-" + t);
-        const content = document.getElementById("adminTabContent-" + t);
+        const btn = document.getElementById("tabBtn-" + t) || document.getElementById("adminTab-" + t);
+        const content = document.getElementById("adminTab-" + t) || document.getElementById("adminTabContent-" + t);
         if (btn) {
             if (t === tab) {
-                btn.className = "px-4 py-2 rounded-xl bg-cyan-600 text-white font-bold text-xs uppercase tracking-wider transition";
+                btn.className = "border-b-2 border-cyan-400 text-cyan-400 font-bold px-4 py-2.5 transition whitespace-nowrap cursor-pointer";
             } else {
-                btn.className = "px-4 py-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white font-bold text-xs uppercase tracking-wider transition";
+                btn.className = "border-b-2 border-transparent text-slate-400 hover:text-white font-bold px-4 py-2.5 transition whitespace-nowrap cursor-pointer";
             }
         }
         if (content) {
@@ -1007,6 +1017,7 @@ function switchAdminTab(tab) {
     });
 
     if (tab === "leads") renderAdminLeads();
+    if (tab === "products") renderAdminProductsList();
     if (tab === "reviews") renderAdminReviewsList();
 }
 
@@ -1023,7 +1034,7 @@ function getStoredLeads() {
             phone: "+91 98765 43210",
             address: "Plot 42, Sector 14, Sirsa",
             itemCount: 3,
-            totalEst: "₹ 48,500",
+            
             date: "2026-02-08"
         },
         {
@@ -1031,7 +1042,7 @@ function getStoredLeads() {
             phone: "+91 94160 12345",
             address: "Model Town, Bathinda",
             itemCount: 2,
-            totalEst: "₹ 32,100",
+            
             date: "2026-02-07"
         }
     ];
@@ -1070,7 +1081,7 @@ function renderAdminLeads() {
                                     <td class="p-2.5 text-cyan-400 font-mono">${escapeHtml(l.phone)}</td>
                                     <td class="p-2.5 text-slate-400 truncate max-w-[150px]">${escapeHtml(l.address)}</td>
                                     <td class="p-2.5 text-center font-bold text-indigo-400">${l.itemCount || 1}</td>
-                                    <td class="p-2.5 text-right font-bold text-emerald-400">${escapeHtml(l.totalEst || "N/A")}</td>
+                                    
                                 </tr>
                             `).join("")}
                         </tbody>
@@ -1156,7 +1167,7 @@ function exportLeadsExcel() {
                 '<th>Phone / WhatsApp</th>' +
                 '<th>Location / Address</th>' +
                 '<th>Total Items</th>' +
-                '<th>Estimated Amount (₹)</th>' +
+                
             '</tr>' +
             leads.map(l => 
                 '<tr>' +
@@ -1165,7 +1176,7 @@ function exportLeadsExcel() {
                     '<td>' + escapeHtml(l.phone || "") + '</td>' +
                     '<td>' + escapeHtml(l.address || "") + '</td>' +
                     '<td class="center"><b>' + (l.itemCount || 1) + '</b></td>' +
-                    '<td class="num"><b>' + escapeHtml(l.totalEst || "N/A") + '</b></td>' +
+                    
                 '</tr>'
             ).join('') +
         '</table>' +
@@ -1298,6 +1309,7 @@ function toggleAdminPassword() {
 
 function refreshAdminData() {
     if (typeof renderAdminLeads === "function") renderAdminLeads();
+    if (typeof renderAdminProductsList === "function") renderAdminProductsList();
     if (typeof renderAdminReviewsList === "function") renderAdminReviewsList();
 }
 
@@ -1311,48 +1323,14 @@ function exportData() {
 }
 
 function closeLightbox() {
-    const modal = document.getElementById("lightboxModal");
+    const modal = document.getElementById("lightbox");
     if (modal) modal.classList.add("hidden");
 }
 
-// 5-Click Secret Admin Portal Trigger
-let logoClickCount = 0;
-let logoClickTimer = null;
-
-function showClickToast(count) {
-    if (count < 5) return; // Do NOT show any attempts/counter toast for 1-4 clicks
-    
-    let toast = document.getElementById("adminClickToast");
-    if (!toast) {
-        toast = document.createElement("div");
-        toast.id = "adminClickToast";
-        toast.className = "fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-slate-900/95 text-cyan-400 border border-cyan-500/50 px-5 py-2.5 rounded-full shadow-2xl shadow-cyan-500/30 text-xs font-bold tracking-wider uppercase backdrop-blur-md flex items-center gap-2 transition-all duration-300 pointer-events-none opacity-0 transform translate-y-4";
-        document.body.appendChild(toast);
-    }
-    
-    toast.innerHTML = '<i class="fa-solid fa-unlock text-emerald-400 animate-bounce"></i> <span class="text-emerald-300 font-extrabold">Admin Portal Unlocked!</span>';
-    toast.style.opacity = "1";
-    toast.style.transform = "translate(-50%, 0) scale(1.15)";
-
-    if (toast.hideTimer) clearTimeout(toast.hideTimer);
-    toast.hideTimer = setTimeout(() => {
-        if (toast) {
-            toast.style.opacity = "0";
-            toast.style.transform = "translate(-50%, 20px) scale(0.9)";
-        }
-    }, 2500);
-}
-
 function handleLogoClick(e) {
-    if (e) {
-        if (e.preventDefault) e.preventDefault();
-        if (e.stopPropagation) e.stopPropagation();
-    }
+    if (e && e.preventDefault) e.preventDefault();
     
-    logoClickCount++;
-    if (logoClickTimer) clearTimeout(logoClickTimer);
-    
-    // Animate logo spring effect on every click
+    // Animate logo spring effect on click
     let target = null;
     if (e && e.currentTarget) {
         target = e.currentTarget.querySelector("img") || e.currentTarget;
@@ -1364,31 +1342,12 @@ function handleLogoClick(e) {
         if (typeof gsap !== "undefined") {
             gsap.killTweensOf(target);
             gsap.fromTo(target, 
-                { scale: 0.7, rotate: -15 }, 
-                { scale: 1.4, rotate: 0, duration: 0.2, ease: "back.out(3.0)", onComplete: () => {
+                { scale: 0.85, rotate: -8 }, 
+                { scale: 1.15, rotate: 0, duration: 0.2, ease: "back.out(2.5)", onComplete: () => {
                     gsap.to(target, { scale: 1, duration: 0.25, ease: "power2.out" });
                 }}
             );
-        } else {
-            target.style.transition = "transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)";
-            target.style.transform = "scale(1.4) rotate(-12deg)";
-            setTimeout(() => {
-                target.style.transform = "scale(1) rotate(0deg)";
-            }, 180);
         }
-    }
-
-    logoClickTimer = setTimeout(() => {
-        logoClickCount = 0;
-    }, 3000);
-
-    if (logoClickCount >= 5) {
-        showClickToast(logoClickCount);
-        logoClickCount = 0;
-        if (logoClickTimer) clearTimeout(logoClickTimer);
-        setTimeout(() => {
-            openAdminPortal();
-        }, 200);
     }
 }
 
@@ -1492,4 +1451,346 @@ if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initPopOutAnimations);
 } else {
     initPopOutAnimations();
+}
+
+
+/* ==========================================================================
+   DYNAMIC PRODUCT CATALOG MANAGEMENT SYSTEM
+   ========================================================================== */
+const DEFAULT_PRODUCTS = [
+  {
+    id: "prod-1",
+    title: "Sliding Window Systems",
+    subtitle: "Premium slim profiles",
+    categoryBadge: "Premium Sizing Profile",
+    description: "Elegant sliding systems designed for modern homes and offices with smooth operation, weather resistance and high sound reduction.",
+    features: ["Noise Reduction", "Weather Resistant", "Premium Aluminium", "Custom Sizing"],
+    image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "prod-2",
+    title: "Sliding Doors & Slim Casements",
+    subtitle: "Panoramic luxury sliding panels",
+    categoryBadge: "Architectural Glazing",
+    description: "Ultra-slim aluminium profile sliding doors offering floor-to-ceiling glass view, effortless movement, and multipoint lock safety.",
+    features: ["Panoramic View", "Multi-Point Security", "Thermal Break", "Double Tempered"],
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "prod-3",
+    title: "Frameless Glass Partitions",
+    subtitle: "Office & Home frameless glass",
+    categoryBadge: "Interior Acoustic",
+    description: "Sleek toughened glass partition systems for modern corporate workspaces and residential interiors with acoustic sound dampening.",
+    features: ["10-12mm Toughened Glass", "Sound Proofing", "Matte Black Hardware", "Custom Etching"],
+    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "prod-4",
+    title: "Luxury Shower Cubicles",
+    subtitle: "Custom premium cubicle glass",
+    categoryBadge: "Hydrophobic Glass",
+    description: "Bespoke frameless and sliding glass shower enclosures with water-repellent nano coating and heavy-duty brass hinges.",
+    features: ["Anti-Limescale Coating", "Brass SS304 Hinges", "Magnetic Door Seals", "Zero Leak Design"],
+    image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "prod-5",
+    title: "Structural Glass Railings",
+    subtitle: "Minimal safety railings",
+    categoryBadge: "Safety Laminated",
+    description: "Balcony and staircase frameless glass railing systems with concealed aluminium base channels or stainless steel spigots.",
+    features: ["12mm-15mm Laminated", "Wind Pressure Resistant", "Base Channel Mounted", "Top Handrail Options"],
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+  }
+];
+
+let currentSelectedProductIndex = 0;
+
+function getStoredProducts() {
+    try {
+        const stored = localStorage.getItem("ajanta_products_catalog");
+        if (stored !== null) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) return parsed;
+        }
+    } catch (e) {
+        console.warn("Error reading stored products:", e);
+    }
+    return DEFAULT_PRODUCTS;
+}
+
+function saveStoredProducts(products) {
+    try {
+        localStorage.setItem("ajanta_products_catalog", JSON.stringify(products));
+    } catch (e) {
+        console.warn("Error saving products:", e);
+    }
+}
+
+function selectProductSpotlight(indexOrId) {
+    const products = getStoredProducts();
+    if (!products || products.length === 0) return;
+
+    let index = 0;
+    if (typeof indexOrId === "number") {
+        index = indexOrId;
+    } else if (typeof indexOrId === "string") {
+        const foundIdx = products.findIndex(p => p.id === indexOrId || p.title.toLowerCase().includes(indexOrId.toLowerCase()));
+        if (foundIdx !== -1) index = foundIdx;
+    }
+
+    if (index < 0 || index >= products.length) index = 0;
+    currentSelectedProductIndex = index;
+
+    const p = products[index];
+    if (!p) return;
+
+    // Update Spotlight elements
+    const spotlightImg = document.getElementById("spotlightImage");
+    const spotlightBadge = document.getElementById("spotlightBadge");
+    const spotlightTitle = document.getElementById("spotlightTitle");
+    const spotlightDesc = document.getElementById("spotlightDescription");
+    const spotlightFeatures = document.getElementById("spotlightFeatures");
+
+    if (spotlightImg) {
+        spotlightImg.style.opacity = "0";
+        setTimeout(() => {
+            spotlightImg.src = p.image || "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80";
+            spotlightImg.style.opacity = "0.25";
+        }, 150);
+    }
+
+    if (spotlightBadge) spotlightBadge.textContent = p.categoryBadge || "Architectural Glazing";
+    if (spotlightTitle) spotlightTitle.textContent = p.title || "Custom Glass Product";
+    if (spotlightDesc) spotlightDesc.textContent = p.description || "";
+
+    if (spotlightFeatures) {
+        const feats = Array.isArray(p.features) ? p.features : (p.features || "").split(",");
+        spotlightFeatures.innerHTML = feats.map(f =>
+            '<div class="flex items-center space-x-2">' +
+                '<span class="text-[#00B8D9] font-bold"><i class="fa-regular fa-square-check"></i></span>' +
+                '<span class="truncate">' + escapeHtml(f.trim()) + '</span>' +
+            '</div>'
+        ).join("");
+    }
+
+    // Update sidebar active highlight styles
+    products.forEach((prod, i) => {
+        const tabEl = document.getElementById("prodTab-" + prod.id) || document.getElementById("prodTab-" + i);
+        if (tabEl) {
+            if (i === index) {
+                tabEl.className = "glass-panel pop-card p-4 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-[#00B8D9] bg-slate-900/80 flex items-center justify-between";
+                const icon = tabEl.querySelector(".fa-angle-right");
+                if (icon) icon.className = "fa-solid fa-angle-right text-[#00B8D9]";
+            } else {
+                tabEl.className = "glass-panel pop-card p-4 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 border-l-transparent flex items-center justify-between hover:bg-slate-900/40";
+                const icon = tabEl.querySelector(".fa-angle-right");
+                if (icon) icon.className = "fa-solid fa-angle-right text-slate-500";
+            }
+        }
+    });
+}
+
+function renderProductsCatalog() {
+    const products = getStoredProducts();
+    const sidebar = document.getElementById("products-sidebar");
+    
+    // Update tab count badge in admin
+    const countBadge = document.getElementById("tabCountProducts");
+    if (countBadge) countBadge.textContent = products.length;
+
+    if (sidebar) {
+        sidebar.innerHTML = products.map((p, i) => {
+            const isSel = (i === currentSelectedProductIndex);
+            return '<div onclick="selectProductSpotlight(' + i + ')" id="prodTab-' + p.id + '" class="glass-panel pop-card p-4 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 ' + (isSel ? 'border-l-[#00B8D9] bg-slate-900/80' : 'border-l-transparent hover:bg-slate-900/40') + ' flex items-center justify-between">' +
+                '<div class="min-w-0 pr-2">' +
+                    '<h4 class="font-bold text-sm tracking-wide text-white truncate">' + escapeHtml(p.title) + '</h4>' +
+                    '<span class="text-[10px] text-slate-400 truncate block">' + escapeHtml(p.subtitle || p.categoryBadge || "Architectural Glass") + '</span>' +
+                '</div>' +
+                '<span class="' + (isSel ? 'text-[#00B8D9]' : 'text-slate-500') + ' text-xs font-bold shrink-0"><i class="fa-solid fa-angle-right"></i></span>' +
+            '</div>';
+        }).join("");
+    }
+
+    // Also update Configurator dropdown options so new products appear in the estimator!
+    const catSelect = document.getElementById("itemCategory");
+    if (catSelect) {
+        let optionsHtml = products.map(p => '<option value="' + escapeHtml(p.title) + '">' + escapeHtml(p.title) + ' (' + escapeHtml(p.subtitle || p.categoryBadge) + ')</option>').join("");
+        optionsHtml += '<option value="CUSTOM_ITEM">+ Custom Special Glass Request...</option>';
+        catSelect.innerHTML = optionsHtml;
+    }
+
+    // Select active spotlight
+    selectProductSpotlight(currentSelectedProductIndex);
+}
+
+function renderAdminProductsList() {
+    const products = getStoredProducts();
+    const container = document.getElementById("adminProductsContainer");
+    const countBadge = document.getElementById("tabCountProducts");
+    if (countBadge) countBadge.textContent = products.length;
+
+    if (!container) return;
+
+    if (products.length === 0) {
+        container.innerHTML = 
+            '<div class="col-span-2 text-center py-8 text-slate-500 space-y-2">' +
+                '<p class="text-xs">No products in catalog. Click "+ Add New Product" to add your first product.</p>' +
+            '</div>';
+        return;
+    }
+
+    container.innerHTML = products.map(function(p) {
+        const featCount = Array.isArray(p.features) ? p.features.length : (p.features || "").split(",").length;
+        const safeId = escapeHtml(p.id);
+        const safeTitle = escapeHtml(p.title);
+        const safeBadge = escapeHtml(p.categoryBadge || "Product");
+        
+        const safeSub = escapeHtml(p.subtitle || p.description || "");
+        const safeImg = escapeHtml(p.image || "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80");
+
+        return '<div class="p-4 bg-slate-900/90 border border-slate-800 rounded-2xl flex flex-col justify-between space-y-3 relative group hover:border-slate-700 transition">' +
+            '<div class="flex items-start gap-3">' +
+                '<img src="' + safeImg + '" alt="' + safeTitle + '" class="w-16 h-16 object-cover rounded-xl border border-slate-800 shrink-0">' +
+                '<div class="min-w-0 flex-1">' +
+                    '<div class="flex items-center gap-2">' +
+                        '<span class="text-[9px] font-bold text-cyan-400 bg-cyan-950/60 border border-cyan-800/40 px-2 py-0.5 rounded-md uppercase">' + safeBadge + '</span>' +
+                         +
+                    '</div>' +
+                    '<h4 class="font-bold text-white text-xs mt-1 truncate">' + safeTitle + '</h4>' +
+                    '<p class="text-[11px] text-slate-400 line-clamp-1">' + safeSub + '</p>' +
+                '</div>' +
+            '</div>' +
+            '<div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[10px]">' +
+                '<span class="text-slate-500 font-medium">' + featCount + ' key features</span>' +
+                '<div class="flex items-center gap-2">' +
+                    '<button onclick="toggleAddProductModal(true, &quot;' + safeId + '&quot;)" class="bg-indigo-950/60 hover:bg-indigo-900 text-indigo-300 border border-indigo-800/40 px-2.5 py-1 rounded-lg transition font-bold flex items-center gap-1 cursor-pointer">' +
+                        '<i class="fa-solid fa-pen-to-square"></i> Edit' +
+                    '</button>' +
+                    '<button onclick="deleteProduct(&quot;' + safeId + '&quot;)" class="bg-rose-950/60 hover:bg-rose-900 text-rose-400 border border-rose-800/40 px-2.5 py-1 rounded-lg transition font-bold flex items-center gap-1 cursor-pointer">' +
+                        '<i class="fa-solid fa-trash-can"></i> Delete' +
+                    '</button>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }).join("");
+}
+
+function toggleAddProductModal(show, editId) {
+    const modal = document.getElementById("addProductModal");
+    if (!modal) return;
+
+    if (show) {
+        modal.classList.remove("hidden");
+        const form = document.getElementById("productForm");
+        const formTitle = document.getElementById("productFormTitle");
+
+        if (editId) {
+            const products = getStoredProducts();
+            const p = products.find(item => item.id === editId);
+            if (p) {
+                if (formTitle) formTitle.textContent = "Edit Product";
+                document.getElementById("prodFormId").value = p.id;
+                document.getElementById("prodFormTitle").value = p.title || "";
+                document.getElementById("prodFormSubtitle").value = p.subtitle || "";
+                document.getElementById("prodFormBadge").value = p.categoryBadge || "";
+                
+                document.getElementById("prodFormImage").value = p.image || "";
+                document.getElementById("prodFormDesc").value = p.description || "";
+                document.getElementById("prodFormFeatures").value = Array.isArray(p.features) ? p.features.join(", ") : (p.features || "");
+                return;
+            }
+        }
+
+        // Add new mode
+        if (formTitle) formTitle.textContent = "Add New Product";
+        if (form) form.reset();
+        document.getElementById("prodFormId").value = "";
+    } else {
+        modal.classList.add("hidden");
+    }
+}
+
+function applyPresetImage(url) {
+    if (url) {
+        const imgInput = document.getElementById("prodFormImage");
+        if (imgInput) imgInput.value = url;
+    }
+}
+
+function saveProductSubmit(e) {
+    if (e) e.preventDefault();
+
+    const id = document.getElementById("prodFormId").value || ("prod-" + Date.now());
+    const title = document.getElementById("prodFormTitle").value.trim();
+    const subtitle = document.getElementById("prodFormSubtitle").value.trim();
+    const categoryBadge = document.getElementById("prodFormBadge").value.trim();
+    
+    const image = document.getElementById("prodFormImage").value.trim();
+    const description = document.getElementById("prodFormDesc").value.trim();
+    const featuresRaw = document.getElementById("prodFormFeatures").value.trim();
+
+    const features = featuresRaw.split(",").map(f => f.trim()).filter(f => f.length > 0);
+
+    const newProd = {
+        id,
+        title,
+        subtitle,
+        categoryBadge,
+        image,
+        description,
+        features: features.length > 0 ? features : ["Custom Specifications", "Quality Inspected"]
+    };
+
+    let products = getStoredProducts();
+    const existingIdx = products.findIndex(p => p.id === id);
+
+    if (existingIdx !== -1) {
+        products[existingIdx] = newProd;
+    } else {
+        products.unshift(newProd); // Add to beginning of catalog
+    }
+
+    saveStoredProducts(products);
+    toggleAddProductModal(false);
+
+    // Refresh UI
+    renderProductsCatalog();
+    renderAdminProductsList();
+}
+
+function deleteProduct(id) {
+    let products = getStoredProducts();
+    const prod = products.find(p => p.id === id);
+    products = products.filter(p => p.id !== id);
+    saveStoredProducts(products);
+
+    requestAnimationFrame(() => {
+        renderProductsCatalog();
+        renderAdminProductsList();
+    });
+}
+
+function resetDefaultProducts() {
+    localStorage.removeItem("ajanta_products_catalog");
+    requestAnimationFrame(() => {
+        renderProductsCatalog();
+        renderAdminProductsList();
+    });
+}
+
+// Auto Initialize Products on DOM Load
+try {
+    renderProductsCatalog();
+} catch (err) {
+    console.warn("Immediate renderProductsCatalog error:", err);
+}
+
+if (typeof document !== "undefined") {
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", renderProductsCatalog);
+    } else {
+        renderProductsCatalog();
+    }
 }
