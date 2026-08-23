@@ -182,23 +182,63 @@ window.addEventListener('load', () => {
     }
 });
 
-// Configurator Visibility handlers
+// Standard Material & Glass Types Requested by Client
+const STANDARD_MATERIAL_OPTIONS = [
+    "5mm Clear",
+    "8mm Clear",
+    "10mm Toughened",
+    "12mm Toughened",
+    "Sliding Window",
+    "Casement Door",
+    "Fixed Glass",
+    "Frosted Glass",
+    "Laminated Glass",
+    "Reflective Glass",
+    "Mirror",
+    "ACP"
+];
+
+// Configurator Visibility & Option Handlers
 function handleCategoryChange() {
     const select = document.getElementById('itemCategory');
     const customInput = document.getElementById('customCategoryContainer');
+    const thicknessSelect = document.getElementById('itemThickness');
+
+    if (!select) return;
+
     if (select.value === 'CUSTOM_ITEM') {
-        customInput.classList.remove('hidden');
+        if (customInput) customInput.classList.remove('hidden');
     } else {
-        customInput.classList.add('hidden');
+        if (customInput) customInput.classList.add('hidden');
+        
+        // Auto-align thickness if category indicates explicit thickness
+        if (thicknessSelect) {
+            const val = select.value;
+            if (val.startsWith("5mm")) {
+                thicknessSelect.value = "5mm";
+            } else if (val.startsWith("8mm")) {
+                thicknessSelect.value = "8mm";
+            } else if (val.startsWith("10mm")) {
+                thicknessSelect.value = "10mm";
+            } else if (val.startsWith("12mm")) {
+                thicknessSelect.value = "12mm";
+            }
+        }
     }
 }
 
 function addSpecLineItem() {
     const catSelect = document.getElementById('itemCategory');
-    let category = catSelect.value;
+    let category = catSelect ? catSelect.value : '10mm Toughened';
     if (category === 'CUSTOM_ITEM') {
-        category = document.getElementById('customCategoryInput').value.trim() || 'Custom';
+        category = document.getElementById('customCategoryInput').value.trim() || 'Custom Glass / Material';
     }
+
+    const thicknessSelect = document.getElementById('itemThickness');
+    const thickness = thicknessSelect ? thicknessSelect.value : 'Standard';
+
+    const edgeworkSelect = document.getElementById('itemEdgework');
+    const edgework = edgeworkSelect ? edgeworkSelect.value : 'None (Rough/Standard)';
 
     const widthInput = document.getElementById('itemWidth');
     const heightInput = document.getElementById('itemHeight');
@@ -209,13 +249,15 @@ function addSpecLineItem() {
     const qty = parseInt(qtyInput.value) || 1;
 
     if (width <= 0 || height <= 0) {
-        alert("Please specify positive width and height parameters.");
+        alert("Please specify positive width and height parameters in inches.");
         return;
     }
 
     const itemSpec = {
         id: `spec-${Date.now()}-${Math.floor(Math.random()*100)}`,
         name: category,
+        thickness: thickness,
+        edgework: edgework,
         width: width,
         height: height,
         qty: qty,
@@ -290,7 +332,7 @@ function renderSpecLinesTable(newItemId = null) {
 
             const tr = document.createElement('tr');
             tr.id = rowId;
-            tr.className = "border-b border-slate-800/60 hover:bg-slate-900/40";
+            tr.className = "border-b border-slate-800/60 hover:bg-slate-900/40 transition";
 
             if (isNew) {
                 tr.style.opacity = "0";
@@ -298,14 +340,22 @@ function renderSpecLinesTable(newItemId = null) {
             }
 
             tr.innerHTML = `
-                <td class="p-3 pl-4 font-semibold text-white leading-tight">
-                    ${item.name}
+                <td class="p-3 pl-4">
+                    <div class="font-semibold text-white leading-tight">${escapeHtml(item.name)}</div>
+                    <div class="text-[10px] text-slate-400 font-normal flex flex-wrap items-center gap-1.5 mt-1">
+                        <span class="bg-slate-900/90 px-2 py-0.5 rounded-md text-cyan-300 border border-slate-800 font-mono inline-flex items-center gap-1">
+                            <i class="fa-solid fa-layer-group text-[8px]"></i>${escapeHtml(item.thickness || 'Standard')}
+                        </span>
+                        <span class="bg-slate-900/90 px-2 py-0.5 rounded-md text-indigo-300 border border-slate-800 font-mono inline-flex items-center gap-1">
+                            <i class="fa-solid fa-gem text-[8px]"></i>${escapeHtml(item.edgework || 'None')}
+                        </span>
+                    </div>
                 </td>
-                <td class="p-3 text-center font-mono text-indigo-300 font-semibold">${item.width}"</td>
-                <td class="p-3 text-center font-mono text-indigo-300 font-semibold">${item.height}"</td>
+                <td class="p-3 text-center font-mono text-cyan-300 font-semibold">${item.width}"</td>
+                <td class="p-3 text-center font-mono text-cyan-300 font-semibold">${item.height}"</td>
                 <td class="p-3 text-center font-bold text-white">${item.qty}</td>
                 <td class="p-3 text-center">
-                    <button type="button" onclick="removeSpecLineItem('${item.id}')" class="text-rose-400 hover:text-rose-300 bg-rose-950/30 hover:bg-rose-900/20 p-1.5 rounded-lg transition interactive-hover-btn">
+                    <button type="button" onclick="removeSpecLineItem('${item.id}')" class="text-rose-400 hover:text-rose-300 bg-rose-950/30 hover:bg-rose-900/20 p-1.5 rounded-lg transition interactive-hover-btn cursor-pointer" title="Remove item">
                         <i class="fa fa-trash-can text-xs"></i>
                     </button>
                 </td>
@@ -1319,7 +1369,7 @@ function switchPortalTab(tab) {
     }
 }
 
-function selectProductSpotlight(productName) {
+function selectProductInConfigurator(productName) {
     const configEl = document.getElementById("configurator");
     if (configEl) {
         configEl.scrollIntoView({ behavior: "smooth" });
@@ -1504,7 +1554,71 @@ if (document.readyState === "loading") {
 /* ==========================================================================
    DYNAMIC PRODUCT CATALOG MANAGEMENT SYSTEM (Real-Time Cloud & Local Sync)
    ========================================================================== */
-const DEFAULT_PRODUCTS = [];
+const DEFAULT_PRODUCTS = [
+    {
+        id: "prod-sliding-windows",
+        title: "Sliding Window Systems",
+        subtitle: "Acoustic DGU Double Glazing & Precision Rollers",
+        categoryBadge: "Acoustic Glazing",
+        image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+        description: "Heavy-duty engineered sliding window systems with multi-point perimeter compression seals. Eliminates exterior urban noise up to 38dB while delivering thermal insulation.",
+        features: ["38dB Noise Attenuation", "Heavy-Duty Extrusions", "Double Glazed DGU", "Smooth Glide Rollers"]
+    },
+    {
+        id: "prod-panoramic-doors",
+        title: "Panoramic Sliding Doors",
+        subtitle: "Ultra-Slim Sightlines with 12mm Toughened Glass",
+        categoryBadge: "Architectural Glazing",
+        image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+        description: "Floor-to-ceiling glass expanses designed for modern residences, penthouses, and luxury villas. Features seamless flush bottom track options for barrier-free transitions.",
+        features: ["Flush Floor Transition", "Multi-Point Locking", "12mm Toughened Glass", "High Wind Load Rated"]
+    },
+    {
+        id: "prod-frameless-partitions",
+        title: "Frameless Glass Partitions",
+        subtitle: "10mm–12mm Clear & Frosted Office Partitions",
+        categoryBadge: "Interior Glazing",
+        image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
+        description: "Minimalist floor-to-ceiling interior glass dividing solutions for executive boardrooms, luxury corporate offices, and private residential cabins.",
+        features: ["Architectural Hardware", "Custom CNC Cutouts", "Acoustic Sound Control", "Frosted Privacy Banding"]
+    },
+    {
+        id: "prod-shower-cubicles",
+        title: "Toughened Shower Cubicles",
+        subtitle: "10mm Hydrophobic Coated Water-Repellent Glass",
+        categoryBadge: "Hydrophobic Glass",
+        image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+        description: "Custom-manufactured frameless shower enclosures with anti-limescale Nano-coating and marine-grade SS304 stainless steel hinges.",
+        features: ["Nano Anti-Limescale", "SS304 Marine Hardware", "Magnetic Door Seals", "Bespoke Enclosure Shapes"]
+    },
+    {
+        id: "prod-safety-railings",
+        title: "Safety Glass Railings",
+        subtitle: "13.52mm SentryGlas Toughened Laminated Balustrades",
+        categoryBadge: "Safety Architecture",
+        image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+        description: "Engineered spigot and continuous floor base-shoe railing systems for balconies, terrace gardens, and internal cantilever staircases.",
+        features: ["High Impact Structural Glass", "Unobstructed Views", "Balcony & Staircase Spigots", "Zero Maintenance Aluminum"]
+    },
+    {
+        id: "prod-facade-glazing",
+        title: "Curtain Wall Facade Glazing",
+        categoryBadge: "Commercial Exterior",
+        subtitle: "High-performance structural spider & stick curtain glazing",
+        description: "Complete exterior building elevation envelope with low-E energy efficient solar control double glazed units (DGU) and structural silicone sealants.",
+        image: "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=800&q=80",
+        features: ["DGU Solar Control Glass", "Structural Silicone Glazing", "Thermal Break Efficiency", "Weather & UV Resistant"]
+    },
+    {
+        id: "prod-skylight",
+        title: "Skylight & Glass Dome",
+        categoryBadge: "Roof Glazing",
+        subtitle: "Architectural natural daylighting roof canopies",
+        description: "Engineered overhead glass canopies with high-strength laminated safety glass, slope water drainage channels, and UV-filtering heat reduction tints.",
+        image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80",
+        features: ["Laminated Overhead Safety", "UV & Heat Rejection Tint", "Integrated Water Gutter", "Heavy Steel/Alu Substructure"]
+    }
+];
 
 let currentSelectedProductIndex = 0;
 
@@ -1513,12 +1627,12 @@ function getStoredProducts() {
         const stored = localStorage.getItem("ajanta_products_catalog");
         if (stored !== null) {
             const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed)) return parsed;
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
         }
     } catch (e) {
         console.warn("Error reading stored products:", e);
     }
-    return [];
+    return DEFAULT_PRODUCTS;
 }
 
 function saveStoredProducts(products) {
@@ -1540,7 +1654,7 @@ async function syncCatalogFromCloud() {
         const res = await fetch("https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/ajanta_products_catalog").catch(() => null);
         if (res && res.ok) {
             const cloudProducts = await res.json().catch(() => null);
-            if (Array.isArray(cloudProducts)) {
+            if (Array.isArray(cloudProducts) && cloudProducts.length > 0) {
                 localStorage.setItem("ajanta_products_catalog", JSON.stringify(cloudProducts));
                 requestAnimationFrame(() => {
                     renderProductsCatalog();
@@ -1662,13 +1776,37 @@ function renderProductsCatalog() {
     // Also update Configurator dropdown options so new products appear in the estimator!
     const catSelect = document.getElementById("itemCategory");
     if (catSelect) {
-        let optionsHtml = products.map(p => '<option value="' + escapeHtml(p.title) + '">' + escapeHtml(p.title) + ' (' + escapeHtml(p.subtitle || p.categoryBadge) + ')</option>').join("");
-        optionsHtml += '<option value="CUSTOM_ITEM">+ Custom Special Glass Request...</option>';
+        const currentVal = catSelect.value;
+        let optionsHtml = STANDARD_MATERIAL_OPTIONS.map(opt => '<option value="' + escapeHtml(opt) + '">' + escapeHtml(opt) + '</option>').join("");
+        
+        // Add additional showcase products if not already present
+        products.forEach(p => {
+            const exists = STANDARD_MATERIAL_OPTIONS.some(opt => opt.toLowerCase() === p.title.toLowerCase());
+            if (!exists) {
+                optionsHtml += '<option value="' + escapeHtml(p.title) + '">' + escapeHtml(p.title) + ' (' + escapeHtml(p.subtitle || p.categoryBadge || "Architectural Glazing") + ')</option>';
+            }
+        });
+        optionsHtml += '<option value="CUSTOM_ITEM">+ Custom / Special Request...</option>';
         catSelect.innerHTML = optionsHtml;
+        if (currentVal && Array.from(catSelect.options).some(o => o.value === currentVal)) {
+            catSelect.value = currentVal;
+        }
     }
 
     // Select active spotlight
     selectProductSpotlight(currentSelectedProductIndex);
+}
+
+function configureSelectedSpotlightProduct() {
+    const products = getStoredProducts();
+    const p = products[currentSelectedProductIndex];
+    if (p) {
+        selectProductInConfigurator(p.title);
+    } else {
+        const configEl = document.getElementById("configurator");
+        if (configEl) configEl.scrollIntoView({ behavior: "smooth" });
+        setWizardStep(2);
+    }
 }
 
 function renderAdminProductsList() {
