@@ -14,8 +14,6 @@ if (typeof window.fabricatorUser === 'undefined') window.fabricatorUser = window
 function openAjantaEmail(event) {
     if (event) event.preventDefault();
     const email = "ajnatafenestration@gmail.com";
-    const subject = encodeURIComponent("Inquiry - Ajanta Door & Window System");
-    const body = encodeURIComponent("Hello Ajanta Glass team,\n\nI would like to inquire about your architectural glass, doors, and window systems.\n\nThank you!");
 
     // Copy to clipboard
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -25,13 +23,13 @@ function openAjantaEmail(event) {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     if (isMobile) {
-        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        window.location.href = `mailto:${email}`;
     } else {
-        // Open Gmail Compose directly in new tab
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`;
+        // Open Gmail Compose directly with clean blank message
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}`;
         const win = window.open(gmailUrl, "_blank");
         if (!win || win.closed || typeof win.closed === "undefined") {
-            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+            window.location.href = `mailto:${email}`;
         }
     }
 }
