@@ -10,6 +10,32 @@ if (typeof window.clientSpecsList === 'undefined') window.clientSpecsList = [];
 if (typeof window.MAIN_OWNER_ACCOUNT === 'undefined') window.MAIN_OWNER_ACCOUNT = "ajnatafenestration@gmail.com";
 if (typeof window.fabricatorUser === 'undefined') window.fabricatorUser = window.MAIN_OWNER_ACCOUNT;
 
+// Cross-platform Email Handler (Desktop Web Gmail + Mobile App Mailto + Clipboard copy)
+function openAjantaEmail(event) {
+    if (event) event.preventDefault();
+    const email = "ajnatafenestration@gmail.com";
+    const subject = encodeURIComponent("Inquiry - Ajanta Door & Window System");
+    const body = encodeURIComponent("Hello Ajanta Glass team,\n\nI would like to inquire about your architectural glass, doors, and window systems.\n\nThank you!");
+
+    // Copy to clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email).catch(() => {});
+    }
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    } else {
+        // Open Gmail Compose directly in new tab
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`;
+        const win = window.open(gmailUrl, "_blank");
+        if (!win || win.closed || typeof win.closed === "undefined") {
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }
+    }
+}
+
 // Web Geolocation detection with OpenStreetMap and BigDataCloud fallback geocoding plus IP fallback
 async function detectWebLocation() {
     const btn = document.getElementById('locateBtn');
