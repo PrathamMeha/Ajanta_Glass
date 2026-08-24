@@ -324,18 +324,18 @@
                 </div>
                 
                 <!-- Quoting / Support tab selection buttons -->
-                <div class="inline-flex bg-slate-950 p-1 rounded-xl border border-slate-850">
-                    <button onclick="switchPortalTab('quoting')" id="tabBtnQuoting" class="px-4 py-2 font-bold text-xs rounded-lg transition duration-200 bg-gradient-to-r from-cyan-600 to-cyan-850 text-white">
-                        Sizing & Requirements
+                <div class="inline-flex bg-[#070a12] p-1.5 rounded-2xl border border-slate-800 shadow-inner">
+                    <button onclick="switchPortalTab('quoting')" id="tabBtnQuoting" class="px-5 py-2.5 font-bold text-xs rounded-xl transition duration-200 bg-[#5846f6] text-white shadow-md shadow-indigo-600/30 cursor-pointer">
+                        <i class="fa-solid fa-calculator mr-1.5"></i> Sizing &amp; Requirements
                     </button>
-                    <button onclick="switchPortalTab('support')" id="tabBtnSupport" class="px-4 py-2 font-bold text-xs rounded-lg transition duration-200 text-slate-400 hover:text-white">
-                        Customer Support
+                    <button onclick="switchPortalTab('support')" id="tabBtnSupport" class="px-5 py-2.5 font-bold text-xs rounded-xl transition duration-200 text-slate-400 hover:text-white cursor-pointer">
+                        <i class="fa-solid fa-headset mr-1.5"></i> Customer Support
                     </button>
                 </div>
             </div>
 
             <!-- DIRECT STANDALONE INTERACTIVE SIZE CALCULATOR CARD (MATCHING CLIENT VIDEO) -->
-            <div class="space-y-6">
+            <div id="quotingFormSection" class="space-y-6 transition-all duration-300">
                 <!-- Interactive Size Calculator Card -->
                 <div class="bg-[#0b0f19]/90 border border-slate-800/80 p-5 sm:p-7 rounded-2xl space-y-6 shadow-2xl backdrop-blur-md">
                     <div class="flex items-center justify-between border-b border-white/10 pb-4">

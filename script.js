@@ -1395,14 +1395,17 @@ function switchPortalTab(tab) {
     const quotingSection = document.getElementById("quotingFormSection");
     const supportSection = document.getElementById("supportFormSection") || document.getElementById("customerSupportSection");
 
+    const activeClass = "px-5 py-2.5 font-bold text-xs rounded-xl transition duration-200 bg-[#5846f6] text-white shadow-md shadow-indigo-600/30 cursor-pointer";
+    const inactiveClass = "px-5 py-2.5 font-bold text-xs rounded-xl transition duration-200 text-slate-400 hover:text-white cursor-pointer";
+
     if (tab === "quoting") {
-        if (btnQuoting) btnQuoting.className = "px-4 py-2 font-bold text-xs rounded-lg transition duration-200 bg-gradient-to-r from-cyan-600 to-cyan-850 text-white";
-        if (btnSupport) btnSupport.className = "px-4 py-2 font-bold text-xs rounded-lg transition duration-200 text-slate-400 hover:text-white";
+        if (btnQuoting) btnQuoting.className = activeClass;
+        if (btnSupport) btnSupport.className = inactiveClass;
         if (quotingSection) quotingSection.classList.remove("hidden");
         if (supportSection) supportSection.classList.add("hidden");
     } else {
-        if (btnQuoting) btnQuoting.className = "px-4 py-2 font-bold text-xs rounded-lg transition duration-200 text-slate-400 hover:text-white";
-        if (btnSupport) btnSupport.className = "px-4 py-2 font-bold text-xs rounded-lg transition duration-200 bg-gradient-to-r from-cyan-600 to-cyan-850 text-white";
+        if (btnQuoting) btnQuoting.className = inactiveClass;
+        if (btnSupport) btnSupport.className = activeClass;
         if (quotingSection) quotingSection.classList.add("hidden");
         if (supportSection) supportSection.classList.remove("hidden");
     }
@@ -1676,7 +1679,7 @@ function getStoredProducts() {
         const stored = localStorage.getItem("ajanta_products_catalog");
         if (stored !== null) {
             const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            if (Array.isArray(parsed)) return parsed;
         }
     } catch (e) {
         console.warn("Error reading stored products:", e);
@@ -1703,7 +1706,7 @@ async function syncCatalogFromCloud() {
         const res = await fetch("https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/ajanta_products_catalog").catch(() => null);
         if (res && res.ok) {
             const cloudProducts = await res.json().catch(() => null);
-            if (Array.isArray(cloudProducts) && cloudProducts.length > 0) {
+            if (Array.isArray(cloudProducts)) {
                 localStorage.setItem("ajanta_products_catalog", JSON.stringify(cloudProducts));
                 requestAnimationFrame(() => {
                     renderProductsCatalog();
