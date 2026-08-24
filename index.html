@@ -334,204 +334,194 @@
                 </div>
             </div>
 
-            <!-- TAB A: ESTIMATOR CONFIGURATOR FORM WITH MULTI-STEP WIZARD -->
-            <div id="quotingFormSection" class="transition-all duration-300 space-y-6">
-                
-                <!-- Elegant Step Indicators -->
-                <div class="flex items-center justify-between max-w-md mx-auto mb-10 relative px-2">
-                    <div class="absolute top-4 left-0 w-full h-[1px] bg-slate-850 z-0"></div>
-                    
-                    <div class="relative z-10 flex flex-col items-center gap-1.5">
-                        <div id="wizard-indicator-1" class="w-8 h-8 rounded-full bg-[#00B8D9] text-slate-950 flex items-center justify-center font-bold text-xs ring-4 ring-cyan-500/20">1</div>
-                        <span id="wizard-indicator-text-1" class="text-[10px] font-bold text-white uppercase tracking-wider">Identity</span>
+            <!-- DIRECT STANDALONE INTERACTIVE SIZE CALCULATOR CARD (MATCHING CLIENT VIDEO) -->
+            <div class="space-y-6">
+                <!-- Interactive Size Calculator Card -->
+                <div class="bg-[#0b0f19]/90 border border-slate-800/80 p-5 sm:p-7 rounded-2xl space-y-6 shadow-2xl backdrop-blur-md">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                        <span class="text-base sm:text-lg font-bold text-white tracking-wide flex items-center gap-2 font-display">
+                            Interactive Size Calculator
+                        </span>
+                        <span class="text-[11px] font-bold text-indigo-300 bg-indigo-950/70 border border-indigo-500/30 px-3 py-1 rounded-md tracking-wider">
+                            ERP Standard
+                        </span>
                     </div>
-                    <div class="relative z-10 flex flex-col items-center gap-1.5">
-                        <div id="wizard-indicator-2" class="w-8 h-8 rounded-full bg-slate-900 border border-slate-850 text-slate-500 flex items-center justify-center font-bold text-xs">2</div>
-                        <span id="wizard-indicator-text-2" class="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">Specs</span>
+
+                    <!-- Row 1: Product Category & Glass / Material Profile -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <!-- Product Category -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-300 block">Product Category</label>
+                            <select id="itemCategory" onchange="handleCategoryChange()" class="w-full px-4 py-3 bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition shadow-inner">
+                                <option value="Sliding Window" selected>Sliding Window</option>
+                                <option value="Sliding Door">Sliding Door</option>
+                                <option value="Casement Door">Casement Door</option>
+                                <option value="Fixed Glass Partition">Fixed Glass Partition</option>
+                                <option value="Balcony Glass Railing">Balcony Glass Railing</option>
+                                <option value="Shower Cubicle">Shower Cubicle</option>
+                                <option value="Mirror / Toughened Glass">Mirror / Toughened Glass</option>
+                                <option value="CUSTOM_ITEM">+ Custom product select...</option>
+                            </select>
+                            <div id="customCategoryContainer" class="mt-2 hidden">
+                                <input id="customCategoryInput" type="text" placeholder="Specify custom product category..." class="w-full px-3.5 py-2.5 rounded-lg text-xs glass-input">
+                            </div>
+                        </div>
+
+                        <!-- Glass / Material Profile -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-300 block">Glass / Material Profile</label>
+                            <select id="itemGlassProfile" onchange="handleGlassProfileChange()" class="w-full px-4 py-3 bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition shadow-inner">
+                                <option value="5mm Clear Glass" selected>5mm Clear Glass</option>
+                                <option value="8mm Clear Glass">8mm Clear Glass</option>
+                                <option value="10mm Toughened Glass">10mm Toughened Glass</option>
+                                <option value="12mm Toughened Glass">12mm Toughened Glass</option>
+                                <option value="Sliding Window Profiling">Sliding Window Profiling</option>
+                                <option value="Frosted Glass">Frosted Glass</option>
+                                <option value="Laminated Glass">Laminated Glass</option>
+                                <option value="Reflective Glass">Reflective Glass</option>
+                                <option value="Mirror Spec">Mirror Spec</option>
+                                <option value="ACP Panel Profile">ACP Panel Profile</option>
+                                <option value="CUSTOM_GLASS">+ Customized material spec...</option>
+                            </select>
+                            <div id="customGlassContainer" class="mt-2 hidden">
+                                <input id="customGlassInput" type="text" placeholder="Specify customized material..." class="w-full px-3.5 py-2.5 rounded-lg text-xs glass-input">
+                            </div>
+                        </div>
                     </div>
-                    <div class="relative z-10 flex flex-col items-center gap-1.5">
-                        <div id="wizard-indicator-3" class="w-8 h-8 rounded-full bg-slate-900 border border-slate-850 text-slate-500 flex items-center justify-center font-bold text-xs">3</div>
-                        <span id="wizard-indicator-text-3" class="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">Confirm</span>
+
+                    <!-- Row 2: Thickness Profile & Edgework Surcharge -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <!-- Thickness Profile -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-300 block">Thickness Profile</label>
+                            <select id="itemThickness" onchange="handleThicknessChange()" class="w-full px-4 py-3 bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition shadow-inner">
+                                <option value="Standard" selected>Standard</option>
+                                <option value="5mm Thickness">5mm Thickness</option>
+                                <option value="8mm Thickness">8mm Thickness</option>
+                                <option value="10mm Thickness">10mm Thickness</option>
+                                <option value="12mm Thickness">12mm Thickness</option>
+                                <option value="CUSTOM_THICKNESS">+ Custom thickness...</option>
+                            </select>
+                            <div id="customThicknessContainer" class="mt-2 hidden">
+                                <input id="customThicknessInput" type="text" placeholder="Custom thickness (e.g. 15mm, 19mm)..." class="w-full px-3.5 py-2.5 rounded-lg text-xs glass-input">
+                            </div>
+                        </div>
+
+                        <!-- Edgework Surcharge -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-300 block">Edgework Surcharge</label>
+                            <select id="itemEdgework" class="w-full px-4 py-3 bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition shadow-inner">
+                                <option value="Standard bevel" selected>Standard bevel</option>
+                                <option value="Seamed perimeter">Seamed perimeter</option>
+                                <option value="Flat premium polished">Flat premium polished</option>
+                                <option value="Beveled polished decorative">Beveled polished decorative</option>
+                                <option value="Mitered 45 edge">Mitered 45 edge</option>
+                                <option value="None (Rough/Standard)">None (Rough/Standard)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Dimensions (Width, Height) & Quantity -->
+                    <div class="grid grid-cols-3 gap-3 sm:gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-300 block text-center sm:text-left">Width (Inches)</label>
+                            <input id="itemWidth" type="number" step="0.1" placeholder="Inches" class="w-full px-3 py-3 rounded-xl text-xs sm:text-sm bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 focus:border-indigo-500 text-white font-bold text-center transition">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-300 block text-center sm:text-left">Height (Inches)</label>
+                            <input id="itemHeight" type="number" step="0.1" placeholder="Inches" class="w-full px-3 py-3 rounded-xl text-xs sm:text-sm bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 focus:border-indigo-500 text-white font-bold text-center transition">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-300 block text-center sm:text-left">Quantity</label>
+                            <input id="itemQty" type="number" min="1" value="1" class="w-full px-3 py-3 rounded-xl text-xs sm:text-sm bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 focus:border-indigo-500 text-white font-bold text-center transition">
+                        </div>
+                    </div>
+
+                    <!-- Add Specs Button (Right Aligned as in Video) -->
+                    <div class="flex justify-end pt-1">
+                        <button type="button" onclick="addSpecLineItem()" class="bg-[#5846f6] hover:bg-[#4b3be0] text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl transition duration-200 cursor-pointer shadow-lg shadow-indigo-600/30 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-plus"></i> Add Specs to Order
+                        </button>
+                    </div>
+
+                    <!-- Selected Spec Table list inside calculator -->
+                    <div id="specItemsContainer" class="hidden border border-slate-800 rounded-xl overflow-hidden bg-slate-950/80 transition mt-4 animate-fade-in text-xs">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-slate-900 border-b border-slate-800 font-bold text-slate-300">
+                                    <th class="p-3 text-left">Specs Profile</th>
+                                    <th class="p-3 text-center">Width</th>
+                                    <th class="p-3 text-center">Height</th>
+                                    <th class="p-3 text-center">Qty</th>
+                                    <th class="p-3 text-center">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody id="specItemsBody" class="divide-y divide-slate-800/80 font-medium">
+                                <!-- Appended dynamic selection lines -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <form id="requirementsForm" onsubmit="submitForm(event)" class="space-y-6">
-                    
-                    <!-- STEP 1: IDENTITY & GEOLOCATION -->
-                    <div id="wizard-step-1" class="space-y-6">
-                        <div class="grid sm:grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Your Name *</label>
-                                <input id="clientName" type="text" required placeholder="Full Name" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Mobile Number / Whatsapp *</label>
-                                <input id="clientPhone" type="tel" required placeholder="+91 98765 43210" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
-                            </div>
+                <!-- Big PLACE ORDER NOW CTA (As in video) -->
+                <button type="button" onclick="openOrderModal()" class="w-full bg-[#5846f6] hover:bg-[#4a39e3] text-white font-black py-4.5 rounded-2xl tracking-widest uppercase flex items-center justify-center gap-3 shadow-2xl shadow-indigo-600/40 text-sm sm:text-base transition-all duration-200 active:scale-[0.99] cursor-pointer">
+                    <i class="fa-solid fa-paper-plane text-indigo-200"></i> PLACE ORDER NOW
+                </button>
+            </div>
+
+            <!-- PLACE ORDER CONFIRMATION MODAL -->
+            <div id="orderPlacementModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 hidden animate-fade-in">
+                <div class="bg-[#0b0f19] border border-slate-800 p-6 sm:p-8 rounded-3xl max-w-lg w-full space-y-5 shadow-2xl relative">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white font-syne">Complete Your Order</h3>
+                            <p class="text-xs text-slate-400">Provide contact details to receive fast pricing & dispatch confirmation</p>
+                        </div>
+                        <button type="button" onclick="closeOrderModal()" class="text-slate-400 hover:text-white p-2 text-sm cursor-pointer">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+
+                    <form id="requirementsForm" onsubmit="submitForm(event)" class="space-y-4">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-300 block">Your Name *</label>
+                            <input id="clientName" type="text" required placeholder="Full Name" class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none">
                         </div>
 
-                        <!-- Geolocation Installation Address input line -->
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex justify-between">
-                                <span>Installation / Site Address</span>
-                                <span class="text-[10px] text-[#00B8D9] font-bold uppercase tracking-widest cursor-pointer hover:text-cyan-400 transition" onclick="detectWebLocation()">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-300 block">Mobile / WhatsApp Number *</label>
+                            <input id="clientPhone" type="tel" required placeholder="+91 98765 43210" class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between items-center">
+                                <label class="text-xs font-semibold text-slate-300">Site / Delivery Address</label>
+                                <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider cursor-pointer hover:text-indigo-300 transition" onclick="detectWebLocation()">
                                     <i class="fa-solid fa-location-arrow"></i> Auto Locate
                                 </span>
-                            </label>
+                            </div>
                             <div class="relative">
-                                <input id="clientAddress" type="text" placeholder="Flat number, Society name, Area, City" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium pr-10 placeholder-slate-600">
-                                <span onclick="detectWebLocation()" class="absolute right-4 top-3.5 text-[#00B8D9] cursor-pointer text-xs"><i id="locateIcon" class="fa-solid fa-compass"></i></span>
+                                <input id="clientAddress" type="text" placeholder="Plot / Flat, Area, City" class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none pr-10">
+                                <span onclick="detectWebLocation()" class="absolute right-3.5 top-3 text-indigo-400 cursor-pointer text-xs"><i id="locateIcon" class="fa-solid fa-compass"></i></span>
                             </div>
                         </div>
 
-                        <div class="pt-4 flex justify-end">
-                            <button type="button" onclick="setWizardStep(2)" class="bg-white hover:bg-slate-200 text-slate-950 font-bold text-xs px-6 py-3.5 rounded-xl transition duration-200 tracking-wider uppercase">
-                                Configure Requirements <i class="fa-solid fa-arrow-right ml-1.5"></i>
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-300 block">Additional Specifications / Notes</label>
+                            <textarea id="clientRequirements" rows="2" placeholder="Framework details, delivery timeline, or special instructions..." class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none"></textarea>
+                        </div>
+
+                        <div class="pt-2 flex gap-3">
+                            <button type="button" onclick="closeOrderModal()" class="px-5 py-3 rounded-xl border border-slate-800 text-slate-400 hover:text-white text-xs font-bold uppercase tracking-wider transition">
+                                Cancel
+                            </button>
+                            <button type="submit" id="submitBtn" class="flex-1 py-3.5 bg-[#5846f6] hover:bg-[#4a39e3] text-white rounded-xl font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl shadow-indigo-600/30 text-xs sm:text-sm">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Confirm &amp; Place Order</span>
                             </button>
                         </div>
-                    </div>
-
-                    <!-- STEP 2: CUSTOM SIZING SPECIFICATIONS -->
-                    <div id="wizard-step-2" class="space-y-6 hidden">
-                        <!-- Live SPEC PANEL -->
-                        <div class="bg-slate-900/40 border border-slate-850 p-5 rounded-2xl space-y-4">
-                            <div class="flex items-center justify-between border-b border-white/5 pb-3">
-                                <span class="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-ruler-combined text-cyan-400"></i> Enter Sizing &amp; Material Specifications
-                                </span>
-                                <span class="text-[10px] font-extrabold text-[#00B8D9] bg-slate-950 border border-slate-850 px-2 py-0.5 rounded">Manual Quote Sizing</span>
-                            </div>
-
-                            <!-- Options Grid: Material/Type, Thickness, Edgework -->
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <!-- Material & Glass Type -->
-                                <div class="sm:col-span-1">
-                                    <label class="text-[10px] font-bold text-slate-400 block mb-1">
-                                        <i class="fa-solid fa-shapes text-cyan-400 mr-1"></i>Material &amp; Glass Type
-                                    </label>
-                                    <select id="itemCategory" onchange="handleCategoryChange()" class="w-full px-3 py-2.5 bg-slate-950/90 border border-slate-850 hover:border-cyan-500/50 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500 transition">
-                                        <option value="5mm Clear">5mm Clear</option>
-                                        <option value="8mm Clear">8mm Clear</option>
-                                        <option value="10mm Toughened" selected>10mm Toughened</option>
-                                        <option value="12mm Toughened">12mm Toughened</option>
-                                        <option value="Sliding Window">Sliding Window</option>
-                                        <option value="Casement Door">Casement Door</option>
-                                        <option value="Fixed Glass">Fixed Glass</option>
-                                        <option value="Frosted Glass">Frosted Glass</option>
-                                        <option value="Laminated Glass">Laminated Glass</option>
-                                        <option value="Reflective Glass">Reflective Glass</option>
-                                        <option value="Mirror">Mirror</option>
-                                        <option value="ACP">ACP</option>
-                                        <option value="CUSTOM_ITEM">+ Custom / Special Request...</option>
-                                    </select>
-                                    <div id="customCategoryContainer" class="mt-2 hidden">
-                                        <input id="customCategoryInput" type="text" placeholder="Custom material / glass request..." class="w-full px-2.5 py-2 hover:border-cyan-500 rounded-lg text-xs glass-input">
-                                    </div>
-                                </div>
-
-                                <!-- Thickness Selection -->
-                                <div>
-                                    <label class="text-[10px] font-bold text-slate-400 block mb-1">
-                                        <i class="fa-solid fa-layer-group text-cyan-400 mr-1"></i>Thickness
-                                    </label>
-                                    <select id="itemThickness" class="w-full px-3 py-2.5 bg-slate-950/90 border border-slate-850 hover:border-cyan-500/50 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500 transition">
-                                        <option value="Standard">Standard</option>
-                                        <option value="5mm">5mm</option>
-                                        <option value="8mm">8mm</option>
-                                        <option value="10mm" selected>10mm</option>
-                                        <option value="12mm">12mm</option>
-                                    </select>
-                                </div>
-
-                                <!-- Edgework Processing -->
-                                <div>
-                                    <label class="text-[10px] font-bold text-slate-400 block mb-1">
-                                        <i class="fa-solid fa-gem text-cyan-400 mr-1"></i>Edgework Processing
-                                    </label>
-                                    <select id="itemEdgework" class="w-full px-3 py-2.5 bg-slate-950/90 border border-slate-850 hover:border-cyan-500/50 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500 transition">
-                                        <option value="None (Rough/Standard)">None (Rough/Standard)</option>
-                                        <option value="Seamed">Seamed</option>
-                                        <option value="Flat Polished" selected>Flat Polished</option>
-                                        <option value="Beveled Polished">Beveled Polished</option>
-                                        <option value="Mitered">Mitered</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Dimensions & Quantity -->
-                            <div class="grid grid-cols-3 gap-3 pt-1">
-                                <div>
-                                    <label class="text-[10px] font-bold text-slate-400 block mb-1">Width (Inches)</label>
-                                    <input id="itemWidth" type="number" step="0.1" placeholder="e.g. 48" class="w-full px-2.5 py-2 rounded-lg text-xs glass-input font-bold text-center">
-                                </div>
-                                <div>
-                                    <label class="text-[10px] font-bold text-slate-400 block mb-1">Height (Inches)</label>
-                                    <input id="itemHeight" type="number" step="0.1" placeholder="e.g. 72" class="w-full px-2.5 py-2 rounded-lg text-xs glass-input font-bold text-center">
-                                </div>
-                                <div>
-                                    <label class="text-[10px] font-bold text-slate-400 block mb-1">Quantity</label>
-                                    <input id="itemQty" type="number" min="1" value="1" class="w-full px-2.5 py-2 rounded-lg text-xs glass-input font-bold text-center">
-                                </div>
-                            </div>
-
-                            <div class="flex justify-end pt-1">
-                                <button type="button" onclick="addSpecLineItem()" class="bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-650 text-white font-bold text-[11px] px-5 py-2.5 rounded-xl transition duration-200 cursor-pointer shadow-lg shadow-cyan-900/30 flex items-center gap-1.5">
-                                    <i class="fa fa-circle-plus"></i> Add Specs to Inquiry
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Step navigation controls -->
-                        <div class="pt-4 flex justify-between items-center">
-                            <button type="button" onclick="setWizardStep(1)" class="text-slate-400 hover:text-white font-bold text-xs transition px-4 py-2 uppercase tracking-wider cursor-pointer">
-                                <i class="fa-solid fa-arrow-left mr-1"></i> Back
-                            </button>
-                            <button type="button" onclick="setWizardStep(3)" class="bg-white hover:bg-slate-200 text-slate-950 font-bold text-xs px-6 py-3.5 rounded-xl transition duration-200 tracking-wider uppercase cursor-pointer">
-                                Review &amp; Confirm <i class="fa-solid fa-arrow-right ml-1.5"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- STEP 3: REVIEWS & CONFIRMATION -->
-                    <div id="wizard-step-3" class="space-y-6 hidden">
-                        <!-- Selected Spec Table list inside modal selection -->
-                        <div id="specItemsContainer" class="hidden border border-slate-850 rounded-xl overflow-hidden bg-slate-950/60 transition mt-4 animate-fade-in text-xs">
-                            <table class="w-full">
-                                <thead>
-                                    <tr class="bg-slate-900 border-b border-slate-850 font-bold text-slate-300">
-                                        <th class="p-3 text-left">Specs Profile</th>
-                                        <th class="p-3 text-center">Width</th>
-                                        <th class="p-3 text-center">Height</th>
-                                        <th class="p-3 text-center">Qty</th>
-                                        <th class="p-3 text-center">Revoke</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="specItemsBody" class="divide-y divide-slate-850 font-medium">
-                                    <!-- Appended dynamic selection lines -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- General Requirements and Note -->
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Special Sizing / Framework Surcharge Notes</label>
-                            <textarea id="clientRequirements" rows="3" placeholder="Specify customized aluminum framework densities, mesh requirements, clear or safety laminated spec choice, site details..." class="w-full p-4 rounded-xl text-xs glass-input font-medium placeholder-slate-600"></textarea>
-                        </div>
-
-                        <!-- Step navigation controls -->
-                        <div class="pt-4 flex justify-between items-center gap-4">
-                            <button type="button" onclick="setWizardStep(2)" class="text-slate-400 hover:text-white font-bold text-xs transition px-4 py-2 uppercase tracking-wider">
-                                <i class="fa-solid fa-arrow-left mr-1"></i> Modify Specs
-                            </button>
-                            
-                            <button type="submit" id="submitBtn" class="flex-1 max-w-xs py-3.5 bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-650 text-white rounded-xl font-bold uppercase tracking-wider transition-all flex items-center justify-center space-x-2 shadow-xl shadow-cyan-600/15">
-                                <i class="fa-regular fa-paper-plane mr-2"></i>
-                                <span>Submit Inquiry</span>
-                            </button>
-                        </div>
-                    </div>
-
-                </form>
+                    </form>
+                </div>
             </div>
 
             <!-- TAB B: CUSTOMER SUPPORT FORM -->

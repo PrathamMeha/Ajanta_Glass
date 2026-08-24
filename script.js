@@ -182,71 +182,87 @@ window.addEventListener('load', () => {
     }
 });
 
-// Standard Material & Glass Types Requested by Client
-const STANDARD_MATERIAL_OPTIONS = [
-    "5mm Clear",
-    "8mm Clear",
-    "10mm Toughened",
-    "12mm Toughened",
-    "Sliding Window",
-    "Casement Door",
-    "Fixed Glass",
-    "Frosted Glass",
-    "Laminated Glass",
-    "Reflective Glass",
-    "Mirror",
-    "ACP"
-];
-
-// Configurator Visibility & Option Handlers
+// Interactive Size Calculator Configurator Dropdown Handlers
 function handleCategoryChange() {
     const select = document.getElementById('itemCategory');
     const customInput = document.getElementById('customCategoryContainer');
-    const thicknessSelect = document.getElementById('itemThickness');
-
     if (!select) return;
 
     if (select.value === 'CUSTOM_ITEM') {
         if (customInput) customInput.classList.remove('hidden');
     } else {
         if (customInput) customInput.classList.add('hidden');
+    }
+}
+
+function handleGlassProfileChange() {
+    const select = document.getElementById('itemGlassProfile');
+    const customInput = document.getElementById('customGlassContainer');
+    const thicknessSelect = document.getElementById('itemThickness');
+    if (!select) return;
+
+    if (select.value === 'CUSTOM_GLASS') {
+        if (customInput) customInput.classList.remove('hidden');
+    } else {
+        if (customInput) customInput.classList.add('hidden');
         
-        // Auto-align thickness if category indicates explicit thickness
+        // Auto-align thickness if glass profile indicates explicit thickness
         if (thicknessSelect) {
             const val = select.value;
             if (val.startsWith("5mm")) {
-                thicknessSelect.value = "5mm";
+                thicknessSelect.value = "5mm Thickness";
             } else if (val.startsWith("8mm")) {
-                thicknessSelect.value = "8mm";
+                thicknessSelect.value = "8mm Thickness";
             } else if (val.startsWith("10mm")) {
-                thicknessSelect.value = "10mm";
+                thicknessSelect.value = "10mm Thickness";
             } else if (val.startsWith("12mm")) {
-                thicknessSelect.value = "12mm";
+                thicknessSelect.value = "12mm Thickness";
             }
         }
     }
 }
 
+function handleThicknessChange() {
+    const select = document.getElementById('itemThickness');
+    const customInput = document.getElementById('customThicknessContainer');
+    if (!select) return;
+
+    if (select.value === 'CUSTOM_THICKNESS') {
+        if (customInput) customInput.classList.remove('hidden');
+    } else {
+        if (customInput) customInput.classList.add('hidden');
+    }
+}
+
 function addSpecLineItem() {
     const catSelect = document.getElementById('itemCategory');
-    let category = catSelect ? catSelect.value : '10mm Toughened';
+    let category = catSelect ? catSelect.value : 'Sliding Window';
     if (category === 'CUSTOM_ITEM') {
-        category = document.getElementById('customCategoryInput').value.trim() || 'Custom Glass / Material';
+        category = document.getElementById('customCategoryInput')?.value.trim() || 'Custom Product';
+    }
+
+    const glassSelect = document.getElementById('itemGlassProfile');
+    let glassProfile = glassSelect ? glassSelect.value : '5mm Clear Glass';
+    if (glassProfile === 'CUSTOM_GLASS') {
+        glassProfile = document.getElementById('customGlassInput')?.value.trim() || 'Custom Material';
     }
 
     const thicknessSelect = document.getElementById('itemThickness');
-    const thickness = thicknessSelect ? thicknessSelect.value : 'Standard';
+    let thickness = thicknessSelect ? thicknessSelect.value : 'Standard';
+    if (thickness === 'CUSTOM_THICKNESS') {
+        thickness = document.getElementById('customThicknessInput')?.value.trim() || 'Custom Thickness';
+    }
 
     const edgeworkSelect = document.getElementById('itemEdgework');
-    const edgework = edgeworkSelect ? edgeworkSelect.value : 'None (Rough/Standard)';
+    const edgework = edgeworkSelect ? edgeworkSelect.value : 'Standard bevel';
 
     const widthInput = document.getElementById('itemWidth');
     const heightInput = document.getElementById('itemHeight');
     const qtyInput = document.getElementById('itemQty');
 
-    const width = parseFloat(widthInput.value) || 0.0;
-    const height = parseFloat(heightInput.value) || 0.0;
-    const qty = parseInt(qtyInput.value) || 1;
+    const width = parseFloat(widthInput?.value) || 0.0;
+    const height = parseFloat(heightInput?.value) || 0.0;
+    const qty = parseInt(qtyInput?.value) || 1;
 
     if (width <= 0 || height <= 0) {
         alert("Please specify positive width and height parameters in inches.");
@@ -256,6 +272,7 @@ function addSpecLineItem() {
     const itemSpec = {
         id: `spec-${Date.now()}-${Math.floor(Math.random()*100)}`,
         name: category,
+        glassProfile: glassProfile,
         thickness: thickness,
         edgework: edgework,
         width: width,
@@ -267,9 +284,9 @@ function addSpecLineItem() {
     clientSpecsList.push(itemSpec);
     renderSpecLinesTable(itemSpec.id);
 
-    widthInput.value = '';
-    heightInput.value = '';
-    qtyInput.value = '1';
+    if (widthInput) widthInput.value = '';
+    if (heightInput) heightInput.value = '';
+    if (qtyInput) qtyInput.value = '1';
 }
 
 function removeSpecLineItem(id) {
@@ -341,7 +358,7 @@ function renderSpecLinesTable(newItemId = null) {
 
             tr.innerHTML = `
                 <td class="p-3 pl-4">
-                    <div class="font-semibold text-white leading-tight">${escapeHtml(item.name)}</div>
+                    <div class="font-semibold text-white leading-tight">${escapeHtml(item.name)} <span class="text-indigo-300 font-normal text-xs">• ${escapeHtml(item.glassProfile || '')}</span></div>
                     <div class="text-[10px] text-slate-400 font-normal flex flex-wrap items-center gap-1.5 mt-1">
                         <span class="bg-slate-900/90 px-2 py-0.5 rounded-md text-cyan-300 border border-slate-800 font-mono inline-flex items-center gap-1">
                             <i class="fa-solid fa-layer-group text-[8px]"></i>${escapeHtml(item.thickness || 'Standard')}
@@ -384,11 +401,30 @@ function renderSpecLinesTable(newItemId = null) {
     }
 }
 
+function openOrderModal() {
+    const modal = document.getElementById('orderPlacementModal');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    const nameInput = document.getElementById('clientName');
+    if (nameInput) nameInput.focus();
+}
+
+function closeOrderModal() {
+    const modal = document.getElementById('orderPlacementModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function setWizardStep(stepNum) {
+    if (stepNum === 3) {
+        openOrderModal();
+    }
+}
+
 async function submitForm(event) {
     event.preventDefault();
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
-    btn.innerHTML = `<i class="fa fa-circle-notch animate-spin"></i> <span>Submitting Inquiry...</span>`;
+    btn.innerHTML = `<i class="fa fa-circle-notch animate-spin"></i> <span>Submitting Order...</span>`;
 
     const name = document.getElementById('clientName').value.trim();
     const phone = document.getElementById('clientPhone').value.trim();
@@ -450,14 +486,17 @@ async function submitForm(event) {
         });
 
         if (postRes.ok) {
+            // Close order modal
+            closeOrderModal();
+
             // Reset form and specifications list
             document.getElementById('requirementsForm').reset();
             clientSpecsList = [];
             renderSpecLinesTable();
 
             // Set dynamic success modal contents
-            document.querySelector('#successModal h3').textContent = "Inquiry Submitted";
-            document.querySelector('#successModal p').textContent = "Your inquiry has been submitted successfully. Our team will review your requirements and contact you with a personalized quotation.";
+            document.querySelector('#successModal h3').textContent = "Order Inquiry Submitted!";
+            document.querySelector('#successModal p').textContent = "Thank you! Your specifications have been forwarded to Sunny Mehta. We will review dimensions and connect via WhatsApp/Phone shortly.";
             
             // Show Success triggers
             document.getElementById('successModal').classList.remove('hidden');
@@ -469,7 +508,7 @@ async function submitForm(event) {
         alert("Submission transmission error: " + err.message);
     } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa fa-paper-plane"></i> <span>Submit Inquiry</span>`;
+        btn.innerHTML = `<i class="fa fa-paper-plane"></i> <span>Confirm &amp; Place Order</span>`;
     }
 }
 
@@ -1620,6 +1659,16 @@ const DEFAULT_PRODUCTS = [
     }
 ];
 
+const STANDARD_PRODUCT_CATEGORIES = [
+    "Sliding Window",
+    "Sliding Door",
+    "Casement Door",
+    "Fixed Glass Partition",
+    "Balcony Glass Railing",
+    "Shower Cubicle",
+    "Mirror / Toughened Glass"
+];
+
 let currentSelectedProductIndex = 0;
 
 function getStoredProducts() {
@@ -1777,16 +1826,16 @@ function renderProductsCatalog() {
     const catSelect = document.getElementById("itemCategory");
     if (catSelect) {
         const currentVal = catSelect.value;
-        let optionsHtml = STANDARD_MATERIAL_OPTIONS.map(opt => '<option value="' + escapeHtml(opt) + '">' + escapeHtml(opt) + '</option>').join("");
+        let optionsHtml = STANDARD_PRODUCT_CATEGORIES.map(opt => '<option value="' + escapeHtml(opt) + '">' + escapeHtml(opt) + '</option>').join("");
         
         // Add additional showcase products if not already present
         products.forEach(p => {
-            const exists = STANDARD_MATERIAL_OPTIONS.some(opt => opt.toLowerCase() === p.title.toLowerCase());
+            const exists = STANDARD_PRODUCT_CATEGORIES.some(opt => opt.toLowerCase() === p.title.toLowerCase());
             if (!exists) {
-                optionsHtml += '<option value="' + escapeHtml(p.title) + '">' + escapeHtml(p.title) + ' (' + escapeHtml(p.subtitle || p.categoryBadge || "Architectural Glazing") + ')</option>';
+                optionsHtml += '<option value="' + escapeHtml(p.title) + '">' + escapeHtml(p.title) + '</option>';
             }
         });
-        optionsHtml += '<option value="CUSTOM_ITEM">+ Custom / Special Request...</option>';
+        optionsHtml += '<option value="CUSTOM_ITEM">+ Custom product select...</option>';
         catSelect.innerHTML = optionsHtml;
         if (currentVal && Array.from(catSelect.options).some(o => o.value === currentVal)) {
             catSelect.value = currentVal;
