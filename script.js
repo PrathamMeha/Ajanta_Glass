@@ -420,6 +420,19 @@ function setWizardStep(stepNum) {
     }
 }
 
+// Orders go to the shop's private inbox in Supabase (the shop is read from the ?user= part of the link).
+// The website can only ADD an order. It can never read other orders.
+const AJANTA_SUPABASE_URL = 'https://mxvtpdlrewqqmjcgvhkc.supabase.co';
+const AJANTA_SUPABASE_KEY = 'sb_publishable_eavuDqsez3bZal_vy0xvdw_q6Fb2bgv';   // publishable key: safe in a public website
+
+const ORDER_ERRORS = {
+    bad_input: 'Please enter your name and a valid mobile number.',
+    too_long: 'Some details are too long. Please shorten them and try again.',
+    bad_items: 'Please add at least one item to your order and try again.',
+    unknown_shop: 'This order link is not active. Please contact the shop on WhatsApp or phone.',
+    busy: 'Too many orders were received just now. Please try again in a little while.'
+};
+
 async function submitForm(event) {
     event.preventDefault();
     const btn = document.getElementById('submitBtn');
@@ -435,10 +448,6 @@ async function submitForm(event) {
         fabricatorUser = MAIN_OWNER_ACCOUNT;
     }
 
-    // Target KVDB user Key Hashing
-    const hashedKey = await sha256(fabricatorUser);
-    const endpoint = `https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/${hashedKey}_leads`;
-
     // Create lead payload
     const newLead = {
         id: `${Date.now()}`,
@@ -451,41 +460,31 @@ async function submitForm(event) {
     };
 
     try {
-        // Fetch existing leads array if any
-        let existingLeads = [];
-        const res = await fetch(endpoint).catch(() => null);
-        if (res && res.ok) {
-            const text = await res.text();
-            try {
-                existingLeads = JSON.parse(text);
-                if (!Array.isArray(existingLeads)) {
-                    existingLeads = [];
-                }
-            } catch (e) {
-                existingLeads = [];
-            }
-        }
-
-        // Append the brand new lead!
-        existingLeads.push(newLead);
-
-        // Also save directly to local storage for instant offline & admin accessibility
-        try {
-            const localLeads = JSON.parse(localStorage.getItem("ajanta_quote_leads") || "[]");
-            localLeads.unshift(newLead);
-            localStorage.setItem("ajanta_quote_leads", JSON.stringify(localLeads));
-        } catch (storageErr) {
-            console.warn("Could not write to local storage:", storageErr);
-        }
-
-        // Save back to KVDB
-        const postRes = await fetch(endpoint, {
+        const res = await fetch(AJANTA_SUPABASE_URL + '/rest/v1/rpc/site_submit_lead', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(existingLeads)
+            headers: { 'Content-Type': 'application/json', apikey: AJANTA_SUPABASE_KEY },
+            body: JSON.stringify({
+                p_user: fabricatorUser,
+                p_name: name,
+                p_phone: phone,
+                p_address: address,
+                p_requirements: newLead.requirements,
+                p_items: clientSpecsList
+            })
         });
+        let result = null;
+        try { result = await res.json(); } catch (e) {}
 
-        if (postRes.ok) {
+        if (res.ok && result && result.status === 'ok') {
+            // Also keep a copy in this browser for the on-page admin view
+            try {
+                const localLeads = JSON.parse(localStorage.getItem("ajanta_quote_leads") || "[]");
+                localLeads.unshift(newLead);
+                localStorage.setItem("ajanta_quote_leads", JSON.stringify(localLeads));
+            } catch (storageErr) {
+                console.warn("Could not write to local storage:", storageErr);
+            }
+
             // Close order modal
             closeOrderModal();
 
@@ -497,15 +496,17 @@ async function submitForm(event) {
             // Set dynamic success modal contents
             document.querySelector('#successModal h3').textContent = "Order Inquiry Submitted!";
             document.querySelector('#successModal p').textContent = "Thank you! Your specifications have been forwarded to Sunny Mehta. We will review dimensions and connect via WhatsApp/Phone shortly.";
-            
+
             // Show Success triggers
             document.getElementById('successModal').classList.remove('hidden');
+        } else if (result && ORDER_ERRORS[result.status]) {
+            alert(ORDER_ERRORS[result.status]);
         } else {
             alert("Unable to transmit information. Please verify internet access and try again.");
         }
     } catch (err) {
         console.error(err);
-        alert("Submission transmission error: " + err.message);
+        alert("Unable to transmit information. Please verify internet access and try again.");
     } finally {
         btn.disabled = false;
         btn.innerHTML = `<i class="fa fa-paper-plane"></i> <span>Confirm &amp; Place Order</span>`;
@@ -1892,7 +1893,6 @@ function renderAdminProductsList() {
                 '<div class="min-w-0 flex-1">' +
                     '<div class="flex items-center gap-2">' +
                         '<span class="text-[9px] font-bold text-cyan-400 bg-cyan-950/60 border border-cyan-800/40 px-2 py-0.5 rounded-md uppercase">' + safeBadge + '</span>' +
-                         +
                     '</div>' +
                     '<h4 class="font-bold text-white text-xs mt-1 truncate">' + safeTitle + '</h4>' +
                     '<p class="text-[11px] text-slate-400 line-clamp-1">' + safeSub + '</p>' +
