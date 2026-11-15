@@ -2,7 +2,9 @@
 <html lang="en" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://kvdb.io https://mxvtpdlrewqqmjcgvhkc.supabase.co https://nominatim.openstreetmap.org; frame-src https://www.google.com https://maps.google.com; object-src 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <title>Ajanta Door & Window System</title>
     <meta name="description" content="Ajanta Door & Window System — Lead Architectural Glass & Window Systems Specialists since 1976. Premium Toughened Glass, DGU Double Glazing, UPVC & Aluminum Windows.">
     <!-- Favicon / Logo -->
@@ -10,7 +12,8 @@
     <link rel="shortcut icon" type="image/svg+xml" href="favicon.svg">
     <link rel="apple-touch-icon" href="favicon.svg">
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="tailwind-config.js"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -18,24 +21,6 @@
     <!-- GSAP for scroll animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                        syne: ['Syne', 'sans-serif'],
-                    },
-                    colors: {
-                        luxuryDark: '#050505',
-                        luxurySlate: '#0F172A',
-                        luxuryAccent: '#00B8D9',
-                    }
-                }
-            }
-        }
-    </script>
     
 
         <meta name="color-scheme" content="dark">
@@ -53,7 +38,7 @@
     </div>    <!-- HEADER / NAVIGATION (Tesla style floating menu) -->
     <header class="fixed top-2 sm:top-4 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-5xl">
         <nav class="glass-panel pop-card rounded-2xl px-4 py-2.5 sm:px-6 sm:py-3 flex items-center justify-between shadow-2xl">
-            <a href="#hero" onclick="handleLogoClick(event)" class="flex items-center gap-2 shrink-0 cursor-pointer" title="Ajanta Door & Window System">
+            <a href="#hero" data-click="handleLogoClick" data-args='["$event"]' class="flex items-center gap-2 shrink-0 cursor-pointer" title="Ajanta Door & Window System">
                 <img src="img_logo.svg" alt="Ajanta Door &amp; Window System Logo" class="h-10 sm:h-12 w-10 sm:w-12 object-contain bg-black p-0.5 rounded-xl border border-white/10 shrink-0 hover:scale-105 transition">
             </a>
             
@@ -228,7 +213,7 @@
                 </div>
 
                 <div class="relative z-10 pt-6 flex justify-end">
-                    <button onclick="configureSelectedSpotlightProduct()" class="bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-650 text-white text-[11px] font-bold tracking-widest px-6 py-3.5 rounded-xl transition uppercase cursor-pointer">
+                    <button data-click="configureSelectedSpotlightProduct" class="bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-650 text-white text-[11px] font-bold tracking-widest px-6 py-3.5 rounded-xl transition uppercase cursor-pointer">
                         Configure Sizing <i class="fa-solid fa-arrow-right ml-2"></i>
                     </button>
                 </div>
@@ -246,7 +231,7 @@
                 </h2>
                 <p class="text-xs text-slate-400 mt-1">Real-time feedback and testimonials submitted directly by our verified clients.</p>
             </div>
-            <button onclick="openReviewModal()" class="flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-650 text-white font-syne font-bold text-xs px-5 py-3 rounded-xl shadow-lg shadow-cyan-600/20 border border-cyan-400/20 transition-all active:scale-95">
+            <button data-click="openReviewModal" class="flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-850 hover:from-[#00B8D9] hover:to-cyan-650 text-white font-syne font-bold text-xs px-5 py-3 rounded-xl shadow-lg shadow-cyan-600/20 border border-cyan-400/20 transition-all active:scale-95">
                 <i class="fa-solid fa-pen-nib"></i>
                 <span>Write a Live Review</span>
             </button>
@@ -325,10 +310,10 @@
                 
                 <!-- Quoting / Support tab selection buttons -->
                 <div class="inline-flex bg-[#070a12] p-1.5 rounded-2xl border border-slate-800 shadow-inner">
-                    <button onclick="switchPortalTab('quoting')" id="tabBtnQuoting" class="px-5 py-2.5 font-bold text-xs rounded-xl transition duration-200 bg-[#5846f6] text-white shadow-md shadow-indigo-600/30 cursor-pointer">
+                    <button data-click="switchPortalTab" data-args='["quoting"]' id="tabBtnQuoting" class="px-5 py-2.5 font-bold text-xs rounded-xl transition duration-200 bg-[#5846f6] text-white shadow-md shadow-indigo-600/30 cursor-pointer">
                         <i class="fa-solid fa-calculator mr-1.5"></i> Sizing &amp; Requirements
                     </button>
-                    <button onclick="switchPortalTab('support')" id="tabBtnSupport" class="px-5 py-2.5 font-bold text-xs rounded-xl transition duration-200 text-slate-400 hover:text-white cursor-pointer">
+                    <button data-click="switchPortalTab" data-args='["support"]' id="tabBtnSupport" class="px-5 py-2.5 font-bold text-xs rounded-xl transition duration-200 text-slate-400 hover:text-white cursor-pointer">
                         <i class="fa-solid fa-headset mr-1.5"></i> Customer Support
                     </button>
                 </div>
@@ -352,7 +337,7 @@
                         <!-- Product Category -->
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-300 block">Product Category</label>
-                            <select id="itemCategory" onchange="handleCategoryChange()" class="w-full px-4 py-3 bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition shadow-inner">
+                            <select id="itemCategory" data-change="handleCategoryChange" class="w-full px-4 py-3 bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition shadow-inner">
                                 <option value="Sliding Window" selected>Sliding Window</option>
                                 <option value="Sliding Door">Sliding Door</option>
                                 <option value="Casement Door">Casement Door</option>
@@ -363,14 +348,14 @@
                                 <option value="CUSTOM_ITEM">+ Custom product select...</option>
                             </select>
                             <div id="customCategoryContainer" class="mt-2 hidden">
-                                <input id="customCategoryInput" type="text" placeholder="Specify custom product category..." class="w-full px-3.5 py-2.5 rounded-lg text-xs glass-input">
+                                <input id="customCategoryInput" type="text" placeholder="Specify custom product category..." class="w-full px-3.5 py-2.5 rounded-lg text-xs glass-input" maxlength="60">
                             </div>
                         </div>
 
                         <!-- Glass / Material Profile -->
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-300 block">Glass / Material Profile</label>
-                            <select id="itemGlassProfile" onchange="handleGlassProfileChange()" class="w-full px-4 py-3 bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition shadow-inner">
+                            <select id="itemGlassProfile" data-change="handleGlassProfileChange" class="w-full px-4 py-3 bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition shadow-inner">
                                 <option value="5mm Clear Glass" selected>5mm Clear Glass</option>
                                 <option value="8mm Clear Glass">8mm Clear Glass</option>
                                 <option value="10mm Toughened Glass">10mm Toughened Glass</option>
@@ -384,7 +369,7 @@
                                 <option value="CUSTOM_GLASS">+ Customized material spec...</option>
                             </select>
                             <div id="customGlassContainer" class="mt-2 hidden">
-                                <input id="customGlassInput" type="text" placeholder="Specify customized material..." class="w-full px-3.5 py-2.5 rounded-lg text-xs glass-input">
+                                <input id="customGlassInput" type="text" placeholder="Specify customized material..." class="w-full px-3.5 py-2.5 rounded-lg text-xs glass-input" maxlength="60">
                             </div>
                         </div>
                     </div>
@@ -394,7 +379,7 @@
                         <!-- Thickness Profile -->
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-300 block">Thickness Profile</label>
-                            <select id="itemThickness" onchange="handleThicknessChange()" class="w-full px-4 py-3 bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition shadow-inner">
+                            <select id="itemThickness" data-change="handleThicknessChange" class="w-full px-4 py-3 bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 rounded-xl text-xs sm:text-sm text-white focus:outline-none focus:border-indigo-500 transition shadow-inner">
                                 <option value="Standard" selected>Standard</option>
                                 <option value="5mm Thickness">5mm Thickness</option>
                                 <option value="8mm Thickness">8mm Thickness</option>
@@ -403,7 +388,7 @@
                                 <option value="CUSTOM_THICKNESS">+ Custom thickness...</option>
                             </select>
                             <div id="customThicknessContainer" class="mt-2 hidden">
-                                <input id="customThicknessInput" type="text" placeholder="Custom thickness (e.g. 15mm, 19mm)..." class="w-full px-3.5 py-2.5 rounded-lg text-xs glass-input">
+                                <input id="customThicknessInput" type="text" placeholder="Custom thickness (e.g. 15mm, 19mm)..." class="w-full px-3.5 py-2.5 rounded-lg text-xs glass-input" maxlength="60">
                             </div>
                         </div>
 
@@ -425,21 +410,21 @@
                     <div class="grid grid-cols-3 gap-3 sm:gap-4">
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-300 block text-center sm:text-left">Width (Inches)</label>
-                            <input id="itemWidth" type="number" step="0.1" placeholder="Inches" class="w-full px-3 py-3 rounded-xl text-xs sm:text-sm bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 focus:border-indigo-500 text-white font-bold text-center transition">
+                            <input id="itemWidth" type="number" step="0.1" placeholder="Inches" class="w-full px-3 py-3 rounded-xl text-xs sm:text-sm bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 focus:border-indigo-500 text-white font-bold text-center transition" min="1" max="600">
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-300 block text-center sm:text-left">Height (Inches)</label>
-                            <input id="itemHeight" type="number" step="0.1" placeholder="Inches" class="w-full px-3 py-3 rounded-xl text-xs sm:text-sm bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 focus:border-indigo-500 text-white font-bold text-center transition">
+                            <input id="itemHeight" type="number" step="0.1" placeholder="Inches" class="w-full px-3 py-3 rounded-xl text-xs sm:text-sm bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 focus:border-indigo-500 text-white font-bold text-center transition" min="1" max="600">
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-300 block text-center sm:text-left">Quantity</label>
-                            <input id="itemQty" type="number" min="1" value="1" class="w-full px-3 py-3 rounded-xl text-xs sm:text-sm bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 focus:border-indigo-500 text-white font-bold text-center transition">
+                            <input id="itemQty" type="number" min="1" value="1" class="w-full px-3 py-3 rounded-xl text-xs sm:text-sm bg-[#070a12] border border-slate-800 hover:border-indigo-500/60 focus:border-indigo-500 text-white font-bold text-center transition" max="500">
                         </div>
                     </div>
 
                     <!-- Add Specs Button (Right Aligned as in Video) -->
                     <div class="flex justify-end pt-1">
-                        <button type="button" onclick="addSpecLineItem()" class="bg-[#5846f6] hover:bg-[#4b3be0] text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl transition duration-200 cursor-pointer shadow-lg shadow-indigo-600/30 flex items-center gap-2">
+                        <button type="button" data-click="addSpecLineItem" class="bg-[#5846f6] hover:bg-[#4b3be0] text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl transition duration-200 cursor-pointer shadow-lg shadow-indigo-600/30 flex items-center gap-2">
                             <i class="fa-solid fa-circle-plus"></i> Add Specs to Order
                         </button>
                     </div>
@@ -464,7 +449,7 @@
                 </div>
 
                 <!-- Big PLACE ORDER NOW CTA (As in video) -->
-                <button type="button" onclick="openOrderModal()" class="w-full bg-[#5846f6] hover:bg-[#4a39e3] text-white font-black py-4.5 rounded-2xl tracking-widest uppercase flex items-center justify-center gap-3 shadow-2xl shadow-indigo-600/40 text-sm sm:text-base transition-all duration-200 active:scale-[0.99] cursor-pointer">
+                <button type="button" data-click="openOrderModal" class="w-full bg-[#5846f6] hover:bg-[#4a39e3] text-white font-black py-4.5 rounded-2xl tracking-widest uppercase flex items-center justify-center gap-3 shadow-2xl shadow-indigo-600/40 text-sm sm:text-base transition-all duration-200 active:scale-[0.99] cursor-pointer">
                     <i class="fa-solid fa-paper-plane text-indigo-200"></i> PLACE ORDER NOW
                 </button>
             </div>
@@ -477,42 +462,43 @@
                             <h3 class="text-lg font-bold text-white font-syne">Complete Your Order</h3>
                             <p class="text-xs text-slate-400">Provide contact details to receive fast pricing & dispatch confirmation</p>
                         </div>
-                        <button type="button" onclick="closeOrderModal()" class="text-slate-400 hover:text-white p-2 text-sm cursor-pointer">
+                        <button type="button" data-click="closeOrderModal" class="text-slate-400 hover:text-white p-2 text-sm cursor-pointer">
                             <i class="fa-solid fa-xmark text-lg"></i>
                         </button>
                     </div>
 
-                    <form id="requirementsForm" onsubmit="submitForm(event)" class="space-y-4">
+                    <form id="requirementsForm" method="post" action="#" data-submit="submitForm" data-args='["$event"]' class="space-y-4">
+                    <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label>Leave this field empty<input type="text" name="website" data-hp="1" tabindex="-1" autocomplete="off"></label></div>
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-300 block">Your Name *</label>
-                            <input id="clientName" type="text" required placeholder="Full Name" class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none">
+                            <input id="clientName" type="text" required placeholder="Full Name" class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none" maxlength="80" minlength="2" autocomplete="name">
                         </div>
 
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-300 block">Mobile / WhatsApp Number *</label>
-                            <input id="clientPhone" type="tel" required placeholder="+91 98765 43210" class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none">
+                            <input id="clientPhone" type="tel" required placeholder="+91 98765 43210" class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none" maxlength="20" pattern="[+]?[0-9 \(\)\-]{8,18}" autocomplete="tel" inputmode="tel" title="Enter a valid mobile number (8-18 digits, optionally with +, spaces or dashes)">
                         </div>
 
                         <div class="space-y-1.5">
                             <div class="flex justify-between items-center">
                                 <label class="text-xs font-semibold text-slate-300">Site / Delivery Address</label>
-                                <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider cursor-pointer hover:text-indigo-300 transition" onclick="detectWebLocation()">
+                                <span class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider cursor-pointer hover:text-indigo-300 transition" data-click="detectWebLocation">
                                     <i class="fa-solid fa-location-arrow"></i> Auto Locate
                                 </span>
                             </div>
                             <div class="relative">
-                                <input id="clientAddress" type="text" placeholder="Plot / Flat, Area, City" class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none pr-10">
-                                <span onclick="detectWebLocation()" class="absolute right-3.5 top-3 text-indigo-400 cursor-pointer text-xs"><i id="locateIcon" class="fa-solid fa-compass"></i></span>
+                                <input id="clientAddress" type="text" placeholder="Plot / Flat, Area, City" class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none pr-10" maxlength="300">
+                                <span data-click="detectWebLocation" class="absolute right-3.5 top-3 text-indigo-400 cursor-pointer text-xs"><i id="locateIcon" class="fa-solid fa-compass"></i></span>
                             </div>
                         </div>
 
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-300 block">Additional Specifications / Notes</label>
-                            <textarea id="clientRequirements" rows="2" placeholder="Framework details, delivery timeline, or special instructions..." class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none"></textarea>
+                            <textarea id="clientRequirements" rows="2" placeholder="Framework details, delivery timeline, or special instructions..." class="w-full px-4 py-3 rounded-xl text-xs bg-[#070a12] border border-slate-800 text-white font-medium focus:border-indigo-500 outline-none" maxlength="1000"></textarea>
                         </div>
 
                         <div class="pt-2 flex gap-3">
-                            <button type="button" onclick="closeOrderModal()" class="px-5 py-3 rounded-xl border border-slate-800 text-slate-400 hover:text-white text-xs font-bold uppercase tracking-wider transition">
+                            <button type="button" data-click="closeOrderModal" class="px-5 py-3 rounded-xl border border-slate-800 text-slate-400 hover:text-white text-xs font-bold uppercase tracking-wider transition">
                                 Cancel
                             </button>
                             <button type="submit" id="submitBtn" class="flex-1 py-3.5 bg-[#5846f6] hover:bg-[#4a39e3] text-white rounded-xl font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl shadow-indigo-600/30 text-xs sm:text-sm">
@@ -526,15 +512,16 @@
 
             <!-- TAB B: CUSTOMER SUPPORT FORM -->
             <div id="supportFormSection" class="hidden transition-all duration-300">
-                <form id="supportForm" onsubmit="submitSupportForm(event)" class="space-y-6">
+                <form id="supportForm" method="post" action="#" data-submit="submitSupportForm" data-args='["$event"]' class="space-y-6">
+                    <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label>Leave this field empty<input type="text" name="website" data-hp="1" tabindex="-1" autocomplete="off"></label></div>
                     <div class="grid sm:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Your Name *</label>
-                            <input id="supportName" type="text" required placeholder="Full Name" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
+                            <input id="supportName" type="text" required placeholder="Full Name" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600" maxlength="80" minlength="2" autocomplete="name">
                         </div>
                         <div class="space-y-2">
                             <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">WhatsApp or Mobile *</label>
-                            <input id="supportPhone" type="tel" required placeholder="+91 90000 00000" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600">
+                            <input id="supportPhone" type="tel" required placeholder="+91 90000 00000" class="w-full px-4 py-3.5 rounded-xl text-xs glass-input font-medium placeholder-slate-600" maxlength="20" pattern="[+]?[0-9 \(\)\-]{8,18}" autocomplete="tel" inputmode="tel" title="Enter a valid mobile number (8-18 digits, optionally with +, spaces or dashes)">
                         </div>
                     </div>
 
@@ -556,7 +543,7 @@
 
                     <div class="space-y-2">
                         <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Describe Complaint Details *</label>
-                        <textarea id="supportMessage" required rows="5" placeholder="Specify any assistance or reviews required. Direct ticket alerts are fired onto Sunny Mehta's phone screens." class="w-full p-4 rounded-xl text-xs glass-input font-medium placeholder-slate-600"></textarea>
+                        <textarea id="supportMessage" required rows="5" placeholder="Specify any assistance or reviews required. Direct ticket alerts are fired onto Sunny Mehta's phone screens." class="w-full p-4 rounded-xl text-xs glass-input font-medium placeholder-slate-600" maxlength="1500"></textarea>
                     </div>
 
                     <button type="submit" id="supportSubmitBtn" class="w-full py-4 bg-gradient-to-r from-red-800 to-rose-950 rounded-2xl font-bold uppercase tracking-wider hover:brightness-110 flex items-center justify-center space-x-2 border border-red-500/20 shadow-xl">
@@ -609,7 +596,7 @@
                     </div>
                     
                     <div class="pt-4">
-                        <a href="https://maps.app.goo.gl/1BENSd4XH3TQqmTw6" target="_blank" class="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-850 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold text-[11px] px-8 py-4 rounded-xl transition-all duration-300 shadow-xl shadow-indigo-600/20 uppercase tracking-widest hover:-translate-y-0.5">
+                        <a href="https://maps.app.goo.gl/1BENSd4XH3TQqmTw6" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-850 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold text-[11px] px-8 py-4 rounded-xl transition-all duration-300 shadow-xl shadow-indigo-600/20 uppercase tracking-widest hover:-translate-y-0.5">
                             <i class="fa-solid fa-navigation text-indigo-200"></i>
                             <span>Get Directions on Maps</span>
                         </a>
@@ -620,13 +607,13 @@
                 <div id="showroom-right" class="lg:col-span-6 w-full relative group min-w-0">
                     <div class="absolute -inset-1 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 opacity-20 group-hover:opacity-35 blur transition duration-500"></div>
                     <div class="relative bg-slate-950/80 border border-slate-800 rounded-2xl p-4 overflow-hidden">
-                        <iframe class="w-full h-72 sm:h-80 md:h-96 rounded-xl border border-slate-800/80 shadow-inner" src="https://maps.google.com/maps?q=Ajanta%20Glass%20Store,%20Sirsa%20Road&t=&z=14&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="filter: invert(90%) hue-rotate(180deg) grayscale(10%) contrast(110%);"></iframe>
+                        <iframe sandbox="allow-scripts allow-same-origin allow-popups" referrerpolicy="no-referrer" loading="lazy" class="w-full h-72 sm:h-80 md:h-96 rounded-xl border border-slate-800/80 shadow-inner" src="https://maps.google.com/maps?q=Ajanta%20Glass%20Store,%20Sirsa%20Road&t=&z=14&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="filter: invert(90%) hue-rotate(180deg) grayscale(10%) contrast(110%);"></iframe>
                         <div class="mt-4 flex items-center justify-between text-left px-2">
                             <div>
                                 <div class="text-[11px] font-bold text-white uppercase tracking-wider">Interactive Showroom Map</div>
                                 <div class="text-[9px] text-slate-500">Pinch or scroll to explore area</div>
                             </div>
-                            <a href="https://maps.app.goo.gl/1BENSd4XH3TQqmTw6" target="_blank" class="inline-flex items-center gap-2 bg-indigo-950/60 hover:bg-indigo-600 text-white text-[10px] font-extrabold px-3.5 py-2 rounded-lg border border-indigo-500/20 hover:border-indigo-500 transition-all">
+                            <a href="https://maps.app.goo.gl/1BENSd4XH3TQqmTw6" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-indigo-950/60 hover:bg-indigo-600 text-white text-[10px] font-extrabold px-3.5 py-2 rounded-lg border border-indigo-500/20 hover:border-indigo-500 transition-all">
                                 <span>Navigate</span>
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                             </a>
@@ -642,7 +629,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
             <!-- Col 1: Brand & Heritage -->
             <div class="space-y-4">
-                <div onclick="handleLogoClick(event)" class="flex items-center space-x-3 cursor-pointer shrink-0">
+                <div data-click="handleLogoClick" data-args='["$event"]' class="flex items-center space-x-3 cursor-pointer shrink-0">
                     <img src="img_logo.svg" alt="Ajanta Logo" class="h-10 w-10 object-contain bg-black p-0.5 rounded-xl border border-white/10 shrink-0">
 
                     <span class="font-syne font-black tracking-widest text-base text-white">AJANTA</span>
@@ -661,11 +648,11 @@
             <div class="space-y-4">
                 <h4 class="text-xs font-bold text-white uppercase tracking-widest">Architectural Systems</h4>
                 <ul class="space-y-2 text-xs text-slate-400 font-light">
-                    <li><a href="#products" onclick="selectProductSpotlight(1)" class="hover:text-[#00B8D9] transition">Sliding Window Systems</a></li>
-                    <li><a href="#products" onclick="selectProductSpotlight(2)" class="hover:text-[#00B8D9] transition">Panoramic Glass Doors</a></li>
-                    <li><a href="#products" onclick="selectProductSpotlight(3)" class="hover:text-[#00B8D9] transition">Frameless Glass Partitions</a></li>
-                    <li><a href="#products" onclick="selectProductSpotlight(4)" class="hover:text-[#00B8D9] transition">Toughened Shower Cubicles</a></li>
-                    <li><a href="#products" onclick="selectProductSpotlight(5)" class="hover:text-[#00B8D9] transition">Safety Glass Railings</a></li>
+                    <li><a href="#products" data-click="selectProductSpotlight" data-args='[1]' class="hover:text-[#00B8D9] transition">Sliding Window Systems</a></li>
+                    <li><a href="#products" data-click="selectProductSpotlight" data-args='[2]' class="hover:text-[#00B8D9] transition">Panoramic Glass Doors</a></li>
+                    <li><a href="#products" data-click="selectProductSpotlight" data-args='[3]' class="hover:text-[#00B8D9] transition">Frameless Glass Partitions</a></li>
+                    <li><a href="#products" data-click="selectProductSpotlight" data-args='[4]' class="hover:text-[#00B8D9] transition">Toughened Shower Cubicles</a></li>
+                    <li><a href="#products" data-click="selectProductSpotlight" data-args='[5]' class="hover:text-[#00B8D9] transition">Safety Glass Railings</a></li>
                 </ul>
             </div>
 
@@ -701,7 +688,7 @@
                     </a>
 
                     <!-- Email -->
-                    <a href="mailto:ajnatafenestration@gmail.com" onclick="openAjantaEmail(event)" class="flex items-center gap-2.5 bg-slate-900/90 hover:bg-cyan-950/40 text-slate-300 hover:text-cyan-400 border border-slate-800 hover:border-cyan-500/50 p-2.5 rounded-xl text-xs font-bold transition group cursor-pointer" title="Send email to ajnatafenestration@gmail.com">
+                    <a href="mailto:ajnatafenestration@gmail.com" data-click="openAjantaEmail" data-args='["$event"]' class="flex items-center gap-2.5 bg-slate-900/90 hover:bg-cyan-950/40 text-slate-300 hover:text-cyan-400 border border-slate-800 hover:border-cyan-500/50 p-2.5 rounded-xl text-xs font-bold transition group cursor-pointer" title="Send email to ajnatafenestration@gmail.com">
                         <span class="w-7 h-7 rounded-lg bg-cyan-950/70 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-sm group-hover:scale-110 transition shrink-0">
                             <i class="fa-solid fa-envelope"></i>
                         </span>
@@ -710,7 +697,7 @@
                 </div>
 
                 <!-- Write Review -->
-                <button onclick="openReviewModal()" class="w-full inline-flex items-center justify-center gap-2 bg-[#00B8D9]/15 hover:bg-[#00B8D9]/25 text-[#00B8D9] border border-[#00B8D9]/30 py-2.5 px-4 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer mt-1">
+                <button data-click="openReviewModal" class="w-full inline-flex items-center justify-center gap-2 bg-[#00B8D9]/15 hover:bg-[#00B8D9]/25 text-[#00B8D9] border border-[#00B8D9]/30 py-2.5 px-4 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer mt-1">
                     <i class="fa-regular fa-star"></i>
                     <span>Write a Customer Review</span>
                 </button>
@@ -739,7 +726,7 @@
             <p class="text-xs text-slate-400 leading-relaxed mb-6">
                 Your inquiry has been submitted successfully. Our team will review your requirements and contact you with a personalized quotation.
             </p>
-            <button onclick="closeSuccessModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl text-xs transition duration-205">
+            <button data-click="closeSuccessModal" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl text-xs transition duration-205">
                 Excellent, Thank You!
             </button>
         </div>
@@ -748,23 +735,24 @@
     <!-- SUBMIT REVIEW MODAL -->
     <div id="reviewModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="glass-panel pop-card p-6 md:p-8 rounded-3xl max-w-md w-full relative space-y-6 shadow-2xl border border-indigo-500/15">
-            <button onclick="closeReviewModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+            <button data-click="closeReviewModal" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
             <div class="space-y-1 text-center md:text-left">
-                <h3 class="text-lg font-syne font-black text-white uppercase tracking-wider">Write a Real Review</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">Share your genuine experience with Ajanta Glass. Your testimonial will appear in our homepage marquee instantly!</p>
+                <h3 class="text-lg font-syne font-black text-white uppercase tracking-wider">Write a Review</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">Share your genuine experience with Ajanta Glass. Your review is sent to our team and appears on the homepage once approved.</p>
             </div>
             
-            <form id="reviewForm" onsubmit="submitReview(event)" class="space-y-4">
+            <form id="reviewForm" method="post" action="#" data-submit="submitReview" data-args='["$event"]' class="space-y-4">
+                    <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label>Leave this field empty<input type="text" name="website" data-hp="1" tabindex="-1" autocomplete="off"></label></div>
                 <div class="space-y-1 text-left">
                     <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
-                    <input type="text" id="reviewAuthor" required placeholder="Priyesh Sharma" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    <input type="text" id="reviewAuthor" required placeholder="Priyesh Sharma" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition" maxlength="60" minlength="2">
                 </div>
                 
                 <div class="space-y-1 text-left">
                     <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Your Role / Profession</label>
-                    <input type="text" id="reviewRole" required placeholder="Homeowner, Architect, Designer" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition">
+                    <input type="text" id="reviewRole" required placeholder="Homeowner, Architect, Designer" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition" maxlength="60">
                 </div>
 
                 <div class="space-y-1 text-left">
@@ -782,7 +770,7 @@
 
                 <div class="space-y-1 text-left">
                     <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Your Review Text</label>
-                    <textarea id="reviewText" required rows="3" placeholder="Describe our service, glass polishing quality, dimensional precision..." class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
+                    <textarea id="reviewText" required rows="3" placeholder="Describe our service, glass polishing quality, dimensional precision..." class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none" maxlength="600" minlength="10"></textarea>
                 </div>
 
                 <button type="submit" id="reviewSubmitBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-syne font-black text-xs uppercase py-3.5 rounded-xl transition shadow-lg shadow-indigo-600/10 border border-indigo-500/20 active:scale-95 flex items-center justify-center gap-2">
@@ -794,10 +782,10 @@
     </div>
 
     <!-- LIGHTBOX MULTIMEDIA PREVIEW -->
-    <div id="lightbox" class="fixed inset-0 bg-slate-950/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden cursor-pointer" onclick="closeLightbox()">
-        <div class="max-w-3xl w-full text-center space-y-4" onclick="event.stopPropagation()">
+    <div id="lightbox" class="fixed inset-0 bg-slate-950/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden cursor-pointer" data-click="closeLightbox">
+        <div class="max-w-3xl w-full text-center space-y-4" data-stop="1">
             <div class="flex justify-end">
-                <button onclick="closeLightbox()" class="text-slate-400 hover:text-white text-xl font-bold"><i class="fa-solid fa-xmark"></i></button>
+                <button data-click="closeLightbox" class="text-slate-400 hover:text-white text-xl font-bold"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <img id="lightboxImg" class="max-h-[70vh] rounded-2xl mx-auto shadow-2xl border border-slate-800/50" src="" alt="">
             <div class="space-y-1">
@@ -808,7 +796,7 @@
     </div>
 
     <!-- FLOATING ASK AI CONSULTANT FAB -->
-    <button id="aiChatFab" onclick="toggleAiChatDrawer()" class="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-50 flex items-center gap-2.5 bg-slate-900/90 hover:bg-slate-800 text-white border border-[#00B8D9]/40 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full ai-fab-glow transition-all duration-300 hover:scale-105 active:scale-95 group select-none cursor-pointer">
+    <button id="aiChatFab" data-click="toggleAiChatDrawer" class="fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-50 flex items-center gap-2.5 bg-slate-900/90 hover:bg-slate-800 text-white border border-[#00B8D9]/40 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full ai-fab-glow transition-all duration-300 hover:scale-105 active:scale-95 group select-none cursor-pointer">
         <div class="relative flex items-center justify-center">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00B8D9] opacity-75"></span>
             <i class="fa-solid fa-wand-magic-sparkles text-[#00B8D9] text-xs sm:text-sm relative z-10"></i>
@@ -817,7 +805,7 @@
     </button>
 
     <!-- FLOATING MAPS DIRECT DIRECTIONS FAB (Sticky Location Control) -->
-    <a href="https://maps.app.goo.gl/1BENSd4XH3TQqmTw6" target="_blank" class="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-850 hover:from-indigo-500 hover:to-indigo-600 text-white text-[10px] sm:text-xs font-bold px-3.5 py-2.5 sm:px-5 sm:py-4 rounded-full shadow-[0_8px_32px_rgba(99,102,241,0.4)] border border-indigo-400/30 transition-all duration-350 hover:scale-105 active:scale-95 group select-none max-w-[calc(100vw-24px)]">
+    <a href="https://maps.app.goo.gl/1BENSd4XH3TQqmTw6" target="_blank" rel="noopener noreferrer" class="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-850 hover:from-indigo-500 hover:to-indigo-600 text-white text-[10px] sm:text-xs font-bold px-3.5 py-2.5 sm:px-5 sm:py-4 rounded-full shadow-[0_8px_32px_rgba(99,102,241,0.4)] border border-indigo-400/30 transition-all duration-350 hover:scale-105 active:scale-95 group select-none max-w-[calc(100vw-24px)]">
         <span class="flex h-2 w-2 sm:h-2.5 sm:w-2.5 relative shrink-0">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-400"></span>
@@ -832,7 +820,7 @@
         <div id="aiHeaderDragHandle" class="p-3.5 sm:p-4 bg-slate-900/90 flex items-center justify-between shrink-0 cursor-grab active:cursor-grabbing select-none rounded-t-[28px] border-b border-slate-800/80">
             <div class="flex items-center gap-2.5 min-w-0">
                 <!-- Small Close Button 'X' on the LEFT where it opens -->
-                <button onclick="toggleAiChatDrawer()" class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition text-xs shrink-0 cursor-pointer border border-white/10 shadow mr-0.5" title="Close">
+                <button data-click="toggleAiChatDrawer" class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition text-xs shrink-0 cursor-pointer border border-white/10 shadow mr-0.5" title="Close">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
 
@@ -862,19 +850,19 @@
 
         <!-- Quick Topic Chips -->
         <div class="p-2.5 bg-slate-950/60 border-b border-slate-900 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 text-[10px]">
-            <button onclick="sendQuickAiQuery('Toughened vs Laminated glass difference?')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+            <button data-click="sendQuickAiQuery" data-args='["Toughened vs Laminated glass difference?"]' class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
                 <i class="fa-solid fa-shield-halved text-cyan-400"></i> Toughened vs Laminated
             </button>
-            <button onclick="sendQuickAiQuery('What glass is best for acoustic soundproofing?')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+            <button data-click="sendQuickAiQuery" data-args='["What glass is best for acoustic soundproofing?"]' class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
                 <i class="fa-solid fa-volume-xmark text-cyan-400"></i> Soundproofing
             </button>
-            <button onclick="sendQuickAiQuery('Recommended glass thickness for shower cubicle?')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+            <button data-click="sendQuickAiQuery" data-args='["Recommended glass thickness for shower cubicle?"]' class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
                 <i class="fa-solid fa-shower text-cyan-400"></i> Shower Cubicle
             </button>
-            <button onclick="sendQuickAiQuery('Suggest UPVC or Slimline Aluminum sliding windows for home')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+            <button data-click="sendQuickAiQuery" data-args='["Suggest UPVC or Slimline Aluminum sliding windows for home"]' class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
                 <i class="fa-solid fa-window-maximize text-cyan-400"></i> Windows
             </button>
-            <button onclick="sendQuickAiQuery('Glass specification for balcony railing')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+            <button data-click="sendQuickAiQuery" data-args='["Glass specification for balcony railing"]' class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/20 font-medium transition flex items-center gap-1.5 shrink-0 cursor-pointer">
                 <i class="fa-solid fa-grip-lines-vertical text-cyan-400"></i> Railings
             </button>
         </div>
@@ -891,7 +879,7 @@
                     <p>I am your 24/7 AI Specialist. I can assist you with selecting glass thickness, acoustic soundproofing, thermal insulation, UPVC/aluminum window profiles, shower partitions, or structural glazing for your home or project.</p>
                     <div class="pt-2 border-t border-slate-800/80 text-[10px] text-slate-400 flex flex-wrap gap-1.5">
                         <span class="font-bold text-cyan-400">Popular queries:</span>
-                        <span class="underline cursor-pointer hover:text-white" onclick="sendQuickAiQuery('Which glass thickness is suitable for a 6ft x 4ft window?')">"Glass for 6ft x 4ft window?"</span>
+                        <span class="underline cursor-pointer hover:text-white" data-click="sendQuickAiQuery" data-args='["Which glass thickness is suitable for a 6ft x 4ft window?"]'>"Glass for 6ft x 4ft window?"</span>
                     </div>
                 </div>
             </div>
@@ -909,13 +897,13 @@
 
         <!-- Chat Input Bar -->
         <div class="p-3 sm:p-4 bg-slate-900/80 border-t border-slate-800 shrink-0 rounded-b-[28px]">
-            <form onsubmit="handleAiFormSubmit(event)" class="flex items-center gap-2">
-                <button type="button" id="aiMicBtn" onclick="toggleAiVoiceInput()" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition shrink-0 cursor-pointer" title="Voice Input">
+            <form data-submit="handleAiFormSubmit" data-args='["$event"]' class="flex items-center gap-2">
+                <button type="button" id="aiMicBtn" data-click="toggleAiVoiceInput" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition shrink-0 cursor-pointer" title="Voice Input">
                     <i class="fa-solid fa-microphone text-sm"></i>
                 </button>
                 <div class="relative flex-1">
-                    <input type="text" id="aiChatInput" placeholder="Ask Ajanta AI about glass & windows..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-3.5 pr-8 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#00B8D9] transition">
-                    <button type="button" onclick="clearAiChatHistory()" class="absolute right-2.5 top-2.5 text-slate-500 hover:text-slate-300 text-xs cursor-pointer" title="Clear Chat">
+                    <input type="text" id="aiChatInput" placeholder="Ask Ajanta AI about glass & windows..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-3.5 pr-8 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#00B8D9] transition" maxlength="500" autocomplete="off">
+                    <button type="button" data-click="clearAiChatHistory" class="absolute right-2.5 top-2.5 text-slate-500 hover:text-slate-300 text-xs cursor-pointer" title="Clear Chat">
                         <i class="fa-solid fa-rotate-left"></i>
                     </button>
                 </div>
@@ -925,101 +913,15 @@
             </form>
             <div class="flex items-center justify-between mt-2 px-1 text-[9px] text-slate-500">
                 <span>Ajanta Door & Window Systems • Est. 1976</span>
-                <button onclick="scrollToConfiguratorFromAi()" class="text-[#00B8D9] hover:underline font-bold flex items-center gap-1 cursor-pointer">
+                <button data-click="scrollToConfiguratorFromAi" class="text-[#00B8D9] hover:underline font-bold flex items-center gap-1 cursor-pointer">
                     <span>Open Configurator</span> <i class="fa-solid fa-arrow-right text-[8px]"></i>
                 </button>
             </div>
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script src="script.js"></script>
 
-    <!-- ADD / EDIT PRODUCT MODAL -->
-    <div id="addProductModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[60] flex items-center justify-center p-4 hidden">
-        <div class="glass-panel pop-card p-6 md:p-8 rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl border border-cyan-500/30 animate-fade-in">
-            <button onclick="toggleAddProductModal(false)" class="absolute top-6 right-6 text-slate-400 hover:text-white transition">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            <div class="flex items-center gap-3 mb-6">
-                <div class="w-10 h-10 bg-cyan-950/80 text-cyan-400 rounded-xl flex items-center justify-center text-lg border border-cyan-800/30 shadow-md">
-                    <i class="fa-solid fa-boxes-packing"></i>
-                </div>
-                <div>
-                    <h3 id="productFormTitle" class="text-lg font-syne font-bold text-white uppercase tracking-wider">Add New Product</h3>
-                    <p class="text-xs text-slate-400">Fill in details to publish a new product on the live website.</p>
-                </div>
-            </div>
-
-            <form id="productForm" onsubmit="saveProductSubmit(event)" class="space-y-4">
-                <input type="hidden" id="prodFormId" value="">
-                
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Product Title *</label>
-                    <input type="text" id="prodFormTitle" required placeholder="e.g. Aluminium Louver Windows" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Tagline / Subtitle *</label>
-                        <input type="text" id="prodFormSubtitle" required placeholder="e.g. Architectural airflow louvers" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">Category Badge *</label>
-                        <input type="text" id="prodFormBadge" required placeholder="e.g. Sun Control & Ventilation" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
-                    </div>
-                </div>
-
-                <!-- Product Image Section -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1.5">Product Image *</label>
-                    
-                    <label for="mainProdFileInput" class="flex flex-col items-center justify-center p-3.5 border-2 border-dashed border-slate-800 hover:border-cyan-500/60 rounded-xl bg-slate-950/60 hover:bg-slate-900/60 transition cursor-pointer group text-center mb-2">
-                        <i class="fa-solid fa-cloud-arrow-up text-cyan-400 text-lg mb-1 group-hover:scale-110 transition"></i>
-                        <span class="text-xs font-bold text-white">Choose photo from phone/PC</span>
-                        <span class="text-[10px] text-slate-500">Auto-compressed JPG, PNG, WebP</span>
-                        <input type="file" id="mainProdFileInput" accept="image/*" onchange="handleMainProductFileUpload(event)" class="hidden">
-                    </label>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <div>
-                            <select id="prodFormPresetImg" onchange="applyPresetImage(this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-cyan-500">
-                                <option value="">Or Select Preset Photo...</option>
-                                <option value="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80">Sliding Windows</option>
-                                <option value="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80">Sliding Doors</option>
-                                <option value="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80">Glass Partition</option>
-                                <option value="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80">Shower Cubicle</option>
-                                <option value="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80">Glass Railings</option>
-                                <option value="https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=800&q=80">Facade Glazing</option>
-                                <option value="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80">Skylight / Dome</option>
-                            </select>
-                        </div>
-                        <div>
-                            <input type="text" id="prodFormImage" required placeholder="Or paste image URL" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Detailed Description *</label>
-                    <textarea id="prodFormDesc" rows="3" required placeholder="Describe specifications, glass thickness, thermal insulation, or hardware..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Key Features (comma separated) *</label>
-                    <input type="text" id="prodFormFeatures" required placeholder="e.g. Noise Reduction, Weather Proof, Double Glazed, Custom Color" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
-                </div>
-
-                <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
-                    <button type="button" onclick="toggleAddProductModal(false)" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-400 text-xs font-bold rounded-xl transition">
-                        Cancel
-                    </button>
-                    <button type="submit" class="px-5 py-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white text-xs font-bold rounded-xl shadow-lg shadow-cyan-500/20 transition cursor-pointer">
-                        <i class="fa-solid fa-check mr-1.5"></i> Save &amp; Publish Product
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-</body>
+    </body>
 </html>

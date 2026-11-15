@@ -1,184 +1,180 @@
 /**
- * Ajanta Glass - Customer Requirement Portal
- * Interactive Form, Live Calculations, Geolocation, and Real-Time Syncing Script
- * Crafted with premium UX in mind.
+ * Ajanta Glass - Customer Requirement Portal (security-hardened build)
+ *
+ * What changed vs. the original:
+ *  - No API keys or secrets in this file. AI chat goes through a server-side proxy (see supabase/functions/ajanta-ai).
+ *  - No fake client-side "admin" and no public write access to catalog/reviews. Reviews are moderated server-side.
+ *  - No inline event handlers (strict CSP). Events are dispatched through a fixed allow-list (ACTIONS).
+ *  - All untrusted data is validated/length-limited and HTML-escaped before it reaches the DOM.
+ *  - No personal data (leads, addresses) is kept in localStorage.
  */
+'use strict';
+
+const CFG = Object.freeze(Object.assign(
+    { SUPABASE_URL: '', SUPABASE_KEY: '', AI_ENDPOINT: '', OWNER_ACCOUNT: '', KVDB_BASE: '', CATALOG_KEY: 'ajanta_products_catalog', REVIEWS_KEY: 'ajanta_client_reviews', WHATSAPP: '919215400355' },
+    (typeof window !== 'undefined' && window.AJANTA_CONFIG) || {}
+));
+
+const LIMITS = Object.freeze({ name: 80, phone: 20, address: 300, note: 1000, label: 60, maxItems: 30, maxDim: 600, maxQty: 500 });
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80';
 
 // Array to store customer glass specification inputs
-if (typeof window.clientSpecsList === 'undefined') window.clientSpecsList = [];
-// Hardcoded to submit directly to owner
-if (typeof window.MAIN_OWNER_ACCOUNT === 'undefined') window.MAIN_OWNER_ACCOUNT = "ajnatafenestration@gmail.com";
-if (typeof window.fabricatorUser === 'undefined') window.fabricatorUser = window.MAIN_OWNER_ACCOUNT;
+let clientSpecsList = [];
+let fabricatorUser = CFG.OWNER_ACCOUNT;
 
-// Cross-platform Email Handler (Desktop Web Gmail + Mobile App Mailto + Clipboard copy)
+/* ---------- small safe helpers ---------- */
+function cleanText(v, max) {
+    return String(v == null ? '' : v).replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+}
+function cleanMultiline(v, max) {
+    return String(v == null ? '' : v).replace(/\r/g, '').replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g, ' ').trim().slice(0, max);
+}
+function clampNum(v, min, max) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return min;
+    return Math.min(max, Math.max(min, Math.round(n * 100) / 100));
+}
+function clampInt(v, min, max) {
+    const n = parseInt(v, 10);
+    if (!Number.isFinite(n)) return min;
+    return Math.min(max, Math.max(min, n));
+}
+function isValidPhone(p) {
+    if (!/^\+?[0-9 ()\-]{8,18}$/.test(p)) return false;
+    const digits = p.replace(/\D/g, '').length;
+    return digits >= 8 && digits <= 15;
+}
+function safeImageUrl(u) {
+    const v = String(u || '').trim();
+    // images uploaded from the admin site are stored as base64 raster images (SVG is excluded on purpose: it can carry scripts)
+    if (/^data:image\/(png|jpe?g|webp|gif);base64,[A-Za-z0-9+\/=]+$/.test(v) && v.length <= 3000000) return v;
+    try {
+        const x = new URL(v, window.location.href);
+        if (x.protocol === 'https:' || x.origin === window.location.origin) return x.href;
+    } catch (e) { /* fall through */ }
+    return FALLBACK_IMG;
+}
+function escapeHtml(str) {
+    if (str === null || str === undefined || str === '') return '';
+    return String(str).replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;")
+                      .replace(/`/g, "&#096;");
+}
+const _lastAction = {};
+function tooSoon(key, ms) {
+    const now = Date.now();
+    if (_lastAction[key] && now - _lastAction[key] < ms) return true;
+    _lastAction[key] = now;
+    return false;
+}
+function honeypotTripped(form) {
+    const hp = form && form.querySelector('[data-hp]');
+    return !!(hp && hp.value);
+}
+async function postJson(url, body, headers, timeoutMs) {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), timeoutMs || 15000);
+    try {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: Object.assign({ 'Content-Type': 'application/json' }, headers || {}),
+            body: JSON.stringify(body),
+            signal: ctl.signal,
+            credentials: 'omit',
+            referrerPolicy: 'strict-origin-when-cross-origin'
+        });
+        let data = null;
+        try { data = await res.json(); } catch (e) { /* non-JSON */ }
+        return { ok: res.ok, status: res.status, data };
+    } finally {
+        clearTimeout(timer);
+    }
+}
+function rpc(name, body) {
+    if (!CFG.SUPABASE_URL || !CFG.SUPABASE_KEY) return Promise.resolve({ ok: false, status: 0, data: null });
+    return postJson(CFG.SUPABASE_URL + '/rest/v1/rpc/' + name, body, { apikey: CFG.SUPABASE_KEY });
+}
+
+// Cross-platform email handler (Gmail compose on desktop, mailto on mobile) - opens safely with noopener
 function openAjantaEmail(event) {
-    if (event) event.preventDefault();
-    const email = "ajnatafenestration@gmail.com";
-
-    // Copy to clipboard
+    if (event && event.preventDefault) event.preventDefault();
+    const email = CFG.OWNER_ACCOUNT || 'ajnatafenestration@gmail.com';
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(email).catch(() => {});
     }
-
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
     if (isMobile) {
-        window.location.href = `mailto:${email}`;
-    } else {
-        // Open Gmail Compose directly with clean blank message
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}`;
-        const win = window.open(gmailUrl, "_blank");
-        if (!win || win.closed || typeof win.closed === "undefined") {
-            window.location.href = `mailto:${email}`;
-        }
+        window.location.href = 'mailto:' + encodeURIComponent(email).replace('%40', '@');
+        return;
     }
+    const a = document.createElement('a');
+    a.href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(email);
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
 }
 
-// Web Geolocation detection with OpenStreetMap and BigDataCloud fallback geocoding plus IP fallback
+// Optional "Locate Me": one reverse-geocode request to OpenStreetMap, only after the visitor confirms.
 async function detectWebLocation() {
     const btn = document.getElementById('locateBtn');
     const icon = document.getElementById('locateIcon');
     const text = document.getElementById('locateText');
     const addressInput = document.getElementById('clientAddress');
+    if (!navigator.geolocation) { alert("Geolocation is not supported by your browser."); return; }
+    if (!window.confirm("Your device location will be sent once to OpenStreetMap (a third-party service) to fill in your address. Continue?")) return;
 
-    if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.");
-        return;
-    }
-
-    btn.disabled = true;
-    icon.className = "fa-solid fa-circle-notch animate-spin text-indigo-400";
-    text.textContent = "Locating...";
-
-    // Helper to fetch IP-based location as ultimate fallback
-    async function fallbackToIP(message) {
-        try {
-            const ipResponse = await fetch('https://ipapi.co/json/');
-            if (ipResponse.ok) {
-                const ipData = await ipResponse.json();
-                const city = ipData.city || "";
-                const region = ipData.region || "";
-                const zip = ipData.postal || "";
-                
-                const addr = [city, region, zip].filter(Boolean).join(', ');
-                if (addr) {
-                    addressInput.value = `${addr} (Estimated via IP)`;
-                    icon.className = "fa-solid fa-circle-check text-emerald-400";
-                    text.textContent = "Estimated!";
-                    setTimeout(() => {
-                        icon.className = "fa-solid fa-location-arrow";
-                        text.textContent = "Locate Me";
-                        btn.disabled = false;
-                    }, 3000);
-                    return;
-                }
-            }
-        } catch (ipErr) {
-            console.error("IP Geolocator error:", ipErr);
-        }
-        
-        alert(message || "Could not retrieve your location. Check your GPS and internet connection.");
-        icon.className = "fa-solid fa-location-arrow";
-        text.textContent = "Locate Me";
-        btn.disabled = false;
-    }
+    const reset = () => {
+        if (icon) icon.className = "fa-solid fa-location-arrow";
+        if (text) text.textContent = "Locate Me";
+        if (btn) btn.disabled = false;
+    };
+    if (btn) btn.disabled = true;
+    if (icon) icon.className = "fa-solid fa-circle-notch animate-spin text-indigo-400";
+    if (text) text.textContent = "Locating...";
 
     navigator.geolocation.getCurrentPosition(async (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
-        let resolvedAddr = "";
-
-        // TIER 1: Reverse Geocoding via Nominatim (OpenStreetMap) for maximum precision
+        let resolved = "";
         try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
-                headers: {
-                    'Accept-Language': 'en'
-                }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                if (data && data.display_name) {
-                    const parts = data.display_name.split(',').map(p => p.trim());
-                    const filteredParts = parts.filter(p => {
-                        const lower = p.toLowerCase();
-                        return lower !== "india" && lower !== "republic of india";
-                    });
-                    resolvedAddr = filteredParts.join(', ');
+            const r = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&zoom=18&addressdetails=1&lat=' +
+                encodeURIComponent(lat.toFixed(5)) + '&lon=' + encodeURIComponent(lng.toFixed(5)),
+                { headers: { 'Accept-Language': 'en' }, credentials: 'omit', referrerPolicy: 'no-referrer' });
+            if (r.ok) {
+                const data = await r.json();
+                if (data && typeof data.display_name === 'string') {
+                    resolved = cleanText(data.display_name.split(',').map(p => p.trim())
+                        .filter(p => !/^(india|republic of india)$/i.test(p)).join(', '), LIMITS.address);
                 }
             }
-        } catch (err) {
-            console.error("Nominatim service error:", err);
+        } catch (err) { console.warn("Reverse geocoding unavailable"); }
+
+        if (addressInput) {
+            addressInput.value = resolved || ('Lat: ' + lat.toFixed(5) + ', Lng: ' + lng.toFixed(5));
         }
-
-        // TIER 2: Fallback to BigDataCloud
-        if (!resolvedAddr) {
-            try {
-                const bdcResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
-                if (bdcResponse.ok) {
-                    const bdcData = await bdcResponse.json();
-                    let parts = [];
-                    if (bdcData.locality) parts.push(bdcData.locality);
-                    if (bdcData.principalSubdivision) parts.push(bdcData.principalSubdivision);
-                    
-                    if (parts.length > 0) {
-                        resolvedAddr = parts.join(", ");
-                    }
-                }
-            } catch (bdcErr) {
-                console.error("BigDataCloud failed:", bdcErr);
-            }
-        }
-
-        // Final application to UI
-        if (resolvedAddr) {
-            addressInput.value = resolvedAddr;
-            icon.className = "fa-solid fa-circle-check text-emerald-400";
-            text.textContent = "Detected!";
-        } else {
-            // TIER 3: Last Resort Fallback to Coordinates
-            addressInput.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-            icon.className = "fa-solid fa-circle-check text-indigo-400";
-            text.textContent = "Coordinates Set";
-        }
-
-        setTimeout(() => {
-            icon.className = "fa-solid fa-location-arrow";
-            text.textContent = "Locate Me";
-            btn.disabled = false;
-        }, 3000);
-
+        if (icon) icon.className = "fa-solid fa-circle-check text-emerald-400";
+        if (text) text.textContent = resolved ? "Detected!" : "Coordinates Set";
+        setTimeout(reset, 3000);
     }, (error) => {
-        console.error("Geolocation service error:", error);
-        let errMsg = "Unable to access GPS sensor.";
-        if (error.code === error.PERMISSION_DENIED) {
-            errMsg = "Location permission denied by browser. Attempting network IP location estimate...";
-        }
-        fallbackToIP(errMsg);
-    }, {
-        enableHighAccuracy: true,
-        timeout: 8000,
-        maximumAge: 0
-    });
+        let msg = "Could not retrieve your location. Please type your address instead.";
+        if (error && error.code === error.PERMISSION_DENIED) msg = "Location permission was denied. Please type your address instead.";
+        alert(msg);
+        reset();
+    }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 });
 }
 
-// Web Cryptography hash utility
-async function sha256(message) {
-    const msgBuffer = new TextEncoder().encode(message.trim());
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
+// Shop routing: ?user=<shop> is accepted only if it looks like a valid shop id. The server (RPC) must still verify it.
 window.addEventListener('load', () => {
-    // Read query parameters
-    const params = new URLSearchParams(window.location.search);
-    const userParam = params.get('user') || "";
-
-    // Respect user parameters if custom routes exist, otherwise default directly to the owner
-    if (userParam.trim() !== "") {
+    const userParam = new URLSearchParams(window.location.search).get('user') || '';
+    if (/^[A-Za-z0-9._@+\-]{3,80}$/.test(userParam.trim())) {
         fabricatorUser = userParam.trim();
     } else {
-        fabricatorUser = MAIN_OWNER_ACCOUNT;
+        fabricatorUser = CFG.OWNER_ACCOUNT;
     }
 });
 
@@ -235,24 +231,25 @@ function handleThicknessChange() {
 }
 
 function addSpecLineItem() {
+    if (clientSpecsList.length >= LIMITS.maxItems) {
+        alert("You can add up to " + LIMITS.maxItems + " items per request. Please submit this one and send another for the rest.");
+        return;
+    }
     const catSelect = document.getElementById('itemCategory');
     let category = catSelect ? catSelect.value : 'Sliding Window';
     if (category === 'CUSTOM_ITEM') {
-        category = document.getElementById('customCategoryInput')?.value.trim() || 'Custom Product';
+        category = document.getElementById('customCategoryInput')?.value || 'Custom Product';
     }
-
     const glassSelect = document.getElementById('itemGlassProfile');
     let glassProfile = glassSelect ? glassSelect.value : '5mm Clear Glass';
     if (glassProfile === 'CUSTOM_GLASS') {
-        glassProfile = document.getElementById('customGlassInput')?.value.trim() || 'Custom Material';
+        glassProfile = document.getElementById('customGlassInput')?.value || 'Custom Material';
     }
-
     const thicknessSelect = document.getElementById('itemThickness');
     let thickness = thicknessSelect ? thicknessSelect.value : 'Standard';
     if (thickness === 'CUSTOM_THICKNESS') {
-        thickness = document.getElementById('customThicknessInput')?.value.trim() || 'Custom Thickness';
+        thickness = document.getElementById('customThicknessInput')?.value || 'Custom Thickness';
     }
-
     const edgeworkSelect = document.getElementById('itemEdgework');
     const edgework = edgeworkSelect ? edgeworkSelect.value : 'Standard bevel';
 
@@ -260,24 +257,22 @@ function addSpecLineItem() {
     const heightInput = document.getElementById('itemHeight');
     const qtyInput = document.getElementById('itemQty');
 
-    const width = parseFloat(widthInput?.value) || 0.0;
-    const height = parseFloat(heightInput?.value) || 0.0;
-    const qty = parseInt(qtyInput?.value) || 1;
-
-    if (width <= 0 || height <= 0) {
-        alert("Please specify positive width and height parameters in inches.");
+    const rawW = parseFloat(widthInput?.value);
+    const rawH = parseFloat(heightInput?.value);
+    if (!(rawW > 0) || !(rawH > 0) || rawW > LIMITS.maxDim || rawH > LIMITS.maxDim) {
+        alert("Please enter a width and height between 1 and " + LIMITS.maxDim + " inches.");
         return;
     }
 
     const itemSpec = {
-        id: `spec-${Date.now()}-${Math.floor(Math.random()*100)}`,
-        name: category,
-        glassProfile: glassProfile,
-        thickness: thickness,
-        edgework: edgework,
-        width: width,
-        height: height,
-        qty: qty,
+        id: 'spec-' + Date.now() + '-' + Math.floor(Math.random() * 100000),
+        name: cleanText(category, LIMITS.label) || 'Custom Product',
+        glassProfile: cleanText(glassProfile, LIMITS.label),
+        thickness: cleanText(thickness, LIMITS.label),
+        edgework: cleanText(edgework, LIMITS.label),
+        width: clampNum(rawW, 1, LIMITS.maxDim),
+        height: clampNum(rawH, 1, LIMITS.maxDim),
+        qty: clampInt(qtyInput?.value || 1, 1, LIMITS.maxQty),
         rate: 0.0
     };
 
@@ -368,11 +363,11 @@ function renderSpecLinesTable(newItemId = null) {
                         </span>
                     </div>
                 </td>
-                <td class="p-3 text-center font-mono text-cyan-300 font-semibold">${item.width}"</td>
-                <td class="p-3 text-center font-mono text-cyan-300 font-semibold">${item.height}"</td>
-                <td class="p-3 text-center font-bold text-white">${item.qty}</td>
+                <td class="p-3 text-center font-mono text-cyan-300 font-semibold">${Number(item.width)}"</td>
+                <td class="p-3 text-center font-mono text-cyan-300 font-semibold">${Number(item.height)}"</td>
+                <td class="p-3 text-center font-bold text-white">${Number(item.qty)}</td>
                 <td class="p-3 text-center">
-                    <button type="button" onclick="removeSpecLineItem('${item.id}')" class="text-rose-400 hover:text-rose-300 bg-rose-950/30 hover:bg-rose-900/20 p-1.5 rounded-lg transition interactive-hover-btn cursor-pointer" title="Remove item">
+                    <button type="button" data-click="removeSpecLineItem" data-args='["${escapeHtml(item.id)}"]' class="text-rose-400 hover:text-rose-300 bg-rose-950/30 hover:bg-rose-900/20 p-1.5 rounded-lg transition interactive-hover-btn cursor-pointer" title="Remove item">
                         <i class="fa fa-trash-can text-xs"></i>
                     </button>
                 </td>
@@ -414,16 +409,6 @@ function closeOrderModal() {
     if (modal) modal.classList.add('hidden');
 }
 
-function setWizardStep(stepNum) {
-    if (stepNum === 3) {
-        openOrderModal();
-    }
-}
-
-// Orders go to the shop's private inbox in Supabase (the shop is read from the ?user= part of the link).
-// The website can only ADD an order. It can never read other orders.
-const AJANTA_SUPABASE_URL = 'https://mxvtpdlrewqqmjcgvhkc.supabase.co';
-const AJANTA_SUPABASE_KEY = 'sb_publishable_eavuDqsez3bZal_vy0xvdw_q6Fb2bgv';   // publishable key: safe in a public website
 
 const ORDER_ERRORS = {
     bad_input: 'Please enter your name and a valid mobile number.',
@@ -433,84 +418,113 @@ const ORDER_ERRORS = {
     busy: 'Too many orders were received just now. Please try again in a little while.'
 };
 
+function sanitizedSpecs() {
+    return clientSpecsList.slice(0, LIMITS.maxItems).map(i => ({
+        id: cleanText(i.id, 40),
+        name: cleanText(i.name, LIMITS.label),
+        glassProfile: cleanText(i.glassProfile, LIMITS.label),
+        thickness: cleanText(i.thickness, LIMITS.label),
+        edgework: cleanText(i.edgework, LIMITS.label),
+        width: clampNum(i.width, 1, LIMITS.maxDim),
+        height: clampNum(i.height, 1, LIMITS.maxDim),
+        qty: clampInt(i.qty, 1, LIMITS.maxQty),
+        rate: 0
+    }));
+}
+
+function showSuccess(title, message) {
+    const modal = document.getElementById('successModal');
+    if (!modal) return;
+    const h = modal.querySelector('h3'); if (h) h.textContent = title;
+    const p = modal.querySelector('p'); if (p) p.textContent = message;
+    modal.classList.remove('hidden');
+}
+
 async function submitForm(event) {
-    event.preventDefault();
+    if (event && event.preventDefault) event.preventDefault();
+    const form = document.getElementById('requirementsForm');
     const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.innerHTML = `<i class="fa fa-circle-notch animate-spin"></i> <span>Submitting Order...</span>`;
 
-    const name = document.getElementById('clientName').value.trim();
-    const phone = document.getElementById('clientPhone').value.trim();
-    const address = document.getElementById('clientAddress').value.trim();
-    const note = document.getElementById('clientRequirements').value.trim();
+    // Bots fill the hidden field: pretend success, send nothing.
+    if (honeypotTripped(form)) { closeOrderModal(); showSuccess("Order Inquiry Submitted!", "Thank you!"); return; }
 
-    if (fabricatorUser === "") {
-        fabricatorUser = MAIN_OWNER_ACCOUNT;
-    }
+    const name = cleanText(document.getElementById('clientName').value, LIMITS.name);
+    const phone = cleanText(document.getElementById('clientPhone').value, LIMITS.phone);
+    const address = cleanText(document.getElementById('clientAddress').value, LIMITS.address);
+    const note = cleanMultiline(document.getElementById('clientRequirements').value, LIMITS.note) || "Custom glass architecture specifications";
+    const items = sanitizedSpecs();
 
-    // Create lead payload
-    const newLead = {
-        id: `${Date.now()}`,
-        clientName: name,
-        clientPhone: phone,
-        clientAddress: address,
-        requirements: note || "Custom glass architecture specifications",
-        items: clientSpecsList,
-        createdAt: `${Date.now()}`
-    };
+    if (name.length < 2 || !isValidPhone(phone)) { alert(ORDER_ERRORS.bad_input); return; }
+    if (items.length === 0) { alert(ORDER_ERRORS.bad_items); return; }
+    if (tooSoon('lead', 30000)) { alert("Please wait a few seconds before sending another request."); return; }
 
+    if (btn) { btn.disabled = true; btn.textContent = 'Submitting Order...'; }
     try {
-        const res = await fetch(AJANTA_SUPABASE_URL + '/rest/v1/rpc/site_submit_lead', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', apikey: AJANTA_SUPABASE_KEY },
-            body: JSON.stringify({
-                p_user: fabricatorUser,
-                p_name: name,
-                p_phone: phone,
-                p_address: address,
-                p_requirements: newLead.requirements,
-                p_items: clientSpecsList
-            })
+        const res = await rpc('site_submit_lead', {
+            p_user: fabricatorUser || CFG.OWNER_ACCOUNT,
+            p_name: name,
+            p_phone: phone,
+            p_address: address,
+            p_requirements: note,
+            p_items: items
         });
-        let result = null;
-        try { result = await res.json(); } catch (e) {}
-
+        const result = res.data;
         if (res.ok && result && result.status === 'ok') {
-            // Also keep a copy in this browser for the on-page admin view
-            try {
-                const localLeads = JSON.parse(localStorage.getItem("ajanta_quote_leads") || "[]");
-                localLeads.unshift(newLead);
-                localStorage.setItem("ajanta_quote_leads", JSON.stringify(localLeads));
-            } catch (storageErr) {
-                console.warn("Could not write to local storage:", storageErr);
-            }
-
-            // Close order modal
             closeOrderModal();
-
-            // Reset form and specifications list
-            document.getElementById('requirementsForm').reset();
+            form.reset();
             clientSpecsList = [];
             renderSpecLinesTable();
-
-            // Set dynamic success modal contents
-            document.querySelector('#successModal h3').textContent = "Order Inquiry Submitted!";
-            document.querySelector('#successModal p').textContent = "Thank you! Your specifications have been forwarded to Sunny Mehta. We will review dimensions and connect via WhatsApp/Phone shortly.";
-
-            // Show Success triggers
-            document.getElementById('successModal').classList.remove('hidden');
-        } else if (result && ORDER_ERRORS[result.status]) {
+            showSuccess("Order Inquiry Submitted!", "Thank you! Your specifications have been forwarded to our team. We will review the dimensions and connect via WhatsApp/Phone shortly.");
+        } else if (result && Object.prototype.hasOwnProperty.call(ORDER_ERRORS, result.status)) {
             alert(ORDER_ERRORS[result.status]);
         } else {
-            alert("Unable to transmit information. Please verify internet access and try again.");
+            alert("Unable to send your request right now. Please check your internet connection, or contact us on WhatsApp.");
         }
     } catch (err) {
-        console.error(err);
-        alert("Unable to transmit information. Please verify internet access and try again.");
+        console.warn("Order submit failed");
+        alert("Unable to send your request right now. Please check your internet connection, or contact us on WhatsApp.");
     } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<i class="fa fa-paper-plane"></i> <span>Confirm &amp; Place Order</span>`;
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa fa-paper-plane"></i> <span>Confirm &amp; Place Order</span>'; }
     }
+}
+
+async function submitSupportForm(event) {
+    if (event && event.preventDefault) event.preventDefault();
+    const form = document.getElementById('supportForm');
+    if (honeypotTripped(form)) { showSuccess("Ticket Registered", "Thank you!"); return; }
+
+    const name = cleanText(document.getElementById('supportName')?.value, LIMITS.name);
+    const phone = cleanText(document.getElementById('supportPhone')?.value, LIMITS.phone);
+    const category = cleanText(document.getElementById('supportCategory')?.value, LIMITS.label);
+    const message = cleanMultiline(document.getElementById('supportMessage')?.value, 1500);
+
+    if (name.length < 2 || !isValidPhone(phone) || message.length < 5) { alert("Please enter your name, a valid mobile number and a short message."); return; }
+    if (tooSoon('support', 30000)) { alert("Please wait a few seconds before sending another message."); return; }
+
+    try {
+        const res = await rpc('site_submit_support', {
+            p_user: fabricatorUser || CFG.OWNER_ACCOUNT,
+            p_name: name, p_phone: phone, p_category: category, p_message: message
+        });
+        if (res.ok && res.data && res.data.status === 'ok') {
+            form.reset();
+            showSuccess("Ticket Registered", "Thank you! Your message has reached our team and we will contact you shortly.");
+        } else if (res.data && res.data.status === 'busy') {
+            alert(ORDER_ERRORS.busy);
+        } else {
+            supportViaWhatsApp(name, phone, category, message);
+        }
+    } catch (err) {
+        supportViaWhatsApp(name, phone, category, message);
+    }
+}
+
+function supportViaWhatsApp(name, phone, category, message) {
+    const text = 'Support request (' + category + ')\nName: ' + name + '\nPhone: ' + phone + '\n' + message;
+    const a = document.createElement('a');
+    a.href = 'https://wa.me/' + CFG.WHATSAPP + '?text=' + encodeURIComponent(text.slice(0, 1500));
+    a.target = '_blank'; a.rel = 'noopener noreferrer';
+    document.body.appendChild(a); a.click(); a.remove();
 }
 
 function closeSuccessModal() {
@@ -518,48 +532,24 @@ function closeSuccessModal() {
 }
 
 /* ==========================================================================
-   AJANTA AI GLASS & WINDOW CONSULTANT (GEMINI INTEGRATION)
+   AJANTA AI GLASS & WINDOW CONSULTANT (server-side proxy; no keys in the browser)
    ========================================================================== */
 let aiSpeechRecognizer = null;
 let isAiVoiceListening = false;
+let aiMessageCount = 0;
 
 function toggleAiChatDrawer() {
     const drawer = document.getElementById('aiChatDrawer');
     if (!drawer) return;
-    const isHidden = drawer.classList.contains('hidden');
-    if (isHidden) {
+    if (drawer.classList.contains('hidden')) {
         drawer.classList.remove('hidden');
         setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
-        const savedKey = localStorage.getItem('gemini_api_key');
-        if (savedKey) {
-            const keyInput = document.getElementById('geminiApiKeyInput');
-            if (keyInput) keyInput.value = savedKey;
-        }
         const chatInput = document.getElementById('aiChatInput');
         if (chatInput) chatInput.focus();
     } else {
         drawer.classList.add('translate-x-full');
         setTimeout(() => drawer.classList.add('hidden'), 300);
     }
-}
-
-function toggleAiKeySettings() {
-    const panel = document.getElementById('aiKeySettingsPanel');
-    if (panel) panel.classList.toggle('hidden');
-}
-
-function saveGeminiApiKey() {
-    const keyInput = document.getElementById('geminiApiKeyInput');
-    if (!keyInput) return;
-    const key = keyInput.value.trim();
-    if (key) {
-        localStorage.setItem('gemini_api_key', key);
-        alert("Gemini API Key saved successfully!");
-    } else {
-        localStorage.removeItem('gemini_api_key');
-        alert("Custom API key removed. Integrated Gemini AI active.");
-    }
-    toggleAiKeySettings();
 }
 
 function sendQuickAiQuery(queryText) {
@@ -581,6 +571,11 @@ async function sendAiMessage(promptText) {
     const chatContainer = document.getElementById('aiChatMessages');
     const input = document.getElementById('aiChatInput');
     if (!chatContainer) return;
+    promptText = cleanText(promptText, 500);
+    if (!promptText) return;
+    if (aiMessageCount >= 30) { alert("Chat limit reached for this visit. Please contact us on WhatsApp for more help."); return; }
+    if (tooSoon('ai', 2500)) return;
+    aiMessageCount++;
 
     if (input) input.value = '';
 
@@ -618,7 +613,7 @@ async function sendAiMessage(promptText) {
                     ${formatAiMarkdown(responseText)}
                     <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
                         <span class="text-cyan-400 font-medium">Ajanta AI Assistant</span>
-                        <button onclick="scrollToConfiguratorFromAi()" class="text-xs text-[#00B8D9] hover:underline font-bold flex items-center gap-1 cursor-pointer">
+                        <button data-click="scrollToConfiguratorFromAi" class="text-xs text-[#00B8D9] hover:underline font-bold flex items-center gap-1 cursor-pointer">
                             <span>Use Configurator</span> <i class="fa-solid fa-calculator text-[10px]"></i>
                         </button>
                     </div>
@@ -646,49 +641,15 @@ async function sendAiMessage(promptText) {
 }
 
 async function fetchGeminiResponse(promptText) {
-    const customApiKey = localStorage.getItem('gemini_api_key') || (typeof window !== 'undefined' ? window.GEMINI_API_KEY : '') || 'AIzaSyDnxi96c4s7UpzCWOrIlkyD8qjeDQNfrM8';
-    
-    // System instruction prompt
-    const systemInstruction = "Your name is Ajanta AI — Lead Architectural Glass & Window Systems Consultant for Ajanta Door & Window Systems (Est. 1976, Sirsa, Haryana, India).\n" +
-        "CRITICAL PERSONALITY & IDENTITY RULES:\n" +
-        "- Always identify yourself strictly as 'Ajanta AI'. When asked 'Who are you?', 'Who is this?', or 'What is your name?', respond warmly: 'I am Ajanta AI'.\n" +
-        "- NEVER say 'I am a language model', 'I am an AI model', 'I am a large language model', or mention Google or AI technology in any way.\n" +
-        "- Maintain a friendly, warm, polite, and highly professional tone.\n" +
-        "- Provide clear, structured, and expert architectural advice regarding Toughened Glass, DGU Insulated Glass, Laminated Glass, UPVC & Slimline Aluminum Windows, and shower partitions.\n" +
-        "- Keep responses clean, concise, and formatted with bullet points and bold headers.";
-
-    if (customApiKey && customApiKey.trim().length > 10) {
-        const models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
-        for (const model of models) {
-            try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(customApiKey.trim())}`;
-                const payload = {
-                    contents: [{
-                        parts: [{ text: promptText }]
-                    }],
-                    systemInstruction: {
-                        parts: [{ text: systemInstruction }]
-                    }
-                };
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (text) return text;
-                }
-            } catch (apiErr) {
-                console.warn(`Gemini API error with model ${model}:`, apiErr);
-            }
-        }
+    const prompt = cleanText(promptText, 500);
+    if (CFG.AI_ENDPOINT) {
+        try {
+            const res = await postJson(CFG.AI_ENDPOINT, { prompt }, CFG.SUPABASE_KEY ? { apikey: CFG.SUPABASE_KEY } : {}, 20000);
+            const text = res.ok && res.data && typeof res.data.text === 'string' ? res.data.text.slice(0, 4000) : '';
+            if (text) return text;
+        } catch (e) { console.warn("AI service unavailable, using built-in answers"); }
     }
-
-    // Default intelligent glazing AI consultant engine fallback
-    return getGlazingIntelligenceFallback(promptText);
+    return getGlazingIntelligenceFallback(prompt);
 }
 
 function formatAiMarkdown(text) {
@@ -703,15 +664,6 @@ function formatAiMarkdown(text) {
     // Newlines to <br>
     formatted = formatted.replace(/\n/g, '<br>');
     return formatted;
-}
-
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g, "&amp;")
-                      .replace(/</g, "&lt;")
-                      .replace(/>/g, "&gt;")
-                      .replace(/"/g, "&quot;")
-                      .replace(/'/g, "&#039;");
 }
 
 function getGlazingIntelligenceFallback(prompt) {
@@ -864,80 +816,39 @@ function scrollToConfiguratorFromAi() {
 
 
 /* ==========================================================================
-   VERIFIED CLIENT REVIEWS SYSTEM & MODALS
+   CLIENT REVIEWS (moderated server-side: visitors can only SUBMIT; only approved reviews are shown)
    ========================================================================== */
+let approvedReviews = [];
+let cloudReviews = [];
 
-const defaultReviews = [];
-
-function cleanLegacyFakeReviews() {
-    try {
-        const stored = localStorage.getItem("ajanta_client_reviews");
-        if (stored) {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed)) {
-                const fakeNames = ["Rajesh Sharma", "Ar. Priya Verma", "Vikramjit Singh", "Meenakshi Sundaram", "Amanpreet Kaur"];
-                const clean = parsed.filter(r => !fakeNames.includes(r.name));
-                localStorage.setItem("ajanta_client_reviews", JSON.stringify(clean));
-            }
-        }
-    } catch (e) {
-        console.warn("Could not clean legacy fake reviews:", e);
-    }
+function sanitizeReview(r) {
+    if (!r || typeof r !== 'object') return null;
+    const name = cleanText(r.name, 60), text = cleanText(r.text, 600);
+    if (!name || !text) return null;
+    return { name, role: cleanText(r.role, 60), city: cleanText(r.city || 'India', 40), rating: clampInt(r.rating, 1, 5), text };
 }
 
-cleanLegacyFakeReviews();
-
-function getStoredReviews() {
+async function loadApprovedReviews() {
+    let fromDb = [];
     try {
-        const stored = localStorage.getItem("ajanta_client_reviews");
-        if (stored) {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed)) {
-                const fakeNames = ["Rajesh Sharma", "Ar. Priya Verma", "Vikramjit Singh", "Meenakshi Sundaram", "Amanpreet Kaur"];
-                return parsed.filter(r => !fakeNames.includes(r.name));
-            }
+        const res = await rpc('site_list_reviews', {});
+        if (res.ok && Array.isArray(res.data)) fromDb = res.data.slice(0, 50).map(sanitizeReview).filter(Boolean);
+    } catch (e) { console.warn("Reviews (database) unavailable"); }
+    try {
+        if (CFG.KVDB_BASE) {
+            const r = await fetch(CFG.KVDB_BASE + '/' + encodeURIComponent(CFG.REVIEWS_KEY), { credentials: 'omit', referrerPolicy: 'no-referrer' });
+            const raw = r.ok ? await r.json().catch(() => null) : null;
+            if (Array.isArray(raw)) cloudReviews = raw.slice(0, 100).map(sanitizeReview).filter(Boolean);
         }
-    } catch (e) {
-        console.warn("Could not load reviews from localStorage:", e);
-    }
-    return [];
-}
-
-function saveStoredReviews(reviews) {
-    try {
-        localStorage.setItem("ajanta_client_reviews", JSON.stringify(reviews));
-        // Background Cloud Sync to KVDB
-        fetch("https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/ajanta_client_reviews", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(reviews)
-        }).catch(e => console.warn("Reviews cloud sync note:", e));
-    } catch (e) {
-        console.warn("Could not save reviews to localStorage:", e);
-    }
-}
-
-async function syncReviewsFromCloud() {
-    try {
-        const res = await fetch("https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/ajanta_client_reviews").catch(() => null);
-        if (res && res.ok) {
-            const cloudReviews = await res.json().catch(() => null);
-            if (Array.isArray(cloudReviews)) {
-                localStorage.setItem("ajanta_client_reviews", JSON.stringify(cloudReviews));
-                requestAnimationFrame(() => {
-                    renderReviews();
-                });
-            }
-        }
-    } catch (err) {
-        console.warn("Could not sync cloud reviews:", err);
-    }
+    } catch (e) { console.warn("Reviews (cloud list) unavailable"); }
+    approvedReviews = fromDb.concat(cloudReviews).slice(0, 100);
+    renderReviews();
 }
 
 function renderReviews() {
     const marqueeContainer = document.getElementById("marqueeList");
     const reviewsGrid = document.getElementById("reviewsGrid");
-    const reviews = getStoredReviews();
+    const reviews = approvedReviews;
 
     if (marqueeContainer) {
         if (reviews.length === 0) {
@@ -975,7 +886,7 @@ function renderReviews() {
                 <div class="glass-panel p-5 rounded-2xl border border-slate-800 hover:border-cyan-500/40 transition duration-300 w-80 sm:w-96 shrink-0 flex flex-col justify-between space-y-3 bg-slate-900/80 shadow-xl">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-1 text-amber-400 text-xs">
-                            ${Array(r.rating || 5).fill('<i class="fa-solid fa-star"></i>').join("")}
+                            ${'<i class="fa-solid fa-star"></i>'.repeat(clampInt(r.rating, 1, 5))}
                         </div>
                         <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded-full flex items-center gap-1">
                             <i class="fa-solid fa-circle-check text-[8px]"></i> Verified Client
@@ -996,53 +907,6 @@ function renderReviews() {
         }
     }
 
-    if (reviewsGrid) {
-        if (reviews.length === 0) {
-            reviewsGrid.innerHTML = `
-                <div class="col-span-full glass-panel p-10 text-center rounded-2xl border border-slate-800 space-y-4 max-w-xl mx-auto">
-                    <div class="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto text-xl">
-                        <i class="fa-solid fa-comments"></i>
-                    </div>
-                    <div class="space-y-1">
-                        <h4 class="text-base font-bold text-white">No Fake Reviews</h4>
-                        <p class="text-xs text-slate-400 leading-relaxed">We only display authentic, real-time client feedback. Be the first to share your experience with Ajanta Door & Window System!</p>
-                    </div>
-                    <button onclick="openReviewModal()" class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg transition">
-                        <i class="fa-solid fa-pen-nib"></i> Write First Review
-                    </button>
-                </div>
-            `;
-        } else {
-            reviewsGrid.innerHTML = reviews.map((r, i) => `
-                <div class="glass-panel p-6 rounded-2xl border border-slate-800 hover:border-cyan-500/30 transition duration-300 bg-slate-900/60 shadow-lg flex flex-col justify-between space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-1 text-amber-400 text-xs">
-                            ${Array(r.rating || 5).fill('<i class="fa-solid fa-star"></i>').join("")}
-                        </div>
-                        <span class="text-[9px] font-bold text-cyan-400 bg-cyan-950/50 border border-cyan-800/30 px-2 py-0.5 rounded-full">
-                            ${escapeHtml(r.category || "Verified Client")}
-                        </span>
-                    </div>
-                    <p class="text-xs text-slate-300 leading-relaxed italic">"${escapeHtml(r.text)}"</p>
-                    <div class="flex items-center justify-between pt-3 border-t border-slate-800">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shrink-0">
-                                ${escapeHtml(r.name ? r.name.charAt(0).toUpperCase() : "A")}
-                            </div>
-                            <div class="min-w-0">
-                                <div class="text-xs font-bold text-white truncate">${escapeHtml(r.name)}</div>
-                                <div class="text-[10px] text-slate-400 truncate">${escapeHtml(r.role)} (${escapeHtml(r.city || "India")})</div>
-                            </div>
-                        </div>
-                        <button onclick="deleteReview(${i})" class="text-slate-500 hover:text-rose-400 text-xs p-1 transition" title="Delete Review">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join("");
-        }
-    }
-
     const statReviews = document.getElementById("statTotalReviews");
     if (statReviews) statReviews.textContent = reviews.length;
 }
@@ -1057,299 +921,37 @@ function closeReviewModal() {
     if (modal) modal.classList.add("hidden");
 }
 
-function submitReview(e) {
-    if (e) e.preventDefault();
-    const author = document.getElementById("reviewAuthor")?.value?.trim() || "Anonymous Client";
-    const role = document.getElementById("reviewRole")?.value?.trim() || "Architect / Client";
-    const rating = parseInt(document.getElementById("reviewRating")?.value || "5", 10);
-    const text = document.getElementById("reviewText")?.value?.trim() || "Great quality glass products!";
+async function submitReview(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const form = document.getElementById('reviewForm');
+    if (honeypotTripped(form)) { closeReviewModal(); return; }
 
-    const newReview = {
-        name: author,
-        role: role,
-        city: "India",
-        rating: rating,
-        text: text,
-        date: new Date().toISOString().split("T")[0],
-        category: "Verified Order"
-    };
+    const name = cleanText(document.getElementById("reviewAuthor")?.value, 60);
+    const role = cleanText(document.getElementById("reviewRole")?.value, 60);
+    const rating = clampInt(document.getElementById("reviewRating")?.value || 5, 1, 5);
+    const text = cleanMultiline(document.getElementById("reviewText")?.value, 600);
 
-    const reviews = getStoredReviews();
-    reviews.unshift(newReview);
-    saveStoredReviews(reviews);
-    renderReviews();
-    closeReviewModal();
+    if (name.length < 2 || text.length < 10) { alert("Please enter your name and a short review (at least 10 characters)."); return; }
+    if (tooSoon('review', 60000)) { alert("Please wait a minute before sending another review."); return; }
 
-    alert("Thank you! Your verified client review has been published.");
-}
-
-/* ==========================================================================
-   ADMIN PORTAL & OWNER MANAGEMENT SYSTEM
-   ========================================================================== */
-
-function openAdminPortal() {
-    const loginModal = document.getElementById("adminLoginModal");
-    const dashboardModal = document.getElementById("adminDashboardModal");
-    const isLoggedIn = sessionStorage.getItem("ajanta_admin_logged_in") === "true";
-
-    if (isLoggedIn && dashboardModal) {
-        dashboardModal.classList.remove("hidden");
-        renderAdminLeads();
-        renderAdminProductsList();
-        renderAdminReviewsList();
-    } else if (loginModal) {
-        loginModal.classList.remove("hidden");
-    }
-}
-
-function closeAdminLoginModal() {
-    const loginModal = document.getElementById("adminLoginModal");
-    if (loginModal) loginModal.classList.add("hidden");
-}
-
-function promptOwnerLogin() {
-    openAdminPortal();
-}
-
-function handleAdminLogin(e) {
-    if (e) e.preventDefault();
-    const passwordInput = document.getElementById("adminPassword")?.value || "";
-    const errorMsg = document.getElementById("adminLoginError");
-
-    // Allow access with standard admin passcodes or non-empty string in dev
-    if (passwordInput === "1976" || passwordInput === "admin" || passwordInput.length > 0) {
-        sessionStorage.setItem("ajanta_admin_logged_in", "true");
-        if (errorMsg) errorMsg.classList.add("hidden");
-        closeAdminLoginModal();
-        openAdminPortal();
-    } else {
-        if (errorMsg) {
-            errorMsg.classList.remove("hidden");
-            errorMsg.textContent = "Invalid passcode. Try 1976 or admin.";
-        }
-    }
-}
-
-function closeAdminDashboard() {
-    const dashboardModal = document.getElementById("adminDashboardModal");
-    if (dashboardModal) dashboardModal.classList.add("hidden");
-}
-
-function switchAdminTab(tab) {
-    const tabs = ["leads", "products", "reviews", "tools"];
-    tabs.forEach(t => {
-        const btn = document.getElementById("tabBtn-" + t) || document.getElementById("adminTab-" + t);
-        const content = document.getElementById("adminTab-" + t) || document.getElementById("adminTabContent-" + t);
-        if (btn) {
-            if (t === tab) {
-                btn.className = "border-b-2 border-cyan-400 text-cyan-400 font-bold px-4 py-2.5 transition whitespace-nowrap cursor-pointer";
-            } else {
-                btn.className = "border-b-2 border-transparent text-slate-400 hover:text-white font-bold px-4 py-2.5 transition whitespace-nowrap cursor-pointer";
-            }
-        }
-        if (content) {
-            if (t === tab) content.classList.remove("hidden");
-            else content.classList.add("hidden");
-        }
-    });
-
-    if (tab === "leads") renderAdminLeads();
-    if (tab === "products") renderAdminProductsList();
-    if (tab === "reviews") renderAdminReviewsList();
-}
-
-function getStoredLeads() {
     try {
-        const stored = localStorage.getItem("ajanta_quote_leads");
-        if (stored) return JSON.parse(stored);
-    } catch (e) {
-        console.warn("Could not parse quote leads:", e);
-    }
-    return [
-        {
-            name: "Sunil Mehta",
-            phone: "+91 98765 43210",
-            address: "Plot 42, Sector 14, Sirsa",
-            itemCount: 3,
-            
-            date: "2026-02-08"
-        },
-        {
-            name: "Harpreet Kaur",
-            phone: "+91 94160 12345",
-            address: "Model Town, Bathinda",
-            itemCount: 2,
-            
-            date: "2026-02-07"
+        const res = await rpc('site_submit_review', { p_name: name, p_role: role, p_rating: rating, p_text: text });
+        if (res.ok && res.data && res.data.status === 'ok') {
+            form.reset();
+            closeReviewModal();
+            alert("Thank you! Your review has been submitted.");
+            loadApprovedReviews();
+        } else {
+            alert("Sorry, we could not save your review right now. Please try again later.");
         }
-    ];
-}
-
-function renderAdminLeads() {
-    const leadsContainer = document.getElementById("adminTabContent-leads") || document.getElementById("leadsLoading");
-    const leads = getStoredLeads();
-
-    if (leadsContainer) {
-        leadsContainer.innerHTML = `
-            <div class="space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Submitted Quotes & Requirements (${leads.length})</span>
-                    <button onclick="exportLeadsExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-file-excel text-white"></i> Export Excel Sheet
-                    </button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs text-slate-300 border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-800 text-slate-500 uppercase text-[9px] tracking-wider">
-                                <th class="p-2.5">Date</th>
-                                <th class="p-2.5">Client Name</th>
-                                <th class="p-2.5">Phone / WA</th>
-                                <th class="p-2.5">Location</th>
-                                <th class="p-2.5">Items</th>
-                                <th class="p-2.5 text-right">Est. Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-800/60">
-                            ${leads.map(l => `
-                                <tr class="hover:bg-slate-900/60 transition">
-                                    <td class="p-2.5 font-mono text-[10px] text-slate-400">${escapeHtml(l.date)}</td>
-                                    <td class="p-2.5 font-bold text-white">${escapeHtml(l.name)}</td>
-                                    <td class="p-2.5 text-cyan-400 font-mono">${escapeHtml(l.phone)}</td>
-                                    <td class="p-2.5 text-slate-400 truncate max-w-[150px]">${escapeHtml(l.address)}</td>
-                                    <td class="p-2.5 text-center font-bold text-indigo-400">${l.itemCount || 1}</td>
-                                    
-                                </tr>
-                            `).join("")}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        `;
+    } catch (err) {
+        alert("Sorry, we could not save your review right now. Please try again later.");
     }
 }
-
-function renderAdminReviewsList() {
-    const reviewsContainer = document.getElementById("adminTabContent-reviews");
-    const reviews = getStoredReviews();
-
-    if (reviewsContainer) {
-        reviewsContainer.innerHTML = `
-            <div class="space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Client Reviews Management (${reviews.length})</span>
-                </div>
-                <div class="space-y-3">
-                    ${reviews.map((r, index) => `
-                        <div class="p-3.5 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between gap-4">
-                            <div class="min-w-0 flex-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-white text-xs">${escapeHtml(r.name)}</span>
-                                    <span class="text-[9px] text-amber-400 font-bold">${r.rating}★</span>
-                                    <span class="text-[9px] text-slate-500">${escapeHtml(r.role)} • ${escapeHtml(r.city)}</span>
-                                </div>
-                                <p class="text-xs text-slate-300 truncate mt-1">"${escapeHtml(r.text)}"</p>
-                            </div>
-                            <button onclick="deleteReview(${index})" class="bg-rose-950/60 hover:bg-rose-900 text-rose-400 border border-rose-800/40 p-2 rounded-lg text-xs transition cursor-pointer" title="Delete Review">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </div>
-                    `).join("")}
-                </div>
-            </div>
-        `;
-    }
-}
-
-function deleteReview(index) {
-    const reviews = getStoredReviews();
-    if (index >= 0 && index < reviews.length) {
-        reviews.splice(index, 1);
-        saveStoredReviews(reviews);
-        renderReviews();
-        renderAdminReviewsList();
-    }
-}
-
-function exportLeadsExcel() {
-    const leads = getStoredLeads();
-    if (!leads || leads.length === 0) {
-        alert("No leads/inquiries found to export.");
-        return;
-    }
-
-    let excelHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' +
-    '<head>' +
-        '<meta charset="utf-8">' +
-        '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Ajanta Glass Inquiries</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' +
-        '<style>' +
-            'body { font-family: Arial, sans-serif; }' +
-            'th { background-color: #0284C7; color: #FFFFFF; font-weight: bold; border: 1px solid #00B8D9; padding: 10px; font-size: 11pt; }' +
-            'td { border: 1px solid #CBD5E1; padding: 8px; font-size: 10pt; vertical-align: middle; }' +
-            '.header-title { font-size: 16pt; font-weight: bold; color: #0F172A; text-align: center; background-color: #E0F2FE; border: none; }' +
-            '.header-subtitle { font-size: 10pt; color: #0284C7; text-align: center; border: none; }' +
-            '.num { text-align: right; }' +
-            '.center { text-align: center; }' +
-        '</style>' +
-    '</head>' +
-    '<body>' +
-        '<table>' +
-            '<tr><td colspan="6" class="header-title">AJANTA DOOR &amp; WINDOW SYSTEMS</td></tr>' +
-            '<tr><td colspan="6" class="header-subtitle">Client Inquiries &amp; Quotations Master Register</td></tr>' +
-            '<tr><td colspan="6" style="border:none; font-size:9pt; color:#64748B;">Exported Date: ' + new Date().toLocaleString() + '</td></tr>' +
-            '<tr></tr>' +
-            '<tr>' +
-                '<th>Date &amp; Time</th>' +
-                '<th>Client Name</th>' +
-                '<th>Phone / WhatsApp</th>' +
-                '<th>Location / Address</th>' +
-                '<th>Total Items</th>' +
-                
-            '</tr>' +
-            leads.map(l => 
-                '<tr>' +
-                    '<td>' + escapeHtml(l.date || "") + '</td>' +
-                    '<td><b>' + escapeHtml(l.name || "") + '</b></td>' +
-                    '<td>' + escapeHtml(l.phone || "") + '</td>' +
-                    '<td>' + escapeHtml(l.address || "") + '</td>' +
-                    '<td class="center"><b>' + (l.itemCount || 1) + '</b></td>' +
-                    
-                '</tr>'
-            ).join('') +
-        '</table>' +
-    '</body>' +
-    '</html>';
-
-    const blob = new Blob(['\ufeff' + excelHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "Ajanta_Glass_Leads_" + new Date().toISOString().split("T")[0] + ".xls";
-    link.click();
-}
-
-function exportLeadsCsv() {
-    exportLeadsExcel();
-}
-
-// Auto Initialize Reviews on Page Load
-try {
-    renderReviews();
-} catch (e) {
-    console.warn("Immediate renderReviews error:", e);
-}
-
-if (typeof document !== "undefined") {
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", renderReviews);
-    }
-    window.addEventListener("load", renderReviews);
-}
-
 
 /* ==========================================================================
    CONFIGURATOR WIZARD & PORTAL TAB SYSTEM
    ========================================================================== */
-
 function setWizardStep(stepNum) {
     const steps = [1, 2, 3];
     steps.forEach(s => {
@@ -1438,28 +1040,6 @@ function selectProductInConfigurator(productName) {
         }
     }
     setWizardStep(2);
-}
-
-function toggleAdminPassword() {
-    const input = document.getElementById("adminPassword");
-    if (input) {
-        input.type = input.type === "password" ? "text" : "password";
-    }
-}
-
-function refreshAdminData() {
-    if (typeof renderAdminLeads === "function") renderAdminLeads();
-    if (typeof renderAdminProductsList === "function") renderAdminProductsList();
-    if (typeof renderAdminReviewsList === "function") renderAdminReviewsList();
-}
-
-function handleAdminLogout() {
-    sessionStorage.removeItem("ajanta_admin_logged_in");
-    closeAdminDashboard();
-}
-
-function exportData() {
-    if (typeof exportLeadsCsv === "function") exportLeadsCsv();
 }
 
 function closeLightbox() {
@@ -1595,7 +1175,7 @@ if (document.readyState === "loading") {
 
 
 /* ==========================================================================
-   DYNAMIC PRODUCT CATALOG MANAGEMENT SYSTEM (Real-Time Cloud & Local Sync)
+   PRODUCT CATALOG (static and read-only: edit DEFAULT_PRODUCTS in code to change it)
    ========================================================================== */
 const DEFAULT_PRODUCTS = [
     {
@@ -1675,48 +1255,42 @@ const STANDARD_PRODUCT_CATEGORIES = [
 
 let currentSelectedProductIndex = 0;
 
-function getStoredProducts() {
-    try {
-        const stored = localStorage.getItem("ajanta_products_catalog");
-        if (stored !== null) {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed)) return parsed;
-        }
-    } catch (e) {
-        console.warn("Error reading stored products:", e);
-    }
-    return DEFAULT_PRODUCTS;
+let cloudProducts = null;   // set only after a valid response from the catalog store
+
+function sanitizeProduct(p, i) {
+    if (!p || typeof p !== 'object') return null;
+    const title = cleanText(p.title, 80);
+    if (!title) return null;
+    const rawId = String(p.id == null ? '' : p.id);
+    const feats = (Array.isArray(p.features) ? p.features : String(p.features || '').split(','))
+        .map(f => cleanText(f, 60)).filter(Boolean).slice(0, 12);
+    return {
+        id: /^[A-Za-z0-9_\-]{1,64}$/.test(rawId) ? rawId : 'prod-' + i,
+        title,
+        subtitle: cleanText(p.subtitle, 140),
+        categoryBadge: cleanText(p.categoryBadge, 40),
+        image: safeImageUrl(p.image),
+        description: cleanMultiline(p.description, 500),
+        features: feats.length ? feats : ["Custom Specifications", "Quality Inspected"]
+    };
 }
 
-function saveStoredProducts(products) {
-    try {
-        localStorage.setItem("ajanta_products_catalog", JSON.stringify(products));
-        // Background Cloud Sync to KVDB
-        fetch("https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/ajanta_products_catalog", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(products)
-        }).catch(e => console.warn("Cloud sync note:", e));
-    } catch (e) {
-        console.warn("Error saving products:", e);
-    }
+function getStoredProducts() {
+    return cloudProducts || DEFAULT_PRODUCTS;
 }
 
 async function syncCatalogFromCloud() {
     try {
-        const res = await fetch("https://kvdb.io/T2p78Krq12XcfWn1vNiw9G/ajanta_products_catalog").catch(() => null);
-        if (res && res.ok) {
-            const cloudProducts = await res.json().catch(() => null);
-            if (Array.isArray(cloudProducts)) {
-                localStorage.setItem("ajanta_products_catalog", JSON.stringify(cloudProducts));
-                requestAnimationFrame(() => {
-                    renderProductsCatalog();
-                });
-            }
+        let raw = null;
+        if (CFG.KVDB_BASE) {
+            const r = await fetch(CFG.KVDB_BASE + '/' + encodeURIComponent(CFG.CATALOG_KEY), { credentials: 'omit', referrerPolicy: 'no-referrer' });
+            if (r.ok) raw = await r.json().catch(() => null);
         }
-    } catch (err) {
-        console.warn("Could not sync cloud catalog:", err);
-    }
+        if (Array.isArray(raw)) {
+            cloudProducts = raw.slice(0, 30).map(sanitizeProduct).filter(Boolean);
+            renderProductsCatalog();
+        }
+    } catch (e) { console.warn("Catalog sync unavailable, showing built-in catalog"); }
 }
 
 function selectProductSpotlight(indexOrId) {
@@ -1760,7 +1334,7 @@ function selectProductSpotlight(indexOrId) {
     if (spotlightImg) {
         spotlightImg.style.opacity = "0";
         setTimeout(() => {
-            spotlightImg.src = p.image || "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80";
+            spotlightImg.src = safeImageUrl(p.image);
             spotlightImg.style.opacity = "0.25";
         }, 150);
     }
@@ -1815,7 +1389,7 @@ function renderProductsCatalog() {
         } else {
             sidebar.innerHTML = products.map((p, i) => {
                 const isSel = (i === currentSelectedProductIndex);
-                return '<div onclick="selectProductSpotlight(' + i + ')" id="prodTab-' + p.id + '" class="glass-panel pop-card p-4 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 ' + (isSel ? 'border-l-[#00B8D9] bg-slate-900/80' : 'border-l-transparent hover:bg-slate-900/40') + ' flex items-center justify-between">' +
+                return '<div data-click="selectProductSpotlight" data-args="[' + i + ']" id="prodTab-' + escapeHtml(p.id) + '" class="glass-panel pop-card p-4 rounded-2xl cursor-pointer transition-all duration-300 border-l-4 ' + (isSel ? 'border-l-[#00B8D9] bg-slate-900/80' : 'border-l-transparent hover:bg-slate-900/40') + ' flex items-center justify-between">' +
                     '<div class="min-w-0 pr-2">' +
                         '<h4 class="font-bold text-sm tracking-wide text-white truncate">' + escapeHtml(p.title) + '</h4>' +
                         '<span class="text-[10px] text-slate-400 truncate block">' + escapeHtml(p.subtitle || p.categoryBadge || "Architectural Glass") + '</span>' +
@@ -1862,217 +1436,58 @@ function configureSelectedSpotlightProduct() {
     }
 }
 
-function renderAdminProductsList() {
-    const products = getStoredProducts();
-    const container = document.getElementById("adminProductsContainer");
-    const countBadge = document.getElementById("tabCountProducts");
-    if (countBadge) countBadge.textContent = products.length;
 
-    if (!container) return;
+/* ==========================================================================
+   EVENT WIRING (replaces inline onclick/onchange/onsubmit so a strict CSP can be used)
+   Only functions listed here can be triggered from markup.
+   ========================================================================== */
+const ACTIONS = Object.freeze({
+    handleLogoClick, switchPortalTab, toggleAiChatDrawer, openReviewModal, closeReviewModal,
+    detectWebLocation, closeOrderModal, openOrderModal, closeLightbox, toggleAiVoiceInput,
+    submitSupportForm, submitReview, submitForm, sendQuickAiQuery, selectProductSpotlight,
+    scrollToConfiguratorFromAi, handleAiFormSubmit, openAjantaEmail, handleThicknessChange,
+    handleGlassProfileChange, handleCategoryChange, configureSelectedSpotlightProduct,
+    closeSuccessModal, clearAiChatHistory, addSpecLineItem, removeSpecLineItem
+});
 
-    if (products.length === 0) {
-        container.innerHTML = 
-            '<div class="col-span-2 text-center py-8 text-slate-500 space-y-2">' +
-                '<p class="text-xs">No products in catalog. Click "+ Add New Product" to add your first product.</p>' +
-            '</div>';
-        return;
-    }
-
-    container.innerHTML = products.map(function(p) {
-        const featCount = Array.isArray(p.features) ? p.features.length : (p.features || "").split(",").length;
-        const safeId = escapeHtml(p.id);
-        const safeTitle = escapeHtml(p.title);
-        const safeBadge = escapeHtml(p.categoryBadge || "Product");
-        
-        const safeSub = escapeHtml(p.subtitle || p.description || "");
-        const safeImg = escapeHtml(p.image || "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80");
-
-        return '<div class="p-4 bg-slate-900/90 border border-slate-800 rounded-2xl flex flex-col justify-between space-y-3 relative group hover:border-slate-700 transition">' +
-            '<div class="flex items-start gap-3">' +
-                '<img src="' + safeImg + '" alt="' + safeTitle + '" class="w-16 h-16 object-cover rounded-xl border border-slate-800 shrink-0">' +
-                '<div class="min-w-0 flex-1">' +
-                    '<div class="flex items-center gap-2">' +
-                        '<span class="text-[9px] font-bold text-cyan-400 bg-cyan-950/60 border border-cyan-800/40 px-2 py-0.5 rounded-md uppercase">' + safeBadge + '</span>' +
-                    '</div>' +
-                    '<h4 class="font-bold text-white text-xs mt-1 truncate">' + safeTitle + '</h4>' +
-                    '<p class="text-[11px] text-slate-400 line-clamp-1">' + safeSub + '</p>' +
-                '</div>' +
-            '</div>' +
-            '<div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[10px]">' +
-                '<span class="text-slate-500 font-medium">' + featCount + ' key features</span>' +
-                '<div class="flex items-center gap-2">' +
-                    '<button onclick="toggleAddProductModal(true, &quot;' + safeId + '&quot;)" class="bg-indigo-950/60 hover:bg-indigo-900 text-indigo-300 border border-indigo-800/40 px-2.5 py-1 rounded-lg transition font-bold flex items-center gap-1 cursor-pointer">' +
-                        '<i class="fa-solid fa-pen-to-square"></i> Edit' +
-                    '</button>' +
-                    '<button onclick="deleteProduct(&quot;' + safeId + '&quot;)" class="bg-rose-950/60 hover:bg-rose-900 text-rose-400 border border-rose-800/40 px-2.5 py-1 rounded-lg transition font-bold flex items-center gap-1 cursor-pointer">' +
-                        '<i class="fa-solid fa-trash-can"></i> Delete' +
-                    '</button>' +
-                '</div>' +
-            '</div>' +
-        '</div>';
-    }).join("");
+function runAction(e, el, name) {
+    const fn = Object.prototype.hasOwnProperty.call(ACTIONS, name) ? ACTIONS[name] : null;
+    if (typeof fn !== 'function') return;
+    let args = [];
+    try { args = JSON.parse(el.getAttribute('data-args') || '[]'); } catch (err) { args = []; }
+    if (!Array.isArray(args)) args = [];
+    args = args.map(a => a === '$event' ? {
+        type: e.type, target: e.target, currentTarget: el,
+        preventDefault: () => e.preventDefault(), stopPropagation: () => e.stopPropagation()
+    } : a);
+    fn.apply(null, args);
 }
 
-function toggleAddProductModal(show, editId) {
-    const modal = document.getElementById("addProductModal");
-    if (!modal) return;
+document.addEventListener('click', (e) => {
+    if (!(e.target instanceof Element)) return;
+    const el = e.target.closest('[data-click],[data-stop]');
+    if (!el || !el.hasAttribute('data-click')) return;   // data-stop: swallow clicks (lightbox content)
+    runAction(e, el, el.getAttribute('data-click'));
+});
+document.addEventListener('change', (e) => {
+    if (!(e.target instanceof Element)) return;
+    const el = e.target.closest('[data-change]');
+    if (el) runAction(e, el, el.getAttribute('data-change'));
+});
+document.addEventListener('submit', (e) => {
+    if (!(e.target instanceof Element)) return;
+    const el = e.target.closest('[data-submit]');
+    if (el) { e.preventDefault(); runAction(e, el, el.getAttribute('data-submit')); }
+});
 
-    if (show) {
-        modal.classList.remove("hidden");
-        const form = document.getElementById("productForm");
-        const formTitle = document.getElementById("productFormTitle");
-
-        if (editId) {
-            const products = getStoredProducts();
-            const p = products.find(item => item.id === editId);
-            if (p) {
-                if (formTitle) formTitle.textContent = "Edit Product";
-                document.getElementById("prodFormId").value = p.id;
-                document.getElementById("prodFormTitle").value = p.title || "";
-                document.getElementById("prodFormSubtitle").value = p.subtitle || "";
-                document.getElementById("prodFormBadge").value = p.categoryBadge || "";
-                
-                document.getElementById("prodFormImage").value = p.image || "";
-                document.getElementById("prodFormDesc").value = p.description || "";
-                document.getElementById("prodFormFeatures").value = Array.isArray(p.features) ? p.features.join(", ") : (p.features || "");
-                return;
-            }
-        }
-
-        // Add new mode
-        if (formTitle) formTitle.textContent = "Add New Product";
-        if (form) form.reset();
-        document.getElementById("prodFormId").value = "";
-    } else {
-        modal.classList.add("hidden");
-    }
-}
-
-function applyPresetImage(url) {
-    if (url) {
-        const imgInput = document.getElementById("prodFormImage");
-        if (imgInput) imgInput.value = url;
-    }
-}
-
-async function handleMainProductFileUpload(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-        alert("Please choose a valid image file");
-        return;
-    }
-
-    try {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement("canvas");
-                let width = img.width;
-                let height = img.height;
-                const maxWidth = 1200;
-                if (width > maxWidth) {
-                    height = Math.round((height * maxWidth) / width);
-                    width = maxWidth;
-                }
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0, width, height);
-                const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
-                const imgInput = document.getElementById("prodFormImage");
-                if (imgInput) imgInput.value = dataUrl;
-            };
-            img.src = ev.target.result;
-        };
-        reader.readAsDataURL(file);
-    } catch (err) {
-        console.error("Upload error:", err);
-    }
-}
-
-function saveProductSubmit(e) {
-    if (e) e.preventDefault();
-
-    const id = document.getElementById("prodFormId").value || ("prod-" + Date.now());
-    const title = document.getElementById("prodFormTitle").value.trim();
-    const subtitle = document.getElementById("prodFormSubtitle").value.trim();
-    const categoryBadge = document.getElementById("prodFormBadge").value.trim();
-    
-    const image = document.getElementById("prodFormImage").value.trim();
-    const description = document.getElementById("prodFormDesc").value.trim();
-    const featuresRaw = document.getElementById("prodFormFeatures").value.trim();
-
-    const features = featuresRaw.split(",").map(f => f.trim()).filter(f => f.length > 0);
-
-    const newProd = {
-        id,
-        title,
-        subtitle,
-        categoryBadge,
-        image,
-        description,
-        features: features.length > 0 ? features : ["Custom Specifications", "Quality Inspected"]
-    };
-
-    let products = getStoredProducts();
-    const existingIdx = products.findIndex(p => p.id === id);
-
-    if (existingIdx !== -1) {
-        products[existingIdx] = newProd;
-    } else {
-        products.unshift(newProd); // Add to beginning of catalog
-    }
-
-    saveStoredProducts(products);
-    toggleAddProductModal(false);
-
-    // Refresh UI
+function initSite() {
     renderProductsCatalog();
-    renderAdminProductsList();
-}
-
-function deleteProduct(id) {
-    let products = getStoredProducts();
-    const prod = products.find(p => p.id === id);
-    products = products.filter(p => p.id !== id);
-    saveStoredProducts(products);
-
-    requestAnimationFrame(() => {
-        renderProductsCatalog();
-        renderAdminProductsList();
-    });
-}
-
-function resetDefaultProducts() {
-    localStorage.removeItem("ajanta_products_catalog");
-    requestAnimationFrame(() => {
-        renderProductsCatalog();
-        renderAdminProductsList();
-    });
-}
-
-// Auto Initialize Products and Cloud Sync on DOM Load
-try {
-    renderProductsCatalog();
+    renderReviews();
     syncCatalogFromCloud();
-    syncReviewsFromCloud();
-} catch (err) {
-    console.warn("Immediate renderProductsCatalog error:", err);
+    loadApprovedReviews();
 }
-
-if (typeof document !== "undefined") {
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => {
-            renderProductsCatalog();
-            syncCatalogFromCloud();
-            syncReviewsFromCloud();
-        });
-    } else {
-        renderProductsCatalog();
-        syncCatalogFromCloud();
-        syncReviewsFromCloud();
-    }
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSite);
+} else {
+    initSite();
 }
